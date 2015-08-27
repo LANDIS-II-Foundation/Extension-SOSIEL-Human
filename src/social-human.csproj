@@ -39,7 +39,6 @@
     <Compile Include="AllowHarvestSiteVar.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="LandCover\IChange.cs" />
-    <Compile Include="LandCover\NoChange.cs" />
     <Compile Include="LandCover\RemoveTrees.cs" />
     <Compile Include="LandUse.cs" />
     <Compile Include="LandUseRegistry.cs" />
@@ -49,7 +48,6 @@
     <Compile Include="Model.cs" />
     <Compile Include="ParameterParser.cs" />
     <Compile Include="Parameters.cs" />
-    <Compile Include="SiteLog.cs" />
     <Compile Include="SiteVars.cs" />
   </ItemGroup>
   <ItemGroup>

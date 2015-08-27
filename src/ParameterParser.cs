@@ -17,7 +17,7 @@ namespace Landis.Extension.SocialHuman
         : BasicParameterParser<Parameters>
     {
         // Singleton for all the land uses that have no land cover changes
-        private static LandCover.IChange noLandCoverChange = new LandCover.NoChange();
+        //private static LandCover.IChange noLandCoverChange = new LandCover.NoChange();
 
         //---------------------------------------------------------------------
 
@@ -107,9 +107,10 @@ namespace Landis.Extension.SocialHuman
 
                 ReadVar(landCoverChangeType);
                 LandCover.IChange landCoverChange = null;
-                if (landCoverChangeType.Value.Actual == LandCover.NoChange.TypeName)
-                    landCoverChange = noLandCoverChange;
-                else if (landCoverChangeType.Value.Actual == LandCover.RemoveTrees.TypeName)
+                //if (landCoverChangeType.Value.Actual == LandCover.NoChange.TypeName)
+                //    landCoverChange = noLandCoverChange;
+                //else 
+                    if (landCoverChangeType.Value.Actual == LandCover.RemoveTrees.TypeName)
                 {
                     ICohortSelector selector = ReadSpeciesAndCohorts("LandUse",
                                                                      ParameterNames.Plant,
