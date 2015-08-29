@@ -7,8 +7,8 @@ namespace Landis.Extension.SocialHuman
     public class Parameters
     {
         private int timestep;
-        private string inputMapNameTemplate;
-        private string siteLogPath;
+        //private string inputMapNameTemplate;
+        //private string siteLogPath;
 
         //---------------------------------------------------------------------
 
@@ -32,21 +32,21 @@ namespace Landis.Extension.SocialHuman
         /// <summary>
         /// Template for pathnames for input maps of land use.
         /// </summary>
-        public string InputMaps
-        {
-            get
-            {
-                return inputMapNameTemplate;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    MapNames.CheckTemplateVars(value);
-                }
-                inputMapNameTemplate = value;
-            }
-        }
+        //public string InputMaps
+        //{
+        //    get
+        //    {
+        //        return inputMapNameTemplate;
+        //    }
+        //    set
+        //    {
+        //        if (value != null)
+        //        {
+        //            MapNames.CheckTemplateVars(value);
+        //        }
+        //        inputMapNameTemplate = value;
+        //    }
+        //}
 
         //---------------------------------------------------------------------
 
@@ -54,19 +54,19 @@ namespace Landis.Extension.SocialHuman
         /// Path to the CSV log file with biomass harvested per species at
         /// each timestep by individual sites.
         /// </summary>
-        public string SiteLogPath
-        {
-            get
-            {
-                return siteLogPath;
-            }
-            set
-            {
-                if (value == "")
-                    throw new InputValueException(value.ToString(),
-                                                  "Site log path is empty string");
-                siteLogPath = value;
-            }
-        }
+        //public string SiteLogPath
+        //{
+        //    get
+        //    {
+        //        return siteLogPath;
+        //    }
+        //    set
+        //    {
+        //        if (value == "")
+        //            throw new InputValueException(value.ToString(),
+        //                                          "Site log path is empty string");
+        //        siteLogPath = value;
+        //    }
+        //}
     }
 }

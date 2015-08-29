@@ -41,10 +41,8 @@
     <Compile Include="LandCover\IChange.cs" />
     <Compile Include="LandCover\RemoveTrees.cs" />
     <Compile Include="LandUse.cs" />
-    <Compile Include="LandUseRegistry.cs" />
     <Compile Include="PlugIn.cs" />
     <Compile Include="MapNames.cs" />
-    <Compile Include="MapPixel.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="ParameterParser.cs" />
     <Compile Include="Parameters.cs" />

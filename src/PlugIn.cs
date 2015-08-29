@@ -14,11 +14,11 @@ namespace Landis.Extension.SocialHuman
         private static readonly ILog log = LogManager.GetLogger(typeof(PlugIn));
         private static readonly bool isDebugEnabled = log.IsDebugEnabled;
 
-        public static readonly ExtensionType ExtType = new ExtensionType("disturbance:land use");
+        public static readonly ExtensionType ExtType = new ExtensionType("disturbance:social-human");
         public static readonly string ExtensionName = "Land Use";
 
         private Parameters parameters;
-        private string inputMapTemplate;
+        //private string inputMapTemplate;
 
         //---------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ namespace Landis.Extension.SocialHuman
             Model.Core.UI.WriteLine("Initializing {0}...", Name);
             SiteVars.Initialize(Model.Core);
             Timestep = parameters.Timestep;
-            inputMapTemplate = parameters.InputMaps;
+            //inputMapTemplate = parameters.InputMaps;
             //if (parameters.SiteLogPath != null)
             //    SiteLog.Initialize(parameters.SiteLogPath);
 
@@ -64,6 +64,22 @@ namespace Landis.Extension.SocialHuman
 
         public override void Run()
         {
+            // RScheller Notes and Thoughts: 8/29/2015
+
+            // Examine Biophysical Environment 
+
+            // Update Mental Models
+
+            // Determine Actions
+
+            // Take Actions
+                // - cohorts are thinned or removed
+                // - therefore need list of cohorts to thin or remove
+                // - if provided a list, we can reuse the base-harvest API
+                // - alternatively, we can simply thin or remove cohorts directly.
+                // - either way, we need very explicit rules about which cohort species, age, percentage to remove.
+
+
             //if (SiteLog.Enabled)
             //    SiteLog.TimestepSetUp();
 

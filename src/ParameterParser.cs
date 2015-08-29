@@ -51,91 +51,91 @@ namespace Landis.Extension.SocialHuman
             ReadVar(timestep);
             parameters.Timestep = timestep.Value;
 
-            InputVar<string> inputMaps = new InputVar<string>("InputMaps");
-            ReadVar(inputMaps);
-            parameters.InputMaps = inputMaps.Value;
+            //InputVar<string> inputMaps = new InputVar<string>("InputMaps");
+            //ReadVar(inputMaps);
+            //parameters.InputMaps = inputMaps.Value;
 
-            InputVar<string> siteLog = new InputVar<string>("SiteLog");
-            if (ReadOptionalVar(siteLog))
-                parameters.SiteLogPath = siteLog.Value;
-            else
-                parameters.SiteLogPath = null;
+            //InputVar<string> siteLog = new InputVar<string>("SiteLog");
+            //if (ReadOptionalVar(siteLog))
+            //    parameters.SiteLogPath = siteLog.Value;
+            //else
+            //    parameters.SiteLogPath = null;
 
-            ReadLandUses();
+            //ReadLandUses();
             return parameters;
         }
 
         //---------------------------------------------------------------------
 
-        protected void ReadLandUses()
-        {
-            InputVar<string> name = new InputVar<string>("LandUse");
-            InputVar<ushort> mapCode = new InputVar<ushort>("MapCode");
-            InputVar<bool> allowHarvest = new InputVar<bool>("AllowHarvest?");
-            InputVar<string> landCoverChangeType = new InputVar<string>("LandCoverChange");
+        //protected void ReadLandUses()
+        //{
+        //    InputVar<string> name = new InputVar<string>("LandUse");
+        //    InputVar<ushort> mapCode = new InputVar<ushort>("MapCode");
+        //    InputVar<bool> allowHarvest = new InputVar<bool>("AllowHarvest?");
+        //    InputVar<string> landCoverChangeType = new InputVar<string>("LandCoverChange");
 
-            Dictionary<string, int> nameLineNumbers = new Dictionary<string, int>();
-            Dictionary<ushort, int> mapCodeLineNumbers = new Dictionary<ushort, int>();
+        //    Dictionary<string, int> nameLineNumbers = new Dictionary<string, int>();
+        //    Dictionary<ushort, int> mapCodeLineNumbers = new Dictionary<ushort, int>();
 
-            while (!AtEndOfInput)
-            {
-                int nameLineNum = LineNumber;
-                ReadVar(name);
-                int lineNumber;
-                if (nameLineNumbers.TryGetValue(name.Value.Actual, out lineNumber))
-                    throw new InputValueException(name.Value.String,
-                                                  "The land use \"{0}\" was previously used on line {1}",
-                                                  name.Value.Actual, lineNumber);
-                else
-                {
-                    nameLineNumbers[name.Value.Actual] = nameLineNum;
-                }
+        //    while (!AtEndOfInput)
+        //    {
+        //        int nameLineNum = LineNumber;
+        //        ReadVar(name);
+        //        int lineNumber;
+        //        if (nameLineNumbers.TryGetValue(name.Value.Actual, out lineNumber))
+        //            throw new InputValueException(name.Value.String,
+        //                                          "The land use \"{0}\" was previously used on line {1}",
+        //                                          name.Value.Actual, lineNumber);
+        //        else
+        //        {
+        //            nameLineNumbers[name.Value.Actual] = nameLineNum;
+        //        }
 
-                int mapCodeLineNum = LineNumber;
-                ReadVar(mapCode);
-                if (mapCodeLineNumbers.TryGetValue(mapCode.Value.Actual, out lineNumber))
-                    throw new InputValueException(mapCode.Value.String,
-                                                  "The map code \"{0}\" was previously used on line {1}",
-                                                  mapCode.Value.Actual, lineNumber);
-                else
-                    mapCodeLineNumbers[mapCode.Value.Actual] = mapCodeLineNum;
+        //        int mapCodeLineNum = LineNumber;
+        //        ReadVar(mapCode);
+        //        if (mapCodeLineNumbers.TryGetValue(mapCode.Value.Actual, out lineNumber))
+        //            throw new InputValueException(mapCode.Value.String,
+        //                                          "The map code \"{0}\" was previously used on line {1}",
+        //                                          mapCode.Value.Actual, lineNumber);
+        //        else
+        //            mapCodeLineNumbers[mapCode.Value.Actual] = mapCodeLineNum;
 
-                ReadVar(allowHarvest);
+        //        ReadVar(allowHarvest);
 
-                // By default, a land use allows trees to establish.
-                bool allowEstablishment = true;
+        //        // By default, a land use allows trees to establish.
+        //        bool allowEstablishment = true;
 
-                ReadVar(landCoverChangeType);
-                LandCover.IChange landCoverChange = null;
-                //if (landCoverChangeType.Value.Actual == LandCover.NoChange.TypeName)
-                //    landCoverChange = noLandCoverChange;
-                //else 
-                    if (landCoverChangeType.Value.Actual == LandCover.RemoveTrees.TypeName)
-                {
-                    ICohortSelector selector = ReadSpeciesAndCohorts("LandUse",
-                                                                     ParameterNames.Plant,
-                                                                     ParameterNames.PreventEstablishment);
-                    ICohortCutter cohortCutter = CohortCutterFactory.CreateCutter(selector,
-                                                                                  PlugIn.ExtType);
-                    Planting.SpeciesList speciesToPlant = ReadSpeciesToPlant();
-                    landCoverChange = new LandCover.RemoveTrees(cohortCutter, speciesToPlant);
+        //        ReadVar(landCoverChangeType);
+        //        LandCover.IChange landCoverChange = null;
+        //        //if (landCoverChangeType.Value.Actual == LandCover.NoChange.TypeName)
+        //        //    landCoverChange = noLandCoverChange;
+        //        //else 
+        //            if (landCoverChangeType.Value.Actual == LandCover.RemoveTrees.TypeName)
+        //        {
+        //            ICohortSelector selector = ReadSpeciesAndCohorts("LandUse",
+        //                                                             ParameterNames.Plant,
+        //                                                             ParameterNames.PreventEstablishment);
+        //            ICohortCutter cohortCutter = CohortCutterFactory.CreateCutter(selector,
+        //                                                                          PlugIn.ExtType);
+        //            Planting.SpeciesList speciesToPlant = ReadSpeciesToPlant();
+        //            landCoverChange = new LandCover.RemoveTrees(cohortCutter, speciesToPlant);
 
-                    if (ReadPreventEstablishment())
-                        allowEstablishment = false;
-                }
-                else
-                    throw new InputValueException(landCoverChangeType.Value.String,
-                                                  "\"{0}\" is not a type of land cover change",
-                                                  landCoverChangeType.Value.Actual);
+        //            if (ReadPreventEstablishment())
+        //                allowEstablishment = false;
+        //        }
+        //        else
+        //            throw new InputValueException(landCoverChangeType.Value.String,
+        //                                          "\"{0}\" is not a type of land cover change",
+        //                                          landCoverChangeType.Value.Actual);
 
-                LandUse landUse = new LandUse(name.Value.Actual,
-                                              mapCode.Value.Actual,
-                                              allowHarvest.Value.Actual,
-                                              allowEstablishment,
-                                              landCoverChange);
-                LandUseRegistry.Register(landUse);
-            }
-        }
+        //        LandUse landUse = new LandUse(name.Value.Actual,
+        //                                      mapCode.Value.Actual,
+        //                                      allowHarvest.Value.Actual,
+        //                                      allowEstablishment,
+        //                                      landCoverChange);
+        //        LandUseRegistry.Register(landUse);
+        //    }
+        //}
 
         //---------------------------------------------------------------------
 
