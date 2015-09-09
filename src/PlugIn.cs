@@ -70,13 +70,17 @@ namespace Landis.Extension.SocialHuman
 
             // Update Mental Models
 
-            // Determine Actions
+            // Determine Actions: we need very explicit rules about which cohort species, age, percentage to remove.
 
             // Take Actions
                 // - cohorts are thinned or removed
                 // - therefore need list of cohorts to thin or remove
                 // - if provided a list, we can reuse the base-harvest API
+                    // These methods: RemoveTrees.cs: RemoveTrees()
+                    // Also ParameterParser.cs: Lines 101-102: CohortCutterFactory.
                 // - alternatively, we can simply thin or remove cohorts directly.
+                    // Could access Biomass Cohort Library directly:
+                    // SiteCohorts.cs: ReduceOrKillBiomassCohorts(IDisturbance disturbance) and RemoveMarkedCohorts()
                 // - either way, we need very explicit rules about which cohort species, age, percentage to remove.
 
 
