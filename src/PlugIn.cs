@@ -46,6 +46,11 @@ namespace Landis.Extension.SocialHuman
             Model.Core.UI.WriteLine("Initializing {0}...", Name);
             SiteVars.Initialize(Model.Core);
             Timestep = parameters.Timestep;
+
+            // NEED to read in Stand maps (general methods can be borrowed from Base Harvest library)
+            // NEED to read in actors and their initial stand assignment(s).
+            // Question: What are the initial properties of actors?
+
             //inputMapTemplate = parameters.InputMaps;
             //if (parameters.SiteLogPath != null)
             //    SiteLog.Initialize(parameters.SiteLogPath);
