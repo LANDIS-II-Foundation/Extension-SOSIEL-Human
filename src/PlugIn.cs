@@ -70,23 +70,35 @@ namespace Landis.Extension.SocialHuman
         public override void Run()
         {
             // RScheller Notes and Thoughts: 8/29/2015
+            // LCB additions: 9/9/2015
 
             // Examine Biophysical Environment 
 
             // Update Mental Models
 
             // Determine Actions: we need very explicit rules about which cohort species, age, percentage to remove.
+               // We are acting at the site (cell) level; Base Harvest concepts of ManagementArea and Stand not applicable - LCB
+               // Do you want any aggregation (stand, management area) ? - LCB
+               // Percentage to remove is percentage of biomass - LCB
+               // Do you want to PreventEstablishment or Plant on a site? Associated with a prescription in BaseHarvest - LCB
 
             // Take Actions
                 // - cohorts are thinned or removed
+                // - partial removal (thinning) means using biomass-harvest-lib PartialCohortCutter - LCB
                 // - therefore need list of cohorts to thin or remove
                 // - if provided a list, we can reuse the base-harvest API
                     // These methods: RemoveTrees.cs: RemoveTrees()
                     // Also ParameterParser.cs: Lines 101-102: CohortCutterFactory.
+                    // Not seeing where the biomass is actually removed with this approach; These methods just store the objects used. (LCB)
                 // - alternatively, we can simply thin or remove cohorts directly.
                     // Could access Biomass Cohort Library directly:
                     // SiteCohorts.cs: ReduceOrKillBiomassCohorts(IDisturbance disturbance) and RemoveMarkedCohorts()
+                // - using harvest management libs - LCB
+                    // Prescription.cs: Harvest(Stand stand) - In harvest-mgmt-lib; At stand level but shows use of api
+                    // PartialCohortCutter.cs Cut(ActiveSite site, CohortCounts cohortCounts) - in biomass-harvest-lib
+                    // WholeCohortCutter.cs Cut(ActiveSite site, CohortCounts cohortCounts) - in site-harvest-lib; called by PartialCohortCutter
                 // - either way, we need very explicit rules about which cohort species, age, percentage to remove.
+                // - What logging or output maps do you need? Likely can't use BaseHarvest as it aggregates higher than site - LCB
 
 
             //if (SiteLog.Enabled)
