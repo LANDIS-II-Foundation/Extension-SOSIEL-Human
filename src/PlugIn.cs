@@ -77,10 +77,9 @@ namespace Landis.Extension.SocialHuman
             // Update Mental Models
 
             // Determine Actions: we need very explicit rules about which cohort species, age, percentage to remove.
-               // We are acting at the site (cell) level; Base Harvest concepts of ManagementArea and Stand not applicable - LCB
-               // Do you want any aggregation (stand, management area) ? - LCB
+               // We are acting at the stand level; Base Harvest concepts of ManagementArea not applicable - LCB
                // Percentage to remove is percentage of biomass - LCB
-               // Do you want to PreventEstablishment or Plant on a site? Associated with a prescription in BaseHarvest - LCB
+               // Do you want to PreventEstablishment or Plant on a site? - LCB.  Yes to both - GS/RS
 
             // Take Actions
                 // - cohorts are thinned or removed
@@ -98,7 +97,12 @@ namespace Landis.Extension.SocialHuman
                     // PartialCohortCutter.cs Cut(ActiveSite site, CohortCounts cohortCounts) - in biomass-harvest-lib
                     // WholeCohortCutter.cs Cut(ActiveSite site, CohortCounts cohortCounts) - in site-harvest-lib; called by PartialCohortCutter
                 // - either way, we need very explicit rules about which cohort species, age, percentage to remove.
+
+            // Log actions
                 // - What logging or output maps do you need? Likely can't use BaseHarvest as it aggregates higher than site - LCB
+                // What was harvested or planted?
+                // How did the actors change?  What are actor properites?
+                // Stand maps of activity?  Maps of biomass removed?
 
 
             //if (SiteLog.Enabled)
