@@ -1,0 +1,46 @@
+﻿<Page x:Class="ApplicationClient.StartFrame"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:ignore="http://www.galasoft.ch/ignore"
+      xmlns:applicationClient="clr-namespace:ApplicationClient"
+      mc:Ignorable="d ignore"
+      Height="500"
+      Width="600"
+      Title="MVVM Light Application"
+      DataContext="{Binding Main, Source={StaticResource Locator}}">
+
+    <Grid x:Name="LayoutRoot">
+        <StackPanel Orientation="Vertical"
+                    Margin="15">
+
+            <StackPanel>
+                <Label Content="Iterations Number:"
+                       Margin="5" />
+                <TextBox Text="{Binding Iterations}" Margin="5,5,420,5" />
+            </StackPanel>
+            <StackPanel>
+                <Label Content="Agents Number:"
+                       Margin="5" />
+                <TextBox Text="{Binding NParameter}" Margin="358,5,5,5" />
+            </StackPanel>
+            <StackPanel>
+                <Label Content="M Parameter:"
+                       Margin="5" />
+                <TextBox Text="{Binding MParameter}" Margin="5" />
+            </StackPanel>
+            
+            <Button Margin="5" Content="Strategies" />
+            <Button Margin="5" Content="Agents" Command="{Binding AgentsCommand}" />
+            <Button Margin="5" Content="Communication Map" Command="{Binding CommunicationMapCommand}" />
+            <Button Content="Open Conf file" Command="{Binding SetConfigurationFilePathCommand}" Margin="5" />
+            <Button Content="Run" Command="{Binding RunCommand}" Margin="5" />
+
+            <ListBox ItemsSource="{Binding Updates}"
+                     Margin="5"
+                     MaxHeight="350"
+                     ScrollViewer.VerticalScrollBarVisibility="Visible" Height="113" />
+        </StackPanel>
+    </Grid>
+</Page>

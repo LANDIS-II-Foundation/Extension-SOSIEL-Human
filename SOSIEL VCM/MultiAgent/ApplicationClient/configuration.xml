@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <strategies>
+    <strategy id="1" if="5" else="5"></strategy>
+    <strategy id="2" if="3" else="5"></strategy>
+    <strategy id="3" if="7" else="10"></strategy>
+    <strategy id="4" if="2" else="10"></strategy>
+    <strategy id="5" if="1" else="10"></strategy>
+    <strategy id="6" if="3" else="0"></strategy>
+  </strategies>
+  <agents>
+    <agent name="Jhon" resource="10">
+      <strategies>
+        <strategy id="1"/>
+        <strategy id="2"/>
+        <strategy id="3"/>
+      </strategies>
+    </agent>
+    <agent name="Michael" resource="10">
+      <strategies>
+        <strategy id="4"/>
+        <strategy id="5"/>
+        <strategy id="6"/>
+      </strategies>
+    </agent>
+  </agents>
+</configuration>
