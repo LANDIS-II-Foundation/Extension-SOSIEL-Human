@@ -25,6 +25,7 @@ namespace ApplicationClient.ViewModel
         private double _mParameter;
         private MultiAgentSystem _multiSystemAgent;
         private int _nParameter;
+        private int _runIteration;
 
         public MainViewModel()
         {
@@ -87,7 +88,8 @@ namespace ApplicationClient.ViewModel
             {
                 return new RelayCommand(() =>
                 {
-                    _multiSystemAgent.RunService(Iterations, MParameter, UpdatingStatus);
+                    _multiSystemAgent.RunService(Iterations-_runIteration, MParameter, UpdatingStatus);
+                    _runIteration = Iterations;
                     UpdateContributions();
                 });
             }
@@ -99,7 +101,9 @@ namespace ApplicationClient.ViewModel
             {
                 return new RelayCommand(() =>
                 {
-                    _multiSystemAgent.RunService(Iterations, MParameter, UpdatingStatus);
+                    if (++_runIteration > Iterations)
+                        return;
+                    _multiSystemAgent.RunServiceOnce(++_runIteration, MParameter, UpdatingStatus);
                     UpdateContributions();
                 });
             }
@@ -148,6 +152,7 @@ namespace ApplicationClient.ViewModel
                     Contributions = agent.Contributions
                 });
             }
+
             RaisePropertyChanged("Contributions");
         }
 

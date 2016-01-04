@@ -41,7 +41,7 @@ namespace MultiAgent
                 Agents.Add(new Agent<double>
                 {
                     Name = "Agent" + i,
-                    Strategy = new Strategy<double> {IfCondition = 5, ThenCondition = 10},
+                    Strategy = new Strategy<double> { IfCondition = 5, ThenCondition = 10 },
                     Endowment = 10,
                     LastPayoff = 0,
                     AgentType = AgentType.FreeRider
@@ -59,35 +59,46 @@ namespace MultiAgent
         {
             for (var i = 0; i < iterations; i++)
             {
+               RunServiceOnce(i, mParameter, updatingStatus);
+            }
+        }
+
+        /// <summary>
+        ///     Running the main system service for one iteration
+        /// </summary>
+        /// <param name="iteration"></param>
+        /// <param name="mParameter"></param>
+        /// <param name="updatingStatus"></param>
+        public void RunServiceOnce(int iteration, double mParameter, Action<string> updatingStatus)
+        {
+            if (updatingStatus != null)
+                updatingStatus("Iteration...." + (iteration + 1));
+
+            var contributions =
+                Agents.Select(x => x.IsContributionValid() ? x.Strategy.ThenCondition : x.Strategy.ElseCondition)
+                    .ToArray();
+            foreach (var agent in Agents)
+            {
+                agent.Update(
+                    _unityContainer.Resolve<CalculatorService>().CalculateNewPayoff(agent.Strategy.ThenCondition,
+                        agent.Endowment, contributions, mParameter), contributions.Sum() / Agents.Count);
+
+                agent.Endowment += agent.LastPayoff;
+
+                agent.Contributions.Add(agent.Strategy.ThenCondition);
+
                 if (updatingStatus != null)
-                    updatingStatus("Iteration...." + (i + 1));
+                    updatingStatus(agent.Name);
+                if (updatingStatus != null)
+                    updatingStatus(agent.LastPayoff.ToString());
+                if (updatingStatus != null)
+                    updatingStatus(agent.Endowment.ToString());
 
-                var contributions =
-                    Agents.Select(x => x.IsContributionValid() ? x.Strategy.ThenCondition : x.Strategy.ElseCondition)
-                        .ToArray();
-                foreach (var agent in Agents)
-                {
-                    agent.Update(
-                        _unityContainer.Resolve<CalculatorService>().CalculateNewPayoff(agent.Strategy.ThenCondition,
-                            agent.Endowment, contributions, mParameter), contributions.Sum()/Agents.Count);
+                if (updatingStatus != null)
+                    updatingStatus("choosing new strategy...." + agent.Name);
 
-                    agent.Endowment += agent.LastPayoff;
-
-                    agent.Contributions.Add(agent.Strategy.ThenCondition);
-
-                    if (updatingStatus != null)
-                        updatingStatus(agent.Name);
-                    if (updatingStatus != null)
-                        updatingStatus(agent.LastPayoff.ToString());
-                    if (updatingStatus != null)
-                        updatingStatus(agent.Endowment.ToString());
-
-                    if (updatingStatus != null)
-                        updatingStatus("choosing new strategy...." + agent.Name);
-
-                    agent.Strategy = _unityContainer.Resolve<StrategyModifier<double>>()
-                        .Execute(agent.AgentType, contributions.Sum()/Agents.Count, 0);
-                }
+                agent.Strategy = _unityContainer.Resolve<StrategyModifier<double>>()
+                    .Execute(agent.AgentType, contributions.Sum() / Agents.Count, 0);
             }
         }
     }
