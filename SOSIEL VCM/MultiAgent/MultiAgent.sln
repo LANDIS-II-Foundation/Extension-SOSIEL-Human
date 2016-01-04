@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{02124C
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChartSurfaceControl", "ChartSurfaceControl\ChartSurfaceControl.csproj", "{96683568-2322-4860-ACC9-51F6A55ACC12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{9E4943D2-B4E4-436A-9AEA-D0C726246B2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E4943D2-B4E4-436A-9AEA-D0C726246B2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E4943D2-B4E4-436A-9AEA-D0C726246B2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96683568-2322-4860-ACC9-51F6A55ACC12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96683568-2322-4860-ACC9-51F6A55ACC12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96683568-2322-4860-ACC9-51F6A55ACC12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96683568-2322-4860-ACC9-51F6A55ACC12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

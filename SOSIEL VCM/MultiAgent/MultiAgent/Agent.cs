@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace MultiAgent
 {
@@ -12,6 +13,13 @@ namespace MultiAgent
         public override bool IsContributionValid()
         {
             return true;
+        }
+
+        public List<T> Contributions { get; set; }
+
+        public Agent()
+        {
+            Contributions = new List<T>();
         }
     }
 }

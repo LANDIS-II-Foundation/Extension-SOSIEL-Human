@@ -5,15 +5,18 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:ignore="http://www.galasoft.ch/ignore"
       xmlns:applicationClient="clr-namespace:ApplicationClient"
+      xmlns:chartSurfaceControl="clr-namespace:ChartSurfaceControl;assembly=ChartSurfaceControl"
       mc:Ignorable="d ignore"
-      Height="500"
-      Width="600"
       Title="MVVM Light Application"
       DataContext="{Binding Main, Source={StaticResource Locator}}">
 
     <Grid x:Name="LayoutRoot">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical"
-                    Margin="15">
+                    Margin="15" Grid.Column="0">
 
             <StackPanel>
                 <Label Content="Iterations Number:"
@@ -30,17 +33,25 @@
                        Margin="5" />
                 <TextBox Text="{Binding MParameter}" Margin="5" />
             </StackPanel>
-            
+
             <Button Margin="5" Content="Strategies" />
             <Button Margin="5" Content="Agents" Command="{Binding AgentsCommand}" />
             <Button Margin="5" Content="Communication Map" Command="{Binding CommunicationMapCommand}" />
             <Button Content="Open Conf file" Command="{Binding SetConfigurationFilePathCommand}" Margin="5" />
-            <Button Content="Run" Command="{Binding RunCommand}" Margin="5" />
 
-            <ListBox ItemsSource="{Binding Updates}"
+
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+            <chartSurfaceControl:ChartSurfaceControl Width="500" Height="400" LineData="{Binding Contributions, Mode=TwoWay}">
+            </chartSurfaceControl:ChartSurfaceControl>
+            <!--<ListBox ItemsSource="{Binding Updates}"
                      Margin="5"
                      MaxHeight="350"
-                     ScrollViewer.VerticalScrollBarVisibility="Visible" Height="113" />
+                     ScrollViewer.VerticalScrollBarVisibility="Visible" Height="113" />-->
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Run one iteration" Command="{Binding RunOnceCommand}" Margin="5" />
+                <Button Content="Run all iterations" Command="{Binding RunAllCommand}" Margin="5" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

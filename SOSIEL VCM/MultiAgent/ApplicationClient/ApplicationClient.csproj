@@ -78,6 +78,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\LineDataConverter.cs" />
     <Compile Include="Model\AdjacencyMatrix.cs" />
     <Compile Include="Model\EnumConverter.cs" />
     <Compile Include="MultiAgent\MultiAgentSystem.cs" />
@@ -87,6 +88,7 @@
     </Compile>
     <Compile Include="ViewModel\AgentsBuilderViewModel.cs" />
     <Compile Include="ViewModel\CommunicationViewModel.cs" />
+    <Compile Include="ViewModel\ContributionModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MapRule.cs" />
     <Compile Include="ViewModel\StrategiesBuilderViewModel.cs" />
@@ -159,6 +161,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ChartSurfaceControl\ChartSurfaceControl.csproj">
+      <Project>{96683568-2322-4860-ACC9-51F6A55ACC12}</Project>
+      <Name>ChartSurfaceControl</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MultiAgent\MultiAgent.csproj">
       <Project>{BD613414-59A3-4F90-8BB0-B3A8BF3C8D4A}</Project>
       <Name>MultiAgent</Name>

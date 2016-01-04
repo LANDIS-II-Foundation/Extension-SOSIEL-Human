@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Windows.Documents;
 using ApplicationClient.Services;
+using ChartSurfaceControl;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Views;
@@ -77,13 +79,26 @@ namespace ApplicationClient.ViewModel
             get { return new RelayCommand(CommunicationMap); }
         }
 
-        public RelayCommand RunCommand
+        public RelayCommand RunAllCommand
         {
             get
             {
                 return new RelayCommand(() =>
                 {
                     _multiSystemAgent.RunService(Iterations, MParameter, UpdatingStatus);
+                    UpdateContributions();
+                });
+            }
+        }
+
+        public RelayCommand RunOnceCommand
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    _multiSystemAgent.RunService(Iterations, MParameter, UpdatingStatus);
+                    UpdateContributions();
                 });
             }
         }
@@ -110,9 +125,28 @@ namespace ApplicationClient.ViewModel
             }
         }
 
+        public ObservableCollection<LineModel> Contributions { get; set; }
+
         public RelayCommand AgentsCommand
         {
             get { return new RelayCommand(AgentsBuilder); }
+        }
+
+        private void UpdateContributions()
+        {
+            //need to be optimized
+
+            Contributions = new ObservableCollection<LineModel>();
+
+            foreach (var agent in _multiSystemAgent.Agents)
+            {
+                Contributions.Add(new LineModel()
+                {
+                    Name = agent.Name,
+                    Contributions = agent.Contributions
+                });
+            }
+            RaisePropertyChanged("Contributions");
         }
 
         private void UpdatingStatus(string obj)
@@ -132,6 +166,5 @@ namespace ApplicationClient.ViewModel
             _navigator.NavigateTo("CommunicationMap", _multiSystemAgent.Agents.Count);
             MessengerInstance.Send(_multiSystemAgent.Agents.Count);
         }
-
     }
 }

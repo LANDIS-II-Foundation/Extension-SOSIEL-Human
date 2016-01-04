@@ -73,6 +73,8 @@ namespace MultiAgent
 
                     agent.Endowment += agent.LastPayoff;
 
+                    agent.Contributions.Add(agent.Strategy.ThenCondition);
+
                     if (updatingStatus != null)
                         updatingStatus(agent.Name);
                     if (updatingStatus != null)
