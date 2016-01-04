@@ -22,7 +22,7 @@ namespace ApplicationClient.ViewModel
     {
         private readonly FrameNavigationService _navigator;
         private int _iterations;
-        private int _mParameter;
+        private double _mParameter;
         private MultiAgentSystem _multiSystemAgent;
         private int _nParameter;
 
@@ -41,11 +41,13 @@ namespace ApplicationClient.ViewModel
 
         public string ConfigurationFilePath { get; set; }
 
-        public int MParameter
+        public double MParameter
         {
             get { return _mParameter; }
             set
             {
+                if(value<0)
+                    return;
                 _mParameter = value;
                 RaisePropertyChanged();
             }
