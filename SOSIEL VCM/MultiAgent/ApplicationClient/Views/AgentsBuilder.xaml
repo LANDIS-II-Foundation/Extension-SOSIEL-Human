@@ -9,8 +9,8 @@
       xmlns:model="clr-namespace:ApplicationClient.Model"
       xmlns:multiAgent="clr-namespace:MultiAgent;assembly=MultiAgent"
       mc:Ignorable="d ignore"
-      Height="473"
-      Width="583"
+      Height="287"
+      Width="656"
       Title="MVVM Light Application"
       DataContext="{Binding AgentsBuilder, Source={StaticResource Locator}}">
 
@@ -31,13 +31,13 @@
             <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0">
-            <TextBlock Text="Name" />
-            <TextBox Text="{Binding SelectedAgent.Name}" />
+        <StackPanel Grid.Column="0" Margin="0,0,5,5" Width="260">
+            <TextBlock Text="Name" Margin="5" />
+            <TextBox Text="{Binding SelectedAgent.Name}" Margin="5" />
 
-            <TextBlock Text="Agent Type" />
+            <TextBlock Text="Agent Type" Margin="5" />
             <ComboBox ItemsSource="{Binding Source={StaticResource DetailScopeDataProvider}}"
-                      Margin="10"
+                      Margin="5"
                       SelectedItem="{Binding SelectedAgentType}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -46,13 +46,13 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
 
-            <TextBlock Text="Resource" />
-            <TextBox Text="{Binding SelectedAgent.Endowment}" />
+            <TextBlock Text="Resource" Margin="5" />
+            <TextBox Text="{Binding SelectedAgent.Endowment}" Margin="5" />
 
-            <Button Margin="10" Content="Done" Command="{Binding DoneCommand}" />
+            <Button Margin="10" Content="Done" Command="{Binding DoneCommand}" Width="150" />
         </StackPanel>
-        <StackPanel Grid.Column="1">
-            <ListBox ItemsSource="{Binding Agents}" SelectedItem="{Binding SelectedAgent}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1" Margin="5">
+            <ListBox ItemsSource="{Binding Agents}" SelectedItem="{Binding SelectedAgent}" BorderThickness="0">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -61,6 +61,6 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </StackPanel>
+            </ScrollViewer>
     </Grid>
 </Page>

@@ -161,7 +161,6 @@ namespace ChartSurfaceControl
             if (areaCanvas != null && areaBorder != null && c.LineData != null)
             {
                     double start = c.LineData[0].Data[0], end = c.LineData[0].Data.Last();
-                    double xRange = Math.Abs(end - start);
 
                     if (c.ShowGridLines)
                         DrawGridLines(areaCanvas, areaBorder, start, end, c.GridLineBrush);

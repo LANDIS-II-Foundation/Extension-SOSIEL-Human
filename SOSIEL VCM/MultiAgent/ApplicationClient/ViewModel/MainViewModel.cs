@@ -38,6 +38,9 @@ namespace ApplicationClient.ViewModel
             Func<double, double> freeRiderFunc = averageCotribution => 0;
 
             _multiSystemAgent = new MultiAgentSystem(cooperationFunc, trendFunc, freeRiderFunc);
+
+            NParameter = 1;
+            Iterations = 1;
         }
 
         public string ConfigurationFilePath { get; set; }
@@ -59,7 +62,7 @@ namespace ApplicationClient.ViewModel
             get { return _iterations; }
             set
             {
-                _iterations = value;
+                _iterations = value < 1 ? 1 : value;
                 RaisePropertyChanged();
             }
         }
@@ -69,7 +72,7 @@ namespace ApplicationClient.ViewModel
             get { return _nParameter; }
             set
             {
-                _nParameter = value;
+                _nParameter = value < 1 ? 1 : value;
                 _multiSystemAgent.InititalizeAgents(value);
                 RaisePropertyChanged();
             }
