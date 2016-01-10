@@ -149,7 +149,7 @@ namespace ApplicationClient.ViewModel
                 Contributions.Add(new LineModel()
                 {
                     Name = agent.Name,
-                    Contributions = agent.Contributions
+                    Data = agent.Contributions
                 });
             }
 
