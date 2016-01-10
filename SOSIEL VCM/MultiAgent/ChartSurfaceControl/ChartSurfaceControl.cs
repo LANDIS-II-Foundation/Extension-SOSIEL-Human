@@ -175,6 +175,8 @@ namespace ChartSurfaceControl
 
                                 foreach (var lineModel in c.LineData)
                                 {
+                                    Brush stroke = new SolidColorBrush(Color.FromRgb((byte)random.Next(), (byte)random.Next(), (byte)random.Next()));
+
                                     for (var u = 0; u < lineModel.Data.Count - 1; u++)
                                     {
                                         double yRange = lineModel.Data.Max() + 1;
@@ -183,11 +185,11 @@ namespace ChartSurfaceControl
                                         {
                                             Visibility = Visibility.Visible,
                                             StrokeThickness = c.LineThickness,
-                                            Stroke = new SolidColorBrush(Color.FromRgb((byte) random.Next(), (byte) random.Next(), (byte) random.Next())),
+                                            Stroke = stroke,
                                             X1 = u*(areaBorder.Width/lineModel.Data.Count),
                                             X2 = (u + 1)*(areaBorder.Width/lineModel.Data.Count),
-                                            Y1 = areaBorder.Height - lineModel.Data[u]*(areaBorder.Height/yRange),
-                                            Y2 = areaBorder.Height - lineModel.Data[u + 1]*(areaBorder.Height/yRange)
+                                            Y1 = areaBorder.Height - lineModel.Data[u]*(areaBorder.Height/yRange) - 2*c.LineThickness,
+                                            Y2 = areaBorder.Height - lineModel.Data[u + 1]*(areaBorder.Height/yRange) - 2*c.LineThickness
                                         };
 
                                         areaCanvas.Children.Add(line);

@@ -11,12 +11,9 @@ namespace ApplicationClient.ViewModel
 {
     public class AgentsBuilderViewModel : ViewModelBase
     {
-        private AgentType _agentType;
-
         private string _name;
 
         private Agent<double> _selectedAgent;
-        private AgentType _selectedAgentType;
 
         public AgentsBuilderViewModel()
         {
@@ -37,22 +34,12 @@ namespace ApplicationClient.ViewModel
             }
         }
 
-        public AgentType AgentType
-        {
-            get { return _agentType; }
-            set
-            {
-                _agentType = value;
-                RaisePropertyChanged();
-            }
-        }
-
         public AgentType SelectedAgentType
         {
-            get { return _selectedAgentType; }
+            get { return _selectedAgent.AgentType; }
             set
             {
-                _selectedAgentType = value;
+                _selectedAgent.AgentType = value;
                 RaisePropertyChanged();
             }
         }
