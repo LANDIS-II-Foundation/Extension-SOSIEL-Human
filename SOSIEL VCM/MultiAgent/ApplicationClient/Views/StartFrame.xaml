@@ -4,8 +4,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:ignore="http://www.galasoft.ch/ignore"
-      xmlns:applicationClient="clr-namespace:ApplicationClient"
-      xmlns:chartSurfaceControl="clr-namespace:ChartSurfaceControl;assembly=ChartSurfaceControl"
+      xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0"
       mc:Ignorable="d ignore"
       Title="MVVM Light Application"
       DataContext="{Binding Main, Source={StaticResource Locator}}">
@@ -42,8 +41,11 @@
 
         </StackPanel>
         <StackPanel Grid.Column="1">
-            <chartSurfaceControl:ChartSurfaceControl Width="660" Height="400"
-                                                     LineData="{Binding Contributions, Mode=TwoWay}" />
+
+            <d3:ChartPlotter VerticalAlignment="Bottom" MinHeight="350">
+                <d3:LineGraph DataSource="{Binding Contributions}"/>
+            </d3:ChartPlotter>
+            
             <!--<ListBox ItemsSource="{Binding Updates}"
                      Margin="5"
                      MaxHeight="350"

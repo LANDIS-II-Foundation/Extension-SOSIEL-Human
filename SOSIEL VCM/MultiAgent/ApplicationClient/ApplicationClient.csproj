@@ -38,6 +38,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DynamicDataDisplay">
+      <HintPath>..\..\..\..\..\..\..\..\Downloads\DynamicDataDisplay v0.3 Binaries &amp; Samples\DynamicDataDisplay\DynamicDataDisplay.dll</HintPath>
+    </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.2.0.37222, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
       <Private>True</Private>
@@ -53,6 +56,12 @@
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="RDotNet">
+      <HintPath>..\..\..\..\..\..\..\..\Downloads\RDotNet_1.5.13\RDotNet_1.5.13\RDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet.NativeLibrary">
+      <HintPath>..\..\..\..\..\..\..\..\Downloads\RDotNet_1.5.13\RDotNet_1.5.13\RDotNet.NativeLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Activities" />
@@ -161,10 +170,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChartSurfaceControl\ChartSurfaceControl.csproj">
-      <Project>{96683568-2322-4860-ACC9-51F6A55ACC12}</Project>
-      <Name>ChartSurfaceControl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MultiAgent\MultiAgent.csproj">
       <Project>{BD613414-59A3-4F90-8BB0-B3A8BF3C8D4A}</Project>
       <Name>MultiAgent</Name>

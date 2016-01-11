@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Windows;
 using System.Windows.Documents;
 using ApplicationClient.Services;
-using ChartSurfaceControl;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Views;
 using Microsoft.Practices.ServiceLocation;
+using Microsoft.Research.DynamicDataDisplay.DataSources;
 using Microsoft.Win32;
 using MultiAgent;
+using RDotNet;
 
 namespace ApplicationClient.ViewModel
 {
@@ -29,7 +34,7 @@ namespace ApplicationClient.ViewModel
 
         public MainViewModel()
         {
-            _navigator = (FrameNavigationService) ServiceLocator.Current.GetInstance<INavigationService>();
+            _navigator = (FrameNavigationService)ServiceLocator.Current.GetInstance<INavigationService>();
 
             Updates = new ObservableCollection<string>();
 
@@ -50,7 +55,7 @@ namespace ApplicationClient.ViewModel
             get { return _mParameter; }
             set
             {
-                if(value<0)
+                if (value < 0)
                     return;
                 _mParameter = value;
                 RaisePropertyChanged();
@@ -91,7 +96,7 @@ namespace ApplicationClient.ViewModel
             {
                 return new RelayCommand(() =>
                 {
-                    _multiSystemAgent.RunService(Iterations-_runIteration, MParameter, UpdatingStatus);
+                    _multiSystemAgent.RunService(Iterations - _runIteration, MParameter, UpdatingStatus);
                     _runIteration = Iterations;
                     UpdateContributions();
                 });
@@ -134,7 +139,7 @@ namespace ApplicationClient.ViewModel
             }
         }
 
-        public ObservableCollection<LineModel> Contributions { get; set; }
+        public ObservableDataSource<Point> Contributions { get; set; }
 
         public RelayCommand AgentsCommand
         {
@@ -143,17 +148,23 @@ namespace ApplicationClient.ViewModel
 
         private void UpdateContributions()
         {
-            //need to be optimized
+            Contributions = new ObservableDataSource<Point>();
 
-            Contributions = new ObservableCollection<LineModel>();
+            REngine engine = REngine.GetInstance();
+
+            NumericVector sequence = engine.Evaluate("x <- seq(" + 1 + ", " + Iterations + ", 1)").AsNumeric();
 
             foreach (var agent in _multiSystemAgent.Agents)
             {
-                Contributions.Add(new LineModel()
+                StringBuilder strBuilder = new StringBuilder();
+                foreach (var contribution in agent.Contributions)
                 {
-                    Name = agent.Name,
-                    Data = agent.Contributions
-                });
+                    strBuilder.Append(contribution+",");
+                }
+                strBuilder.Length--;
+                NumericVector dnorm = engine.Evaluate("y <- c(" + strBuilder + ")").AsNumeric();
+                IEnumerable<Point> data = sequence.Zip(dnorm, (x, y) => new Point(x, y));
+                Contributions.AppendMany(data);
             }
 
             RaisePropertyChanged("Contributions");

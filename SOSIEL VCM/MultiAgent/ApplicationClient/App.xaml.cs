@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using GalaSoft.MvvmLight.Threading;
+using RDotNet;
 
 namespace ApplicationClient
 {
@@ -11,6 +12,7 @@ namespace ApplicationClient
         static App()
         {
             DispatcherHelper.Initialize();
+            REngine.SetEnvironmentVariables();
         }
     }
 }
