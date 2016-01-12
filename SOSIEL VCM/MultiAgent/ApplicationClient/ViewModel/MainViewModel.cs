@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Documents;
 using ApplicationClient.Services;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -25,16 +23,17 @@ namespace ApplicationClient.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        private readonly MultiAgentSystem _multiSystemAgent;
         private readonly FrameNavigationService _navigator;
-        private int _iterations;
+        private int _rParameter;
         private double _mParameter;
-        private MultiAgentSystem _multiSystemAgent;
         private int _nParameter;
         private int _runIteration;
+        private double _endowment;
 
         public MainViewModel()
         {
-            _navigator = (FrameNavigationService)ServiceLocator.Current.GetInstance<INavigationService>();
+            _navigator = (FrameNavigationService) ServiceLocator.Current.GetInstance<INavigationService>();
 
             Updates = new ObservableCollection<string>();
 
@@ -43,9 +42,10 @@ namespace ApplicationClient.ViewModel
             Func<double, double> freeRiderFunc = averageCotribution => 0;
 
             _multiSystemAgent = new MultiAgentSystem(cooperationFunc, trendFunc, freeRiderFunc);
-
+            EndowmentParameter = 10;
             NParameter = 1;
-            Iterations = 1;
+            RParameter = 1;
+
         }
 
         public string ConfigurationFilePath { get; set; }
@@ -62,12 +62,24 @@ namespace ApplicationClient.ViewModel
             }
         }
 
-        public int Iterations
+        public double EndowmentParameter
         {
-            get { return _iterations; }
+            get { return _endowment; }
             set
             {
-                _iterations = value < 1 ? 1 : value;
+                if (value < 0)
+                    return;
+                _endowment = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public int RParameter
+        {
+            get { return _rParameter; }
+            set
+            {
+                _rParameter = value < 1 ? 1 : value;
                 RaisePropertyChanged();
             }
         }
@@ -78,7 +90,7 @@ namespace ApplicationClient.ViewModel
             set
             {
                 _nParameter = value < 1 ? 1 : value;
-                _multiSystemAgent.InititalizeAgents(value);
+                _multiSystemAgent.InititalizeAgents(value, EndowmentParameter);
                 RaisePropertyChanged();
             }
         }
@@ -96,8 +108,8 @@ namespace ApplicationClient.ViewModel
             {
                 return new RelayCommand(() =>
                 {
-                    _multiSystemAgent.RunService(Iterations - _runIteration, MParameter, UpdatingStatus);
-                    _runIteration = Iterations;
+                    _multiSystemAgent.RunService(RParameter - _runIteration, MParameter);
+                    _runIteration = RParameter;
                     UpdateContributions();
                 });
             }
@@ -109,9 +121,9 @@ namespace ApplicationClient.ViewModel
             {
                 return new RelayCommand(() =>
                 {
-                    if (++_runIteration > Iterations)
+                    if (++_runIteration > RParameter)
                         return;
-                    _multiSystemAgent.RunServiceOnce(++_runIteration, MParameter, UpdatingStatus);
+                    _multiSystemAgent.RunServiceOnce(++_runIteration, MParameter);
                     UpdateContributions();
                 });
             }
@@ -150,29 +162,24 @@ namespace ApplicationClient.ViewModel
         {
             Contributions = new ObservableDataSource<Point>();
 
-            REngine engine = REngine.GetInstance();
+            var engine = REngine.GetInstance();
 
-            NumericVector sequence = engine.Evaluate("x <- seq(" + 1 + ", " + Iterations + ", 1)").AsNumeric();
+            var sequence = engine.Evaluate("x <- seq(" + 1 + ", " + RParameter + ", 1)").AsNumeric();
 
             foreach (var agent in _multiSystemAgent.Agents)
             {
-                StringBuilder strBuilder = new StringBuilder();
+                var strBuilder = new StringBuilder();
                 foreach (var contribution in agent.Contributions)
                 {
-                    strBuilder.Append(contribution+",");
+                    strBuilder.Append(contribution + ",");
                 }
                 strBuilder.Length--;
-                NumericVector dnorm = engine.Evaluate("y <- c(" + strBuilder + ")").AsNumeric();
-                IEnumerable<Point> data = sequence.Zip(dnorm, (x, y) => new Point(x, y));
+                var dnorm = engine.Evaluate("y <- c(" + strBuilder + ")").AsNumeric();
+                var data = sequence.Zip(dnorm, (x, y) => new Point(x, y));
                 Contributions.AppendMany(data);
             }
 
             RaisePropertyChanged("Contributions");
-        }
-
-        private void UpdatingStatus(string obj)
-        {
-            Updates.Add(obj);
         }
 
         private void AgentsBuilder()

@@ -8,7 +8,7 @@ namespace MultiAgent
     /// <summary>
     ///     Simple implementation of MultiAgentSystem
     /// </summary>
-    public class MultiAgentSystem
+    public class MultiAgentSystem : IMultiAgentSystem<double>
     {
         private readonly IUnityContainer _unityContainer = new UnityContainer();
 
@@ -33,7 +33,8 @@ namespace MultiAgent
         ///     Initializing Agents here
         /// </summary>
         /// <param name="n"></param>
-        public void InititalizeAgents(int n)
+        /// <param name="endowmentParameter"></param>
+        public void InititalizeAgents(int n, double endowmentParameter)
         {
             Agents = new List<Agent<double>>();
             for (var i = 0; i < n; i++)
@@ -42,7 +43,7 @@ namespace MultiAgent
                 {
                     Name = "Agent" + i,
                     Strategy = new Strategy<double> { IfCondition = 5, ThenCondition = 10 },
-                    Endowment = 10,
+                    Endowment = endowmentParameter,
                     LastPayoff = 0,
                     AgentType = AgentType.FreeRider
                 });
@@ -55,11 +56,11 @@ namespace MultiAgent
         /// <param name="iterations"></param>
         /// <param name="mParameter"></param>
         /// <param name="updatingStatus"></param>
-        public void RunService(int iterations, double mParameter, Action<string> updatingStatus)
+        public void RunService(int iterations, double mParameter)
         {
             for (var i = 0; i < iterations; i++)
             {
-               RunServiceOnce(i, mParameter, updatingStatus);
+               RunServiceOnce(i, mParameter);
             }
         }
 
@@ -69,12 +70,9 @@ namespace MultiAgent
         /// <param name="iteration"></param>
         /// <param name="mParameter"></param>
         /// <param name="updatingStatus"></param>
-        public void RunServiceOnce(int iteration, double mParameter, Action<string> updatingStatus)
+        public void RunServiceOnce(int iteration, double mParameter)
         {
-            if (updatingStatus != null)
-                updatingStatus("Iteration...." + (iteration + 1));
-
-            var contributions =
+           var contributions =
                 Agents.Select(x => x.IsContributionValid() ? x.Strategy.ThenCondition : x.Strategy.ElseCondition)
                     .ToArray();
             foreach (var agent in Agents)
@@ -86,16 +84,6 @@ namespace MultiAgent
                 agent.Endowment += agent.LastPayoff;
 
                 agent.Contributions.Add(agent.Strategy.ThenCondition);
-
-                if (updatingStatus != null)
-                    updatingStatus(agent.Name);
-                if (updatingStatus != null)
-                    updatingStatus(agent.LastPayoff.ToString());
-                if (updatingStatus != null)
-                    updatingStatus(agent.Endowment.ToString());
-
-                if (updatingStatus != null)
-                    updatingStatus("choosing new strategy...." + agent.Name);
 
                 agent.Strategy = _unityContainer.Resolve<StrategyModifier<double>>()
                     .Execute(agent.AgentType, contributions.Sum() / Agents.Count, 0);

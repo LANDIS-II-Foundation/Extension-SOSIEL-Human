@@ -62,15 +62,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Agent.cs" />
-    <Compile Include="AgentBase.cs" />
-    <Compile Include="AgentType.cs" />
-    <Compile Include="CalculatorService.cs" />
-    <Compile Include="MultiAgentSystem.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Agent\Agent.cs" />
+    <Compile Include="Agent\AgentBase.cs" />
+    <Compile Include="Agent\AgentType.cs" />
+    <Compile Include="CalculatorService\CalculatorService.cs" />
+    <Compile Include="MultiAgentService\IMultiAgentSystem.cs" />
+    <Compile Include="MultiAgentService\MultiAgentSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Strategy.cs" />
-    <Compile Include="StrategyModifier.cs" />
+    <Compile Include="Strategy\Strategy.cs" />
+    <Compile Include="Strategy\StrategyModifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

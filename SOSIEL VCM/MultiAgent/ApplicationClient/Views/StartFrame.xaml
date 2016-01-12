@@ -8,29 +8,58 @@
       mc:Ignorable="d ignore"
       Title="MVVM Light Application"
       DataContext="{Binding Main, Source={StaticResource Locator}}">
+    <Page.Background>
+        <LinearGradientBrush EndPoint="1,0.5" StartPoint="0.5,0.5">
+            <GradientStop Color="#FF1B3158" Offset="0" />
+            <GradientStop Color="#FF6A777F" Offset="0.528" />
+            <GradientStop Color="#FF6C687E" Offset="0.993" />
+        </LinearGradientBrush>
+    </Page.Background>
 
-    <Grid x:Name="LayoutRoot" Height="428" Width="897">
+    <Page.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontFamily" Value="Helvetica"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="#19FFFFFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Width" Value="130"/>
+            <Setter Property="BorderBrush" Value="{x:Null}"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <Style TargetType="Label">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontFamily" Value="Helvetica"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#FFF5F3F3"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+    </Page.Resources>
+    <Grid x:Name="LayoutRoot" Height="608" Width="973">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical"
-                    Margin="15" Grid.Column="0">
+                    Margin="25" Grid.Column="0">
 
+            <Label Content="Quick settings" FontSize="16"/>
             <StackPanel>
-                <Label Content="Iterations Number:"
-                       Margin="5" />
-                <TextBox Text="{Binding Iterations}" Width="100" Margin="5" HorizontalAlignment="Left" />
+                <Label Content="Rounds Number:"/>
+                <TextBox Text="{Binding RParameter}"/>
             </StackPanel>
             <StackPanel>
-                <Label Content="Agents Number:"
-                       Margin="5" />
-                <TextBox Text="{Binding NParameter}" Width="100" Margin="5" HorizontalAlignment="Left" />
+                <Label Content="Agents Number:"/>
+                <TextBox Text="{Binding NParameter}"/>
             </StackPanel>
             <StackPanel>
-                <Label Content="M Parameter:"
-                       Margin="5" />
-                <TextBox Text="{Binding MParameter}" Width="100" Margin="5" HorizontalAlignment="Left" />
+                <Label Content="M Parameter:"/>
+                <TextBox Text="{Binding MParameter}"/>
+            </StackPanel>
+            <StackPanel>
+                <Label Content="W Parameter:"/>
+                <TextBox Text="{Binding EndowmentParameter}"/>
             </StackPanel>
 
             <Button Margin="5" Width="120" Content="Strategies" />
@@ -38,22 +67,17 @@
             <Button Margin="5" Width="120" Content="Communication Map" Command="{Binding CommunicationMapCommand}" />
             <Button Margin="5" Width="120" Content="Open Conf file" Command="{Binding SetConfigurationFilePathCommand}" />
 
-
-        </StackPanel>
-        <StackPanel Grid.Column="1">
-
-            <d3:ChartPlotter VerticalAlignment="Bottom" MinHeight="350">
-                <d3:LineGraph DataSource="{Binding Contributions}"/>
-            </d3:ChartPlotter>
-            
-            <!--<ListBox ItemsSource="{Binding Updates}"
-                     Margin="5"
-                     MaxHeight="350"
-                     ScrollViewer.VerticalScrollBarVisibility="Visible" Height="113" />-->
             <StackPanel Orientation="Horizontal">
                 <Button Content="Run one iteration" Command="{Binding RunOnceCommand}" Margin="5" />
                 <Button Content="Run all iterations" Command="{Binding RunAllCommand}" Margin="5" />
             </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Margin="20">
+
+            <d3:ChartPlotter VerticalAlignment="Bottom" MinHeight="500" Background="#83FFFFFF">
+                <d3:LineGraph DataSource="{Binding Contributions}"/>
+            </d3:ChartPlotter>
+
         </StackPanel>
     </Grid>
 </Page>
