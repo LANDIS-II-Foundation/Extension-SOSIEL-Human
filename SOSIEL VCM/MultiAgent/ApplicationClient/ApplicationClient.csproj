@@ -178,6 +178,16 @@
   <ItemGroup>
     <Resource Include="configuration.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\chat.png" />
+    <Resource Include="Icons\friends-group.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Expensive 2.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

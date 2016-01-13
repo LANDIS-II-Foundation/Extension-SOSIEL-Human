@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -151,7 +152,9 @@ namespace ApplicationClient.ViewModel
             }
         }
 
-        public ObservableDataSource<Point> Contributions { get; set; }
+        public event UpdateD3 UpdateD3;
+
+        public ObservableCollection<LineModel> Contributions { get; set; }
 
         public RelayCommand AgentsCommand
         {
@@ -160,25 +163,15 @@ namespace ApplicationClient.ViewModel
 
         private void UpdateContributions()
         {
-            Contributions = new ObservableDataSource<Point>();
-
-            var engine = REngine.GetInstance();
-
-            var sequence = engine.Evaluate("x <- seq(" + 1 + ", " + RParameter + ", 1)").AsNumeric();
+            Contributions = new ObservableCollection<LineModel>();
 
             foreach (var agent in _multiSystemAgent.Agents)
             {
-                var strBuilder = new StringBuilder();
-                foreach (var contribution in agent.Contributions)
-                {
-                    strBuilder.Append(contribution + ",");
-                }
-                strBuilder.Length--;
-                var dnorm = engine.Evaluate("y <- c(" + strBuilder + ")").AsNumeric();
-                var data = sequence.Zip(dnorm, (x, y) => new Point(x, y));
-                Contributions.AppendMany(data);
+                Contributions.Add(new LineModel(){Name = agent.Name, Data = agent.Contributions});
             }
 
+            if (UpdateD3 != null) 
+                UpdateD3(this, null);
             RaisePropertyChanged("Contributions");
         }
 
@@ -195,4 +188,12 @@ namespace ApplicationClient.ViewModel
             MessengerInstance.Send(_multiSystemAgent.Agents.Count);
         }
     }
+
+    public struct LineModel
+    {
+        public string Name { get; set; }
+        public List<double> Data { get; set; }
+    }
+
+    public delegate void UpdateD3(object sender, EventArgs args);
 }
