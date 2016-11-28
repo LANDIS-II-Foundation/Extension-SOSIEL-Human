@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{DC6595F1-5BD2-4EBE-A44D-287FAEAD4FE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialHuman", "SocialHuman\SocialHuman.csproj", "{1EFB7AF7-028C-4AAE-BDA6-179C57C390EB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DC6595F1-5BD2-4EBE-A44D-287FAEAD4FE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC6595F1-5BD2-4EBE-A44D-287FAEAD4FE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC6595F1-5BD2-4EBE-A44D-287FAEAD4FE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC6595F1-5BD2-4EBE-A44D-287FAEAD4FE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EFB7AF7-028C-4AAE-BDA6-179C57C390EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EFB7AF7-028C-4AAE-BDA6-179C57C390EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EFB7AF7-028C-4AAE-BDA6-179C57C390EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EFB7AF7-028C-4AAE-BDA6-179C57C390EB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

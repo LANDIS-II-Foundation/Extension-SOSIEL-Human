@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1EFB7AF7-028C-4AAE-BDA6-179C57C390EB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SocialHuman</RootNamespace>
+    <AssemblyName>SocialHuman</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Actors\Actor.cs" />
+    <Compile Include="Actors\ActorFactory.cs" />
+    <Compile Include="Actors\ForestryEnterprise.cs" />
+    <Compile Include="Algorithm.cs" />
+    <Compile Include="Builders\AntecedentBuilder.cs" />
+    <Compile Include="Entities\Heuristic.cs" />
+    <Compile Include="Entities\HeuristicLayer.cs" />
+    <Compile Include="Entities\HeuristicSet.cs" />
+    <Compile Include="Entities\Site.cs" />
+    <Compile Include="Enums\ActorType.cs" />
+    <Compile Include="Enums\ConsequentRelationship.cs" />
+    <Compile Include="Enums\StepNames.cs" />
+    <Compile Include="Global.cs" />
+    <Compile Include="Helpers\RandomSelectionHelper.cs" />
+    <Compile Include="Models\AntecedentParameters.cs" />
+    <Compile Include="Models\HeuristicConsequentRule.cs" />
+    <Compile Include="Models\GlobalParameters.cs" />
+    <Compile Include="Models\PeriodModel.cs" />
+    <Compile Include="Models\PeriodPartialModel.cs" />
+    <Compile Include="Enums\AnticipatedDirection.cs" />
+    <Compile Include="Models\ActorParameters.cs" />
+    <Compile Include="Models\HeuristicParameters.cs" />
+    <Compile Include="Randoms\LinearUniformRandom.cs" />
+    <Compile Include="Randoms\PowerLawRandom.cs" />
+    <Compile Include="Steps\AboveMin\AnticipationLearning.cs" />
+    <Compile Include="Steps\AboveMin\CounterfactualThinking.cs" />
+    <Compile Include="Steps\AboveMin\HeuristicSelection.cs" />
+    <Compile Include="Steps\Abstract\AnticipationLearningAbstract.cs" />
+    <Compile Include="Steps\Abstract\CounterfactualThinkingAbstract.cs" />
+    <Compile Include="Steps\Abstract\HeuristicSelectionAbstract.cs" />
+    <Compile Include="Steps\InductiveReasoning.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Steps\StepFactory.cs" />
+    <Compile Include="Steps\TakeAction.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

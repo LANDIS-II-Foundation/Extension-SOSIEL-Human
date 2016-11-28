@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulation Results</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="page-header">
+        <h1>Simulation Results</h1>
+    </div>
+
+    <es-results>
+        Loading...
+    </es-results>
+
+    <script src="js/zone.min.js"></script>
+    <script src="js/reflect.js"></script>
+    <script src="js/system.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+        System.config({
+            defaultJSExtensions: true,
+            map: {
+                '@angular/core': 'js/core.umd.min.js',
+                '@angular/common': 'js/common.umd.min.js',
+                '@angular/compiler': 'js/compiler.umd.min.js',
+                '@angular/forms': 'js/forms.umd.min.js',
+                '@angular/http': 'js/http.umd.min.js',
+                '@angular/platform-browser': 'js/platform-browser.umd.min.js',
+                '@angular/platform-browser-dynamic': 'js/platform-browser-dynamic.umd.min.js',
+                'rxjs/Observable' : 'js/rx.min.js',
+                'rxjs/add/operator/map' : 'js/rx.min.js',
+                'rxjs/add/observable/fromEvent' : 'js/rx.min.js',
+                'rxjs/Rx' : 'js/rx.min.js',
+                'rxjs/Subject' : 'js/rx.min.js',
+                'traceur': 'js/traceur.js'
+            }
+        });
+        System.import('main');
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+﻿{
+  "global_variables": {
+    "biomass_by_site": [ 100, 100 ],
+    "periods_count": 5,
+    "biomass_growth_rate": [ 0.9, 1.2, 1.1, 1.1, 1.1 ],
+    "historical_total_biomass_min": 199,
+    "max_heuristic_in_layer": 5
+  },
+  "actors": [
+    {
+      "actor_classname": "ForestryEnterprise",
+      "actor_type": 1,
+      "goal_value_tendency": "AboveMin",
+      "assigned_sites": [ true, true ],
+
+      "anticipated_influence_prior_period": "?",
+
+      "heuristics_consequent_rules": [
+        {
+          "heuristic_layer": 1,
+          "consequent_value_interval": [ 0, 200 ],
+          "consequent_relationship_with_goal_variable": "+"
+        },
+        {
+          "heuristic_layer": 2,
+          "consequent_value_interval": [ 0, 100 ],
+          "consequent_relationship_with_goal_variable": "-"
+        }
+      ],
+
+      "heuristics": [
+        {
+          "id": "HS1_L1_H1",
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 1,
+          "antecedent_const": 199,
+          "antecedent_inequality_sign": ">",
+          "consequent_value": 100,
+          "anticipated_influence": 10,
+          "freshness_status": 1,
+          "is_action": true
+        },
+        {
+          "id": "HS1_L1_H2",
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 2,
+          "antecedent_const": 0,
+          "antecedent_inequality_sign": ">=",
+          "consequent_value": 0,
+          "anticipated_influence": 0,
+          "freshness_status": 5,
+          "is_action": false
+        },
+        {
+          "id": "HS1_L2_H1",
+          "heuristic_set": 1,
+          "heuristic_layer": 2,
+          "heuristic_position_number": 1,
+          "antecedent_const": 100,
+          "antecedent_inequality_sign": "=",
+          "consequent_value": 10,
+          "anticipated_influence": 10,
+          "freshness_status": 1,
+          "is_action": true
+        },
+        {
+          "id": "HS1_L2_H2",
+          "heuristic_set": 1,
+          "heuristic_layer": 2,
+          "heuristic_position_number": 2,
+          "antecedent_const": 0,
+          "antecedent_inequality_sign": ">=",
+          "consequent_value": 0,
+          "anticipated_influence": 0,
+          "freshness_status": 5,
+          "is_action": false
+        }
+      ],
+      "matched_conditions_in_prior_period": [
+        [
+          "HS1_L1_H1",
+          "HS1_L1_H2",
+          "HS1_L2_H1",
+          "HS1_L2_H2"
+        ],
+        [
+          "HS1_L1_H1",
+          "HS1_L1_H2",
+          "HS1_L2_H1",
+          "HS1_L2_H2"
+        ]
+      ],
+      "activated_heuristics_in_prior_period": [
+        [ "HS1_L1_H1", "HS1_L2_H1" ],
+        [ "HS1_L1_H1", "HS1_L2_H1" ]
+      ]
+    }
+  ]
+}
