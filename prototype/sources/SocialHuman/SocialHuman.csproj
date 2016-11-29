@@ -58,7 +58,7 @@
     <Compile Include="Models\HeuristicConsequentRule.cs" />
     <Compile Include="Models\GlobalParameters.cs" />
     <Compile Include="Models\PeriodModel.cs" />
-    <Compile Include="Models\PeriodPartialModel.cs" />
+    <Compile Include="Models\SiteModel.cs" />
     <Compile Include="Enums\AnticipatedDirection.cs" />
     <Compile Include="Models\ActorParameters.cs" />
     <Compile Include="Models\HeuristicParameters.cs" />

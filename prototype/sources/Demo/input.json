@@ -4,16 +4,17 @@
     "periods_count": 5,
     "biomass_growth_rate": [ 0.9, 1.2, 1.1, 1.1, 1.1 ],
     "historical_total_biomass_min": 199,
-    "max_heuristic_in_layer": 5
+    "max_heuristic_in_layer": 5,
+    "power_of_distribution": 3
   },
   "actors": [
     {
       "actor_classname": "ForestryEnterprise",
       "actor_type": 1,
+      
       "goal_value_tendency": "AboveMin",
       "assigned_sites": [ true, true ],
 
-      "anticipated_influence_prior_period": "?",
 
       "heuristics_consequent_rules": [
         {

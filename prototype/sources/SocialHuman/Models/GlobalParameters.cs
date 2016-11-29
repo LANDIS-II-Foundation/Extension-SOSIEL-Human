@@ -7,5 +7,6 @@
         public double[] BiomassGrowthRate { get; private set; }
         public double HistoricalTotalBiomassMin { get; private set; }
         public int MaxHeuristicInLayer { get; private set; }
+        public int PowerOfDistribution { get; private set; }
     }
 }

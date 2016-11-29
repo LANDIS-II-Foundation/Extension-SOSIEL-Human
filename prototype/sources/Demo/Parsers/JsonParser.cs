@@ -12,6 +12,10 @@ namespace Demo.Parsers
 
         public JsonParser(string filePath)
         {
+            if (File.Exists(filePath) == false)
+                throw new FileNotFoundException("input.json not found");
+
+
             using (JsonTextReader jtr = new JsonTextReader(new StreamReader(filePath)))
             {
                 json = JToken.ReadFrom(jtr);

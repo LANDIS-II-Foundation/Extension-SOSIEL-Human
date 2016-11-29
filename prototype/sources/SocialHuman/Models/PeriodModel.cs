@@ -23,7 +23,7 @@ namespace SocialHuman.Models
         //TA
         public bool IsOverconsumption { get; set; }
 
-        public List<PeriodPartialModel> PartialData { get; set; }
+        public List<SiteModel> PartialData { get; set; }
 
         
         public PeriodModel(int periodNumber, Site[] sites)
@@ -31,7 +31,7 @@ namespace SocialHuman.Models
             PeriodNumber = periodNumber;
             Sites = sites;
 
-            PartialData = new List<PeriodPartialModel>();
+            PartialData = new List<SiteModel>();
         }
 
 
@@ -41,7 +41,7 @@ namespace SocialHuman.Models
         /// <param name="actor"></param>
         /// <param name="site"></param>
         /// <returns></returns>
-        public PeriodPartialModel GetDataForSite(Actor actor, Site site)
+        public SiteModel GetDataForSite(Actor actor, Site site)
         {
             return PartialData.Single(pd => pd.Actor == actor && pd.Site.Equals(site));
         }
@@ -51,7 +51,7 @@ namespace SocialHuman.Models
         /// </summary>
         /// <param name="actor"></param>
         /// <returns></returns>
-        public IEnumerable<PeriodPartialModel> GetDataForActor(Actor actor)
+        public IEnumerable<SiteModel> GetDataForActor(Actor actor)
         {
             return PartialData.Where(pd => pd.Actor == actor);
         }

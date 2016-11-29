@@ -27,7 +27,7 @@ namespace SocialHuman
             Site[] sites = algorithm.sites;
 
             PeriodModel zeroPeriodModel = new PeriodModel(0, sites);
-            List<PeriodPartialModel> partialData = zeroPeriodModel.PartialData;
+            List<SiteModel> partialData = zeroPeriodModel.PartialData;
 
             foreach (ActorParameters actorParameters in actors)
             {
@@ -51,7 +51,7 @@ namespace SocialHuman
                         Heuristic[] activatedHeuristicsForSiteInPriorPeriod =
                             allHeuristics.Where(h => activatedHeuristicsInPriorPeriod[i].Contains(h.Id)).ToArray();
 
-                        PeriodPartialModel partialModel = PeriodPartialModel.Create(newActor, site,
+                        SiteModel partialModel = SiteModel.Create(newActor, site,
                             matchedConditionsForSiteInPriorPeriod, activatedHeuristicsForSiteInPriorPeriod);
 
                         partialData.Add(partialModel);

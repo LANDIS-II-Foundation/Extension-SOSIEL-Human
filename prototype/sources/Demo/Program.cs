@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using AutoMapper;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 using SocialHuman;
 using SocialHuman.Enums;
@@ -27,9 +28,20 @@ namespace Demo
         static void Main(string[] args)
         {
             ConfigureMapper();
-            Initialize();
 
-            Run();
+            try
+            {
+                Initialize();
+
+                Run();
+            }
+            catch (JsonException ex)
+            {
+                Console.WriteLine("\n\nERROR! Incorrect input: "+ex.Message);
+                WaitKeyPress();
+            }
+
+
         }
 
         static void ConfigureMapper()
@@ -61,9 +73,6 @@ namespace Demo
             ActorInput[] actors = parser.ParseActors();
 
             algorithm = Algorithm.Initialize(Mapper.Map<GlobalParameters>(configuration), Mapper.Map<ActorParameters[]>(actors));
-
-            ///todo: implement verification input data
-
         }
 
         static void Run()
@@ -72,7 +81,7 @@ namespace Demo
 
             LinkedList<PeriodModel> results = algorithm.Run();
 
-            var data = results.Select(p => new PeriodOutput
+            PeriodOutput[] data = results.Select(p => new PeriodOutput
             {
                 PeriodNumber = p.PeriodNumber,
                 Biomass = p.Sites.Select(s => Math.Round(s.GoalValue, 2)).ToArray(),
@@ -89,7 +98,7 @@ namespace Demo
                         }).ToArray()
                     }).ToArray()
                 }).ToArray()
-            });
+            }).ToArray();
 
             var result = Newtonsoft.Json.JsonConvert.SerializeObject(data);
 
@@ -99,14 +108,15 @@ namespace Demo
             iis.Start($"/path:{outputDirectory} /port:{iisPort}");
 
             Process.Start($"http://localhost:{iisPort}");
-
-
-            Console.WriteLine("{0}Press any key to continue...", Environment.NewLine);
-            Console.ReadKey();
+            WaitKeyPress();
 
             iis.Stop();
         }
 
-
+        private static void WaitKeyPress()
+        {
+            Console.WriteLine("{0}Press any key to continue...", Environment.NewLine);
+            Console.ReadKey();
+        }
     }
 }

@@ -47,7 +47,7 @@ namespace SocialHuman.Steps.Abstract
                 matched.AddRange(matchedForLayer);
             }
 
-            PeriodPartialModel newPeriodPartial = PeriodPartialModel.Create(actor, site, matched.ToArray(), activated.ToArray());
+            SiteModel newPeriodPartial = SiteModel.Create(actor, site, matched.ToArray(), activated.ToArray());
 
             currentPeriod.PartialData.Add(newPeriodPartial);
         }

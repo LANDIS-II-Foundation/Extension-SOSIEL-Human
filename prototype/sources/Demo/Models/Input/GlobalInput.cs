@@ -14,5 +14,7 @@ namespace Demo.Models.Input
         public double HistoricalTotalBiomassMin { get; private set; }
         [JsonProperty("max_heuristic_in_layer")]
         public int MaxHeuristicInLayer { get; private set; }
+        [JsonProperty("power_of_distribution")]
+        public int PowerOfDistribution { get; private set; }
     }
 }

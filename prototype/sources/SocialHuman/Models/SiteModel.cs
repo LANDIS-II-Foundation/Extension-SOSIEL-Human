@@ -5,7 +5,7 @@ namespace SocialHuman.Models
     using Actors;
     using Entities;
 
-    public sealed class PeriodPartialModel
+    public sealed class SiteModel
     {
         public Actor Actor { get; private set; }
         public Site Site { get; private set; }
@@ -13,11 +13,11 @@ namespace SocialHuman.Models
         public Heuristic[] Matched { get; private set; }
         public Heuristic[] Activated { get; private set; }
         
-        private PeriodPartialModel() { }
+        private SiteModel() { }
 
-        public static PeriodPartialModel Create(Actor actor, Site site, Heuristic[] matched, Heuristic[] activated)
+        public static SiteModel Create(Actor actor, Site site, Heuristic[] matched, Heuristic[] activated)
         {
-            return new PeriodPartialModel
+            return new SiteModel
             {
                 Actor = actor,
                 Site = site,
