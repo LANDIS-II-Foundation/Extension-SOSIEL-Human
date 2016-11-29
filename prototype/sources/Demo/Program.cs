@@ -105,7 +105,7 @@ namespace Demo
             File.WriteAllText(outputFilePath, result);
 
             IISAgent iis = new IISAgent();
-            iis.Start($"/path:{outputDirectory} /port:{iisPort}");
+            iis.Start($"/path:\"{outputDirectory}\" /port:{iisPort} /clr:v2.0");
 
             Process.Start($"http://localhost:{iisPort}");
             WaitKeyPress();
