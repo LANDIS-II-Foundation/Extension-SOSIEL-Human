@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Demo
 {
-    class IISAgent
+    class IISAgent:IDisposable
     {
         Process process;
 
@@ -29,5 +29,9 @@ namespace Demo
             }
         }
 
+        public void Dispose()
+        {
+            Stop();
+        }
     }
 }

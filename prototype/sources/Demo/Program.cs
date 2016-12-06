@@ -29,20 +29,26 @@ namespace Demo
         static void Main(string[] args)
         {
             ConfigureMapper();
-
             try
             {
                 Initialize();
 
                 Run();
+
+                using (IISAgent iis = new IISAgent())
+                {
+                    iis.Start($"/path:\"{outputDirectory}\" /port:{iisPort} /clr:v2.0");
+
+                    Process.Start($"http://localhost:{iisPort}");
+
+                    WaitKeyPress();
+                }
             }
             catch (JsonException ex)
             {
-                Console.WriteLine("\n\nERROR! Incorrect input: "+ex.Message);
+                Console.WriteLine("\n\nERROR! Incorrect input: " + ex.Message);
                 WaitKeyPress();
             }
-
-
         }
 
         static void ConfigureMapper()
@@ -77,8 +83,8 @@ namespace Demo
             Dictionary<string, PeriodInitialStateInput> periodState = parser.ParseInitialState();
 
             algorithm = Algorithm.Initialize(
-                Mapper.Map<GlobalParameters>(configuration), 
-                Mapper.Map<ActorParameters[]>(actors), 
+                Mapper.Map<GlobalParameters>(configuration),
+                Mapper.Map<ActorParameters[]>(actors),
                 Mapper.Map<Dictionary<string, PeriodInitialStateParameters>>(periodState));
         }
 
@@ -102,30 +108,15 @@ namespace Demo
                         {
                             SetName = $"set{hg.Key.PositionNumber}",
                             Values = hg.OrderBy(h => h.Layer.PositionNumber).Select(h => Math.Round(h.ConsequentValue, 2)).ToArray(),
-                            Harvested = s.GetTakeActionForSet(hg.Key).HarvestAmount 
+                            Harvested = s.GetTakeActionForSet(hg.Key).HarvestAmount
                         }).ToArray()
                     }).ToArray()
                 }).ToArray()
             }).ToArray();
 
-            var result = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+            string outputString = JsonConvert.SerializeObject(data);
 
-            File.WriteAllText(outputFilePath, result);
-
-            IISAgent iis = new IISAgent();
-            try
-            {
-                iis.Start($"/path:{outputDirectory} /port:{iisPort}");
-
-                Process.Start($"http://localhost:{iisPort}");
-                WaitKeyPress();
-            }
-            finally
-            {
-                iis.Stop();
-            }
-
-
+            File.WriteAllText(outputFilePath, outputString);
         }
 
         private static void WaitKeyPress()
