@@ -9,29 +9,30 @@ namespace SocialHuman.Steps
 
     sealed class TakeAction
     {
-        public void Execute(Actor actor, LinkedListNode<PeriodModel> periodModel)
+        public void Execute(Actor actor, LinkedListNode<Period> periodModel)
         {
-            PeriodModel currentPeriod = periodModel.Value;
+            Period currentPeriod = periodModel.Value;
 
-            foreach (Site site in currentPeriod.Sites)
+            foreach (SiteState siteState in currentPeriod.SiteStates[actor])
             {
-                if (actor.IsSiteAssigned(site))
+                Heuristic[] activatedHeuristics = siteState.Activated;
+
+                foreach (var set in activatedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                 {
-                    Heuristic[] activatedHeuristics = currentPeriod.GetDataForSite(actor, site).Activated;
+                    double consequentValue = set.OrderBy(h => h.Layer.PositionNumber).Last().ConsequentValue;
 
-                    foreach (var set in activatedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                    TakeActionState takeActionState = new TakeActionState(set.Key, siteState.Site.BiomassValue * (consequentValue / 100));
+
+                    siteState.Site.BiomassValue -= takeActionState.HarvestAmount;
+
+                    if (siteState.Site.BiomassValue <= 0)
                     {
-                        double consequentValue = set.OrderBy(h => h.Layer.PositionNumber).Last().ConsequentValue;
-
-                        site.GoalValue -= site.GoalValue * consequentValue;
-
-                        if(site.GoalValue <= 0)
-                        {
-                            currentPeriod.IsOverconsumption = true;
-                            return;
-                        }
+                        currentPeriod.IsOverconsumption = true;
                     }
+
+                    siteState.TakeActions.Add(takeActionState);
                 }
+
             }
         }
     }

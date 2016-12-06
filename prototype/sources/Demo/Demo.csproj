@@ -104,9 +104,8 @@
   <ItemGroup>
     <Compile Include="Models\Input\ActorInput.cs" />
     <Compile Include="Models\Input\GlobalInput.cs" />
-    <Compile Include="Models\Input\HeuristicInput.cs" />
-    <Compile Include="Models\Input\HeuristicConsequentRuleInput.cs" />
     <Compile Include="IISAgent.cs" />
+    <Compile Include="Models\Input\PeriodInitialStateInput.cs" />
     <Compile Include="Models\Output\ActorOutput.cs" />
     <Compile Include="Models\Output\PeriodOutput.cs" />
     <Compile Include="Models\Output\SetOutput.cs" />
@@ -120,6 +119,9 @@
     <None Include="App.config" />
     <None Include="input.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="OutputTemplate\web.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
     <None Include="tsconfig.json" />
@@ -226,6 +228,11 @@
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
     <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_StartDate="2016/11/14" BuildVersion_BuildAction="Build" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_BuildVersioningStyle="None.None.Increment.None" BuildVersion_DetectChanges="True" BuildVersion_ConfigurationName="Release" />
+    </VisualStudio>
+  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

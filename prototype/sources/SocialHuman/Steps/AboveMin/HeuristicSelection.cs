@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace SocialHuman.Steps.AboveMin
 {
@@ -6,26 +7,34 @@ namespace SocialHuman.Steps.AboveMin
     using Entities;
     using Models;
     using Randoms;
+    
 
     sealed class HeuristicSelection : HeuristicSelectionAbstract
     {
-        protected override Heuristic ChooseOne(HeuristicLayer layer, Heuristic[] matchedHeuristics)
+        #region Override methods
+        protected override Heuristic ChooseOne(ActorGoalState criticalGoal, HeuristicLayer layer, Heuristic[] matchedHeuristics)
         {
-            if (currentPeriod.DiffCurrAndMin > 0)
-                return priorPeriod.GetDataForSite(actor, site).GetActivated(layer);
+            if (criticalGoal.DiffCurrentAndMin > 0)
+                return priorPeriodSiteState.GetActivated(layer);
             else
             {
-                Heuristic[] filteredHeuristics = matchedHeuristics.Where(h => h.AnticipatedInfluence >= 0 &&
-                    h.AnticipatedInfluence > currentPeriod.DiffCurrAndMin)
-                    .GroupBy(h => h.AnticipatedInfluence).OrderBy(hg => hg.Key).First().ToArray();
+                ActorGoal goal = criticalGoal.Goal;
 
-                if (filteredHeuristics.Length == 1)
-                    return filteredHeuristics[0];
+                Heuristic[] selectedHeuristics = matchedHeuristics.Where(h => h.ForGoal(goal).Value >= 0 &&
+                    h.ForGoal(goal).Value > criticalGoal.DiffCurrentAndMin)
+                    .GroupBy(h => h.ForGoal(goal).Value).OrderBy(hg => hg.Key).First().ToArray();
+
+                if (selectedHeuristics.Length == 1)
+                    return selectedHeuristics[0];
                 else
                 {
-                    return filteredHeuristics[LinearUniformRandom.GetInstance.Next(filteredHeuristics.Length)];
+                    if (selectedHeuristics.Length == 0)
+                        throw new Exception("Heuristic didn't found on HS step");
+
+                    return selectedHeuristics[LinearUniformRandom.GetInstance.Next(selectedHeuristics.Length)];
                 }
             }
         }
+        #endregion
     }
 }

@@ -8,13 +8,24 @@ namespace SocialHuman
     {
         private static Global instance;
 
-        public double HistoricalTotalBiomassMin { get; private set; }
+        //public double HistoricalTotalBiomassMin { get; private set; }
         public int MaxHeuristicInLayer { get; private set; }
         public int PowerOfDistribution { get; private set; }
 
+        public static Global Instance
+        {
+            get
+            {
+                if (instance != null)
+                    return instance;
+
+                throw new NullReferenceException("Instance wasn't initialized");
+            }
+        }
+
         private Global(GlobalParameters parameters)
         {
-            HistoricalTotalBiomassMin = parameters.HistoricalTotalBiomassMin;
+            //HistoricalTotalBiomassMin = parameters.HistoricalTotalBiomassMin;
             MaxHeuristicInLayer = parameters.MaxHeuristicInLayer;
             PowerOfDistribution = parameters.PowerOfDistribution;
         }
@@ -29,16 +40,5 @@ namespace SocialHuman
 
             throw new InvalidOperationException("Instance was initialized");
         }
-
-        public static Global Instance
-        {
-            get
-            {
-                if (instance != null)
-                    return instance;
-
-                throw new NullReferenceException("Instance wasn't initialized");
-            }
-        } 
     }
 }

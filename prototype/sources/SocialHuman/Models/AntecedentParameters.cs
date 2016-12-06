@@ -1,4 +1,6 @@
-﻿namespace SocialHuman.Models
+﻿using System;
+
+namespace SocialHuman.Models
 {
     public class AntecedentParameters
     {

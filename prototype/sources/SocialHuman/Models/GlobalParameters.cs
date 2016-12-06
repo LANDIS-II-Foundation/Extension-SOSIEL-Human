@@ -1,6 +1,8 @@
-﻿namespace SocialHuman.Models
+﻿using System;
+
+namespace SocialHuman.Models
 {
-    public class GlobalParameters
+    public sealed class GlobalParameters
     {
         public double[] BiomassBySite { get; internal set; }
         public int PeriodsCount { get; private set; }

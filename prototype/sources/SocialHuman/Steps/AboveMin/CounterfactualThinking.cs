@@ -1,28 +1,41 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace SocialHuman.Steps.AboveMin
 {
     using Entities;
-    using Steps.Abstract;
+    using Enums;
+    using Abstract;
+    using Models;
+
 
     sealed class CounterfactualThinking : CounterfactualThinkingAbstract
     {
-        protected override bool SpecificLogic(HeuristicLayer layer)
+        #region Constructors
+        public CounterfactualThinking()
         {
-            double anticipatedInfluence = currentPeriod.AnticipatedInfluence;
+            Tendency = TendencyNames.AboveMin;
+        }
 
-            Heuristic resultHeuristic = matchedPriorPeriodHeuristics
-                .Where(h => h.AnticipatedInfluence >= 0 && h.AnticipatedInfluence > currentPeriod.DiffCurrAndMin)
-                //.Where(h => h.IsMatch(currentPeriod.TotalBiomass))
-                .OrderBy(h => h.AnticipatedInfluence).First();
 
-            bool isPriorPeriod = resultHeuristic == activatedPriorPeriodHeuristic;
+        #endregion
 
-            //Heuristic[] heuristics = layer.Heuristics.Where(h => h.AnticipatedInfluence >= 0
-            //&& h.AnticipatedInfluence > currentPeriod.DiffCurrAndMin && h.AnticipatedInfluence <= minAI).ToArray();
 
-            //not prior period's heuristic OR the “do nothing” heuristic
+        #region Override methods
+        protected override bool SpecificLogic(ActorGoalState criticalGoalState, HeuristicLayer layer, 
+            Heuristic[] matchedPriorPeriodHeuristics, Heuristic priorPeriodHeuristic)
+        {
+            ActorGoal criticalGoal = criticalGoalState.Goal;
+
+            Heuristic resultHeuristic = layer.Heuristics
+                .Where(h => h.ForGoal(criticalGoal).Value >= 0 && h.ForGoal(criticalGoal).Value > criticalGoalState.DiffCurrentAndMin)
+                .OrderBy(h => h.ForGoal(criticalGoal).Value).First();
+
+            bool isPriorPeriod = resultHeuristic == priorPeriodHeuristic;
+
             return !(isPriorPeriod || resultHeuristic.IsAction == false);
         }
+        #endregion
+
     }
 }

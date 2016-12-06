@@ -1,23 +1,35 @@
-﻿namespace SocialHuman.Steps.AboveMin
+﻿using System;
+
+namespace SocialHuman.Steps.AboveMin
 {
     using Abstract;
     using Enums;
+    using Entities;
 
     sealed class AnticipationLearning: AnticipationLearningAbstract
     {
-        protected override void SpecificLogic()
+        #region Constructors
+        public AnticipationLearning():base()
         {
-            if (diffCurrAndMin <= 0)
+            Tendency = TendencyNames.AboveMin;
+        }
+        #endregion
+
+        #region Override methods
+        protected override void SpecificLogic(ActorGoalState currentGoal)
+        {
+            if (currentGoal.DiffCurrentAndMin <= 0)
             {
-                currentPeriod.AnticipatedDirection = AnticipatedDirection.Up;
-                currentPeriod.Confidence = false;
+                currentGoal.AnticipatedDirection = AnticipatedDirection.Up;
+                currentGoal.Confidence = false;
             }
             else
             {
-                currentPeriod.AnticipatedDirection = AnticipatedDirection.Stay;
-                currentPeriod.Confidence = true;
+                currentGoal.AnticipatedDirection = AnticipatedDirection.Stay;
+                currentGoal.Confidence = true;
             }
         }
+        #endregion
 
     }
 }

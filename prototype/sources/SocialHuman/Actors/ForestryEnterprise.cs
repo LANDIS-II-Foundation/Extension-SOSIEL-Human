@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SocialHuman.Actors
 {
@@ -9,38 +11,72 @@ namespace SocialHuman.Actors
     using Steps;
     using Steps.Abstract;
 
+
     class ForestryEnterprise : Actor
     {
-        static int indexer = 1;
-
-        public new string Name { get { return ClassName + indexer; } }
+        #region Private fields
+        //static int indexer = 1;
 
         AnticipationLearningAbstract anticipationLearning;
         CounterfactualThinkingAbstract counterfactualThinking;
         InductiveReasoning inductiveReasoning;
         HeuristicSelectionAbstract heuristicSelection;
         TakeAction takeAction;
+        #endregion
 
 
+        #region Constructors
         public ForestryEnterprise(ActorParameters parameters, Site[] sites)
-            :base(parameters, sites)
+            : base(parameters, sites)
         {
-            name = ClassName + indexer++;
+            ActorGoal firstGoal = parameters.Goals.First();
 
-            anticipationLearning = (AnticipationLearningAbstract)StepFactory.Create(parameters.GoalTendency, StepNames.AnticipationLearning);
-            counterfactualThinking = (CounterfactualThinkingAbstract)StepFactory.Create(parameters.GoalTendency, StepNames.CounterfactualThinking);
+            anticipationLearning = (AnticipationLearningAbstract)StepFactory.Create(firstGoal.Tendency, StepNames.AnticipationLearning);
+
+            counterfactualThinking = (CounterfactualThinkingAbstract)StepFactory.Create(firstGoal.Tendency, StepNames.CounterfactualThinking);
             inductiveReasoning = new InductiveReasoning();
-            heuristicSelection = (HeuristicSelectionAbstract)StepFactory.Create(parameters.GoalTendency, StepNames.HeuristicSelection);
+            heuristicSelection = (HeuristicSelectionAbstract)StepFactory.Create(firstGoal.Tendency, StepNames.HeuristicSelection);
             takeAction = new TakeAction();
         }
+        #endregion
 
-        public override void SimulatePart1(LinkedListNode<PeriodModel> periodModel)
+        #region Public methods
+        public override void SimulatePart1(LinkedListNode<Period> periodModel)
         {
-            PeriodModel currentPeriod = periodModel.Value;
+            Period currentPeriod = periodModel.Value, priorPeriod = periodModel.Previous.Value;
 
-            anticipationLearning.Execute(this, periodModel);
+            currentPeriod.SiteStates.Add(this, new List<SiteState>(AssignedSites.Count));
 
-            if(currentPeriod.Confidence == false)
+            List<ActorGoalState> goalStatesList = new List<ActorGoalState>(Goals.Length);
+
+            foreach (ActorGoal goal in Goals)
+            {
+                if (anticipationLearning.Tendency != goal.Tendency)
+                {
+                    anticipationLearning = (AnticipationLearningAbstract)StepFactory.Create(goal.Tendency, StepNames.AnticipationLearning);
+                }
+
+                ActorGoalState currentGoal = anticipationLearning.Execute(this, periodModel, goal);
+                goalStatesList.Add(currentGoal);
+            }
+
+            currentPeriod.GoalStates.Add(this, goalStatesList);
+
+            anticipationLearning.SelectCriticalGoal(goalStatesList);
+
+
+            ActorGoalState criticalGoal = currentPeriod.GetCriticalGoal(this);
+
+
+            //todo: change if possible
+            if (counterfactualThinking.Tendency != criticalGoal.Goal.Tendency)
+            {
+                counterfactualThinking = (CounterfactualThinkingAbstract)StepFactory.Create(criticalGoal.Goal.Tendency, StepNames.CounterfactualThinking);
+                heuristicSelection = (HeuristicSelectionAbstract)StepFactory.Create(criticalGoal.Goal.Tendency, StepNames.HeuristicSelection);
+            }
+
+
+            if (criticalGoal.Confidence == false)
             {
                 foreach (Site site in AssignedSites.Randomize())
                 {
@@ -48,18 +84,22 @@ namespace SocialHuman.Actors
                     {
                         foreach (HeuristicLayer layer in set.Layers)
                         {
+                            Heuristic[] matchedPriorPeriodHeuristics = priorPeriod.GetStateForSite(this, site).
+                                Matched.Where(h => h.Layer == layer).ToArray();
+
                             bool CTResult = counterfactualThinking.Execute(this, periodModel, site, layer);
 
-                            inductiveReasoning.Execute(CTResult, this, periodModel, site, layer);
+                            if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
+                                inductiveReasoning.Execute(this, periodModel, site, layer);
                         }
                     }
                 }
             }
         }
 
-        public override void SimulatePart2(LinkedListNode<PeriodModel> periodModel)
+        public override void SimulatePart2(LinkedListNode<Period> periodModel)
         {
-            PeriodModel currentPeriod = periodModel.Value;
+            Period currentPeriod = periodModel.Value;
 
             foreach (Site site in AssignedSites.Randomize())
             {
@@ -70,9 +110,11 @@ namespace SocialHuman.Actors
             }
         }
 
-        public override void SimulateTakeActionPart(LinkedListNode<PeriodModel> periodModel)
-        {            
+        public override void SimulateTakeActionPart(LinkedListNode<Period> periodModel)
+        {
             takeAction.Execute(this, periodModel);
         }
+        #endregion
+
     }
 }

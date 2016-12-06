@@ -30,6 +30,7 @@
                                     <thead>
                                         <th>Set</th>
                                         <th>Values</th>
+                                        <th>Harvested</th>
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let set of site.activated">
@@ -39,6 +40,7 @@
                                                     Layer {{i+1}} Consequent: {{value}}
                                                 </div>
                                             </td>
+                                            <td>{{set.harvested | number:'1.0-2'}}</td>
                                         </tr>
                                     </tbody>
                                 </table>

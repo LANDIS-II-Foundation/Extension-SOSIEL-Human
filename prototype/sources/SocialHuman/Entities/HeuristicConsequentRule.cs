@@ -1,4 +1,6 @@
-﻿namespace SocialHuman.Models
+﻿using System;
+
+namespace SocialHuman.Entities
 {
     using Enums;
     public sealed class HeuristicConsequentRule

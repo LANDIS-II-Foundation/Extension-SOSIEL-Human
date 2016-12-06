@@ -12,18 +12,12 @@ namespace SocialHuman.Steps
 
     class InductiveReasoning
     {
-        public void Execute(bool CTResult, Actor actor, LinkedListNode<PeriodModel> periodModel, Site site, HeuristicLayer layer)
+        public void Execute(Actor actor, LinkedListNode<Period> periodModel, Site site, HeuristicLayer layer)
         {
-            //Inductive reasoning is activated only if heuristic-set-layer (i.e. CTResult) specific counterfactual thinking = unsuccessful (i.e. false).
-            if (CTResult != false)
-            {
-                return;
-            }
+            Period currentPeriod = periodModel.Value;
+            Period priorPeriod = periodModel.Previous.Value;
 
-            PeriodModel currentPeriod = periodModel.Value;
-            PeriodModel priorPeriod = periodModel.Previous.Value;
-
-            Heuristic activatedPriorPeriodHeuristic = priorPeriod.GetDataForSite(actor, site).GetActivated(layer);
+            Heuristic activatedPriorPeriodHeuristic = priorPeriod.GetStateForSite(actor, site).GetActivated(layer);
 
             HeuristicConsequentRule rule = layer.ConsequentRule;
 
@@ -32,7 +26,7 @@ namespace SocialHuman.Steps
 
             double newConsequentValue = activatedPriorPeriodHeuristic.ConsequentValue;
 
-            switch (currentPeriod.AnticipatedDirection)
+            switch (currentPeriod.GetCriticalGoal(actor).AnticipatedDirection)
             {
                 case AnticipatedDirection.Up:
                     {
@@ -75,13 +69,13 @@ namespace SocialHuman.Steps
                     }
             }
 
-            Heuristic[] activatedPriorPeriodSiteHeuristic = priorPeriod.GetDataForSite(actor, site).
+            Heuristic[] activatedPriorPeriodSiteHeuristics = priorPeriod.GetStateForSite(actor, site).
                 Activated.OrderBy(h => h.Layer.PositionNumber).ToArray();
 
             //calculating new antecedent constant
             double result = priorPeriod.TotalBiomass;
 
-            foreach (Heuristic heuristic in activatedPriorPeriodSiteHeuristic)
+            foreach (Heuristic heuristic in activatedPriorPeriodSiteHeuristics)
             {
                 if (heuristic == activatedPriorPeriodHeuristic)
                 {
@@ -95,13 +89,12 @@ namespace SocialHuman.Steps
             {
                 AntecedentConst = result,
                 AntecedentInequalitySign = activatedPriorPeriodHeuristic.AntecedentInequalitySign,
-                AnticipatedInfluence = currentPeriod.AnticipatedInfluence,
                 ConsequentValue = newConsequentValue,
-                IsAction = activatedPriorPeriodHeuristic.IsAction,
+                IsAction = true,
                 FreshnessStatus = 0
             };
 
-            layer.Add(Heuristic.Create(newHeuristicParams));
+            layer.Add(Heuristic.Create(newHeuristicParams, currentPeriod.GoalStates[actor]));
         }
     }
 }

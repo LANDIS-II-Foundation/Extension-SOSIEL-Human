@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SocialHuman.Steps.Abstract
@@ -6,42 +7,90 @@ namespace SocialHuman.Steps.Abstract
     using Entities;
     using Actors;
     using Models;
+    using Randoms;
+    
 
     abstract class AnticipationLearningAbstract
     {
-        //difference between prior value of goal variable and goal value(t)
-        protected double diffPriorAndMin;
-        //difference between current value of goal variable and goal min(t)
-        protected double diffCurrAndMin;
+        #region Public fields
+        public string Tendency { get; protected set; }
+        #endregion
 
-        protected PeriodModel currentPeriod;
+        #region Abstract methods
+        protected abstract void SpecificLogic(ActorGoalState currentGoal);
+        #endregion
 
-        protected abstract void SpecificLogic();
-
-        public void Execute(Actor actor, LinkedListNode<PeriodModel> periodModel)
+        #region Public methods
+        public ActorGoalState Execute(Actor actor, LinkedListNode<Period> periodModel, ActorGoal actorGoal)
         {
-            currentPeriod = periodModel.Value;
+            Period currentPeriod = periodModel.Value;
+            Period priorPeriod = periodModel.Previous.Value;
 
-            PeriodModel priorPeriod = periodModel.Previous.Value;
+            ActorGoalState priorState = priorPeriod.GoalStates[actor].Single(gs => gs.Goal == actorGoal);
 
-            //1.Calculate anticipated influence(t) == goal variable value(t) – goal variable value(t-1)
-            currentPeriod.AnticipatedInfluence = currentPeriod.TotalBiomass - priorPeriod.TotalBiomass;
-            //2.Update the anticipated influence of heuristics implemented in prior period
-            IEnumerable<Heuristic> implementedInPriorPeriod = priorPeriod.GetDataForActor(actor).SelectMany(pd=>pd.Activated);
+            double currentValue;
 
-            foreach(Heuristic h in implementedInPriorPeriod)
+            //hack
+            if (actorGoal.IsPrimary)
             {
-                h.AnticipatedInfluence = currentPeriod.AnticipatedInfluence;
+                currentValue = priorPeriod.SiteStates[actor].Sum(ss=>ss.TakeActions.Sum(ta => ta.HarvestAmount)) + priorState.Value;
+            }
+            else
+            {
+                currentValue = currentPeriod.TotalBiomass;
             }
 
-            //= goal variable value(t-1) – critical goal variable value(t)
-            diffPriorAndMin = priorPeriod.TotalBiomass - Global.Instance.HistoricalTotalBiomassMin;
-            //= goal variable value(t) – critical goal variable value(t)
-            diffCurrAndMin = currentPeriod.TotalBiomass - Global.Instance.HistoricalTotalBiomassMin;
+            
 
-            currentPeriod.DiffCurrAndMin = diffCurrAndMin;
+            ActorGoalState currentState = new ActorGoalState(actorGoal, currentValue);
 
-            SpecificLogic();
+            currentState.DiffCurrentAndMin = currentState.Value - currentState.Goal.MinValue;
+            currentState.DiffPreviousAndMin = priorState.Value - priorState.Goal.MinValue;
+
+            //1. Calculate anticipated influence(t) == goal variable value(t) – goal variable value(t-1)
+            currentState.AnticipatedInfluenceValue = currentState.Value - priorState.Value;
+
+            //2.Update the anticipated influence of heuristics implemented in prior period
+            IEnumerable<Heuristic> activatedInPriorPeriod = priorPeriod.GetStateForActor(actor).SelectMany(pd => pd.Activated);
+
+            foreach (Heuristic h in activatedInPriorPeriod)
+            {
+                AnticipatedInfluence aiForCurrentGoal = h.AnticipatedInfluences.Single(ai => ai.ActorGoal == actorGoal);
+
+                aiForCurrentGoal.Value = currentState.AnticipatedInfluenceValue;
+            }
+
+            SpecificLogic(currentState);
+
+            //hack
+            if (actorGoal.IsPrimary)
+            {
+                actorGoal.MinValue = currentState.Value;
+            }
+
+            return currentState;
         }
+
+        public void SelectCriticalGoal(List<ActorGoalState> goals)
+        {
+            ActorGoalState[] confidenceNo = goals.Where(g => g.Confidence == false).ToArray();
+
+            if (confidenceNo.Length > 0)
+            {
+                if (confidenceNo.Length == 1)
+                {
+                    confidenceNo[0].IsSelected = true;
+                }
+                else
+                {
+                    confidenceNo[LinearUniformRandom.GetInstance.Next(confidenceNo.Length)].IsSelected = true;
+                }
+            }
+            else
+            {
+                goals.Single(g => g.Goal.IsPrimary).IsSelected = true;
+            }
+        }
+        #endregion
     }
 }

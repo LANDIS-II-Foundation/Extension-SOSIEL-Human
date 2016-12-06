@@ -21,7 +21,7 @@ var ResultsTable = (function () {
     ResultsTable = __decorate([
         core_1.Component({
             selector: 'es-results',
-            templateUrl: 'components/results.table.template.html'
+            templateUrl: 'components/results.table.template.html?ts=' + (new Date()).getTime()
         }), 
         __metadata('design:paramtypes', [(typeof (_a = typeof http_1.Http !== 'undefined' && http_1.Http) === 'function' && _a) || Object])
     ], ResultsTable);

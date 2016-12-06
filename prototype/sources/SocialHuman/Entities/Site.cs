@@ -7,11 +7,11 @@ namespace SocialHuman.Entities
         static int indexer = 1;
 
         public int Id { get; private set; } = indexer++;
-        public double GoalValue { get; set; }
+        public double BiomassValue { get; set; }
 
         public object Clone()
         {
-            return new Site { Id = this.Id, GoalValue = this.GoalValue };
+            return new Site { Id = this.Id, BiomassValue = this.BiomassValue };
         }
 
         public bool Equals(Site other)

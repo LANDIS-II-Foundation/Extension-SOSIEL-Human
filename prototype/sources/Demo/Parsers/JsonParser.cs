@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -30,6 +31,11 @@ namespace Demo.Parsers
         public GlobalInput ParseGlogalConfiguration()
         {
             return json.SelectToken("global_variables").ToObject<GlobalInput>();
+        }
+
+        public Dictionary<string, PeriodInitialStateInput> ParseInitialState()
+        {
+            return json.SelectToken("initial_state").ToObject<Dictionary<string, PeriodInitialStateInput>>();
         }
        
     }

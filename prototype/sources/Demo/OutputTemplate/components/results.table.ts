@@ -5,7 +5,7 @@ import 'rxjs/Rx';
 
 @Component({
     selector: 'es-results',
-    templateUrl: 'components/results.table.template.html'
+    templateUrl: 'components/results.table.template.html' + (new Date()).getTime()
 })
 export class ResultsTable {
     data: Array<any> = [];

@@ -23,7 +23,10 @@ namespace Demo
 
         public void Stop()
         {
-            process.Kill();
+            if (process?.HasExited == false)
+            {
+                process.Kill();
+            }
         }
 
     }

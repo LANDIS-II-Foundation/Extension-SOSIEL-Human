@@ -3,9 +3,6 @@ using System.Reflection;
 
 namespace SocialHuman.Steps
 {
-    using Models;
-    using Steps.Abstract;
-    
 
     static class StepFactory
     {

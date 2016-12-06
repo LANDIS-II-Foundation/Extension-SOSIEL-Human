@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SocialHuman.Steps.Abstract
@@ -10,30 +11,36 @@ namespace SocialHuman.Steps.Abstract
 
     abstract class CounterfactualThinkingAbstract
     {
-        protected Heuristic[] matchedPriorPeriodHeuristics;
-        protected Heuristic activatedPriorPeriodHeuristic;
+        #region Public fields
+        public string Tendency { get; protected set; }
+        #endregion
 
-        protected PeriodModel currentPeriod;
 
-        protected abstract bool SpecificLogic(HeuristicLayer layer);
+        #region Abstract methods
+        protected abstract bool SpecificLogic(ActorGoalState criticalGoalState, HeuristicLayer layer, Heuristic[] matchedPriorPeriodHeuristics, Heuristic priorPeriodHeuristic);
+        #endregion
 
-        public bool Execute(Actor actor, LinkedListNode<PeriodModel> periodModel, Site site, HeuristicLayer layer)
+        #region Public methods
+        public bool Execute(Actor actor, LinkedListNode<Period> periodModel, Site site, HeuristicLayer layer)
         {
-            currentPeriod = periodModel.Value;
+            Period currentPeriod = periodModel.Value;
 
-            PeriodModel priorPeriod = periodModel.Previous.Value;
+            Period priorPeriod = periodModel.Previous.Value;
 
-            matchedPriorPeriodHeuristics = priorPeriod.GetDataForSite(actor, site).
+            Heuristic[] matchedPriorPeriodHeuristics = priorPeriod.GetStateForSite(actor, site).
                 Matched.Where(h=>h.Layer == layer).ToArray();
 
-            if(currentPeriod.Confidence == false && matchedPriorPeriodHeuristics.Length >= 2)
-            {
-                activatedPriorPeriodHeuristic = priorPeriod.GetDataForSite(actor, site).GetActivated(layer);
+            ActorGoalState criticalGoalState = currentPeriod.GetCriticalGoal(actor);
 
-                return SpecificLogic(layer);
+            if (criticalGoalState.Confidence == false && matchedPriorPeriodHeuristics.Length >= 2)
+            {
+                Heuristic activatedPriorPeriodHeuristic = priorPeriod.GetStateForSite(actor, site).GetActivated(layer);
+
+                return SpecificLogic(criticalGoalState, layer, matchedPriorPeriodHeuristics, activatedPriorPeriodHeuristic);
             }
 
             return true;
         }
+        #endregion
     }
 }

@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 using SocialHuman;
 using SocialHuman.Enums;
+using SocialHuman.Entities;
 using SocialHuman.Models;
 
 namespace Demo
@@ -54,11 +55,13 @@ namespace Demo
             {
                 config.CreateMap<GlobalInput, GlobalParameters>();
                 config.CreateMap<HeuristicInput, HeuristicParameters>();
+                config.CreateMap<PeriodInitialStateInput, PeriodInitialStateParameters>();
+                config.CreateMap<GoalStateInput, GoalStateParameters>();
                 config.CreateMap<HeuristicConsequentInput, HeuristicConsequentRule>()
                 .ForMember(dest => dest.ConsequentRelationship, opt => opt.ResolveUsing((a) => a.ConsequentRelationshipConverter));
                 config.CreateMap<ActorInput, ActorParameters>()
-                .ForMember(dest => dest.ActorType, opt => opt.ResolveUsing((a) => (ActorType)a.ActorType))
-                .ForMember(dest => dest.Heuristics, opt => opt.ResolveUsing((a) => Mapper.Map<HeuristicParameters[]>(a.HeuristicSet)));
+                .ForMember(dest => dest.ActorType, opt => opt.ResolveUsing((a) => (ActorType)a.ActorType));
+                config.CreateMap<ActorGoalInput, ActorGoal>();
             });
         }
 
@@ -71,30 +74,35 @@ namespace Demo
 
             GlobalInput configuration = parser.ParseGlogalConfiguration();
             ActorInput[] actors = parser.ParseActors();
+            Dictionary<string, PeriodInitialStateInput> periodState = parser.ParseInitialState();
 
-            algorithm = Algorithm.Initialize(Mapper.Map<GlobalParameters>(configuration), Mapper.Map<ActorParameters[]>(actors));
+            algorithm = Algorithm.Initialize(
+                Mapper.Map<GlobalParameters>(configuration), 
+                Mapper.Map<ActorParameters[]>(actors), 
+                Mapper.Map<Dictionary<string, PeriodInitialStateParameters>>(periodState));
         }
 
         static void Run()
         {
             Console.WriteLine("Algorithm is running....");
 
-            LinkedList<PeriodModel> results = algorithm.Run();
+            LinkedList<Period> results = algorithm.Run();
 
             PeriodOutput[] data = results.Select(p => new PeriodOutput
             {
                 PeriodNumber = p.PeriodNumber,
-                Biomass = p.Sites.Select(s => Math.Round(s.GoalValue, 2)).ToArray(),
-                Actors = p.PartialData.GroupBy(pd => pd.Actor).Select(g => new ActorOutput
+                Biomass = p.Sites.Select(s => Math.Round(s.BiomassValue, 2)).ToArray(),
+                Actors = p.SiteStates.Select(g => new ActorOutput
                 {
-                    Name = g.Key.Name,
-                    Information = g.OrderBy(s => s.Site.Id).Select(s => new SiteOutput
+                    Name = g.Key.ActorName,
+                    Information = g.Value.OrderBy(s => s.Site.Id).Select(s => new SiteOutput
                     {
                         Name = $"site{s.Site.Id}",
                         ActivatedHeuristics = s.Activated.GroupBy(h => h.Layer.Set).Select(hg => new SetOutput
                         {
                             SetName = $"set{hg.Key.PositionNumber}",
-                            Values = hg.OrderBy(h => h.Layer.PositionNumber).Select(h => Math.Round(h.ConsequentValue, 2)).ToArray()
+                            Values = hg.OrderBy(h => h.Layer.PositionNumber).Select(h => Math.Round(h.ConsequentValue, 2)).ToArray(),
+                            Harvested = s.GetTakeActionForSet(hg.Key).HarvestAmount 
                         }).ToArray()
                     }).ToArray()
                 }).ToArray()
@@ -105,12 +113,19 @@ namespace Demo
             File.WriteAllText(outputFilePath, result);
 
             IISAgent iis = new IISAgent();
-            iis.Start($"/path:{outputDirectory} /port:{iisPort}");
+            try
+            {
+                iis.Start($"/path:{outputDirectory} /port:{iisPort}");
 
-            Process.Start($"http://localhost:{iisPort}");
-            WaitKeyPress();
+                Process.Start($"http://localhost:{iisPort}");
+                WaitKeyPress();
+            }
+            finally
+            {
+                iis.Stop();
+            }
 
-            iis.Stop();
+
         }
 
         private static void WaitKeyPress()

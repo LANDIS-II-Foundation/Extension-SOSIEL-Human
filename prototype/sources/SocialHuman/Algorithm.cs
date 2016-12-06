@@ -11,32 +11,39 @@ namespace SocialHuman
 
     public class Algorithm
     {
-        public static Algorithm Initialize(GlobalParameters globalParameters, ActorParameters[] actors)
+        #region Factory methods
+        public static Algorithm Initialize(GlobalParameters globalParameters, ActorParameters[] actors,
+            Dictionary<string, PeriodInitialStateParameters> initialState)
         {
             Global.Init(globalParameters);
 
             Algorithm algorithm = new Algorithm
             {
                 actors = new List<Actor>(actors.Length),
-                periods = new LinkedList<PeriodModel>(),
+                periods = new LinkedList<Period>(),
                 biomassGrowthRate = globalParameters.BiomassGrowthRate,
                 periodsCount = globalParameters.PeriodsCount,
-                sites = globalParameters.BiomassBySite.Select(s => new Site { GoalValue = s }).ToArray()
+                sites = globalParameters.BiomassBySite.Select(s => new Site { BiomassValue = s }).ToArray()
             };
 
             Site[] sites = algorithm.sites;
 
-            PeriodModel zeroPeriodModel = new PeriodModel(0, sites);
-            List<SiteModel> partialData = zeroPeriodModel.PartialData;
+            Period zeroPeriodModel = new Period(0, sites);
+
 
             foreach (ActorParameters actorParameters in actors)
             {
                 Actor newActor = ActorFactory.Create(actorParameters, sites);
                 algorithm.actors.Add(newActor);
 
+                PeriodInitialStateParameters periodStateForActor = initialState[actorParameters.ActorName];
 
-                string[][] matchedConditionsInPriorPeriod = actorParameters.MatchedConditionsInPriorPeriod;
-                string[][] activatedHeuristicsInPriorPeriod = actorParameters.ActivatedHeuristicsInPriorPeriod;
+                #region Create site states
+                List<SiteState> siteStates = new List<SiteState>(sites.Length);
+                List<TakeActionState> takeActions = new List<TakeActionState>(sites.Length);
+
+                string[][] matchedConditionsInPriorPeriod = periodStateForActor.MatchedConditionsInPriorPeriod;
+                string[][] activatedHeuristicsInPriorPeriod = periodStateForActor.ActivatedHeuristicsInPriorPeriod;
 
                 for (int i = 0; i < sites.Length; i++)
                 {
@@ -51,32 +58,55 @@ namespace SocialHuman
                         Heuristic[] activatedHeuristicsForSiteInPriorPeriod =
                             allHeuristics.Where(h => activatedHeuristicsInPriorPeriod[i].Contains(h.Id)).ToArray();
 
-                        SiteModel partialModel = SiteModel.Create(newActor, site,
+                        SiteState newSiteData = SiteState.Create(site,
                             matchedConditionsForSiteInPriorPeriod, activatedHeuristicsForSiteInPriorPeriod);
 
-                        partialData.Add(partialModel);
+                        //todo: only for one heuristic set now
+                        newSiteData.TakeActions.Add(new TakeActionState(newActor.MentalModel.First(), periodStateForActor.Harvested[i]));
+
+                        siteStates.Add(newSiteData);
                     }
                 }
 
+                zeroPeriodModel.SiteStates.Add(newActor, siteStates);
+                //zeroPeriodModel.TakeActions.Add(newActor, takeActions);
+                #endregion
 
+                #region Create goals state for actor  
+                List<ActorGoalState> goalsState = new List<ActorGoalState>(newActor.Goals.Length);
+
+                foreach (ActorGoal goal in newActor.Goals)
+                {
+                    GoalStateParameters goalState = periodStateForActor.GoalsState.Single(gp => gp.GoalName == goal.Name);
+
+                    goalsState.Add(new ActorGoalState(goal, goalState.GoalValue));
+                }
+
+                zeroPeriodModel.GoalStates.Add(newActor, goalsState);
+                #endregion
             }
 
             algorithm.periods.AddFirst(zeroPeriodModel);
 
 
-
             return algorithm;
         }
+        #endregion
 
+        #region Private fields
         List<Actor> actors;
-        LinkedList<PeriodModel> periods;
+        LinkedList<Period> periods;
         double[] biomassGrowthRate;
 
         int periodsCount;
         Site[] sites;
+        #endregion
 
+        #region Constructors
         private Algorithm() { }
+        #endregion
 
+        #region Private methods
         void BiomassGrowth(double growthRate)
         {
             //create copy of sites state
@@ -84,7 +114,7 @@ namespace SocialHuman
 
             for (int i = 0; i < sites.Length; i++)
             {
-                copy[i].GoalValue *= growthRate;
+                copy[i].BiomassValue *= growthRate;
             }
 
             //save new state
@@ -103,50 +133,18 @@ namespace SocialHuman
                 }
             }
         }
+        #endregion
 
-        public LinkedList<PeriodModel> Run()
+        #region Public methods
+        public LinkedList<Period> Run()
         {
-            //int[,] bla3 = new int[4, 10];
-            //int[][] bla = new int[10000][];
-            //for (int i = 0; i < 10000; i++)
-            //{
-            //    bla[i] = new int[4];
-            //}
-            //string[] bla2 = new string[10000];
-            //for (int t = 1; t < 5; t++)
-            //{
-
-
-            //    for (int i = 0; i < 10000; i++)
-            //    {
-            //        bla[i][t-1] = (int)Randoms.PowerLawRandom.GetInstance.Next(0, 100);
-
-            //        var col = (bla[i][t - 1] - 1) / 10;
-
-            //        bla3[t - 1, col] += 1;
-
-
-            //        if(t==4)
-            //        {
-            //            bla2[i] = string.Join(";", bla[i]);
-            //        }
-
-            //    }
-            //}
-
-            //var l = string.Join(Environment.NewLine, bla2);
-
-            //System.IO.File.WriteAllText("output.csv", l);
-
             for (int period = 0; period < periodsCount; period++)
             {
-                int actualPaeriodNumber = period + 1;
-
-                Maintenance();
+                int actualPeriodNumber = period + 1;
 
                 BiomassGrowth(biomassGrowthRate[period]);
 
-                var currentPeriod = periods.AddLast(new PeriodModel(actualPaeriodNumber, sites));
+                var currentPeriod = periods.AddLast(new Period(actualPeriodNumber, sites));
 
                 var actorGroups = actors.GroupBy(a => a.ActorType).OrderBy(ag => ag.Key);
 
@@ -176,9 +174,13 @@ namespace SocialHuman
                             return periods;
                     }
                 }
+
+                Maintenance();
             }
 
             return periods;
         }
+        #endregion
     }
+
 }

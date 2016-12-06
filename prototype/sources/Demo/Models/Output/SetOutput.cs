@@ -2,11 +2,13 @@
 
 namespace Demo.Models.Output
 {
-    class SetOutput
+    class SetOutput 
     {
         [JsonProperty("name")]
         public string SetName { get; set; }
         [JsonProperty("values")]
         public double[] Values { get; set; }
+        [JsonProperty("harvested")]
+        public double Harvested { get; set; }
     }
 }
