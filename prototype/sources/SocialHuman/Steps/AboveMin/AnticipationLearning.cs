@@ -21,7 +21,16 @@ namespace SocialHuman.Steps.AboveMin
             if (currentGoal.DiffCurrentAndMin <= 0)
             {
                 currentGoal.AnticipatedDirection = AnticipatedDirection.Up;
-                currentGoal.Confidence = false;
+
+                //history about absolute values
+                if (currentGoal.DiffCurrentAndMin > currentGoal.DiffPriorAndMin)
+                {
+                    currentGoal.Confidence = true;
+                }
+                else
+                {
+                    currentGoal.Confidence = false;
+                }
             }
             else
             {

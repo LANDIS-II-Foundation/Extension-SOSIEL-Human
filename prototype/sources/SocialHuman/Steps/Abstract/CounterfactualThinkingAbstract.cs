@@ -28,18 +28,13 @@ namespace SocialHuman.Steps.Abstract
             Period priorPeriod = periodModel.Previous.Value;
 
             Heuristic[] matchedPriorPeriodHeuristics = priorPeriod.GetStateForSite(actor, site).
-                Matched.Where(h=>h.Layer == layer).ToArray();
+                Matched.Where(h => h.Layer == layer).ToArray();
 
             ActorGoalState criticalGoalState = currentPeriod.GetCriticalGoal(actor);
 
-            if (criticalGoalState.Confidence == false && matchedPriorPeriodHeuristics.Length >= 2)
-            {
-                Heuristic activatedPriorPeriodHeuristic = priorPeriod.GetStateForSite(actor, site).GetActivated(layer);
+            Heuristic activatedPriorPeriodHeuristic = priorPeriod.GetStateForSite(actor, site).GetActivated(layer);
 
-                return SpecificLogic(criticalGoalState, layer, matchedPriorPeriodHeuristics, activatedPriorPeriodHeuristic);
-            }
-
-            return true;
+            return SpecificLogic(criticalGoalState, layer, matchedPriorPeriodHeuristics, activatedPriorPeriodHeuristic);
         }
         #endregion
     }

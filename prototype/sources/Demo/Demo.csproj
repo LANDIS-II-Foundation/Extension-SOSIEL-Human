@@ -95,6 +95,8 @@
     <Compile Include="IISAgent.cs" />
     <Compile Include="Models\Input\PeriodInitialStateInput.cs" />
     <Compile Include="Models\Output\ActorOutput.cs" />
+    <Compile Include="Models\Output\LayerOutput.cs" />
+    <Compile Include="Models\Output\Output.cs" />
     <Compile Include="Models\Output\PeriodOutput.cs" />
     <Compile Include="Models\Output\SetOutput.cs" />
     <Compile Include="Models\Output\SiteOutput.cs" />
@@ -142,7 +144,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="OutputTemplate\css\site.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="OutputTemplate\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

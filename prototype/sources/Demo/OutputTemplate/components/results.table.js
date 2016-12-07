@@ -15,8 +15,8 @@ var ResultsTable = (function () {
     function ResultsTable(http) {
         var _this = this;
         this.http = http;
-        this.data = [];
-        this.http.request('./output.json?ts=' + (new Date()).getTime()).subscribe(function (res) { return _this.data = res.json(); });
+        this.data = null;
+        this.http.request('./output.json?ts=' + (new Date()).getTime()).subscribe(function (res) { console.log(res.json()); return _this.data = res.json(); });
     }
     ResultsTable = __decorate([
         core_1.Component({

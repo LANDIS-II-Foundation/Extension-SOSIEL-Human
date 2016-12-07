@@ -1,57 +1,109 @@
-<table class="table">
-    <thead>
-        <th>Period</th>
-        <th>Biomass</th>
-        <th>Information</th>
-    </thead>
-    <tbody *ngIf="data.length > 0">
-        <tr  *ngFor="let period of data">
-            <td>{{period.period_number}}</td>
-            <td>
-                <span *ngFor="let site of period.biomass; let ind = index">{{site | number:'1.0-2'}} <span *ngIf="ind < period.biomass.length - 1"> | </span></span>
-            </td>
-            <td>
-                <table class="table" *ngFor="let actor of period.actors">
-                    <colgroup>
-                        <col class="col-md-3">
-                        <col class="col-md-2">
-                    </colgroup>
-                    <thead>
-                        <th>Actor</th>
-                        <th>Site</th>
-                        <th>Information by site</th>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let site of actor.information;let siteIndex = index">
-                            <td [attr.rowspan]="actor.information.length" *ngIf="siteIndex == 0">{{actor.name}}</td>
-                            <td>{{site.name}}</td>
-                            <td>
-                                <table class="table">
-                                    <thead>
-                                        <th>Set</th>
-                                        <th>Values</th>
-                                        <th>Harvested</th>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let set of site.activated">
-                                            <td>{{set.name}}</td>
-                                            <td>
-                                                <div *ngFor="let value of set.values; let i = index">
-                                                    Layer {{i+1}} Consequent: {{value}}
-                                                </div>
-                                            </td>
-                                            <td>{{set.harvested | number:'1.0-2'}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-    </tbody>
-</table>
-
+<div class="row">
+    <div class="col-md-12 col-lg-7">
+        <table class="table">
+            <colgroup>
+                <col class="col-md-1">
+                <col class="col-md-2">
+                <col class="col-md-9">
+            </colgroup>
+            <thead>
+            <th>Period</th>
+            <th>Biomass</th>
+            <th>Information</th>
+            </thead>
+            <tbody *ngIf="data && data.periods.length > 0">
+                <tr *ngFor="let period of data.periods">
+                    <td>{{period.period_number}}</td>
+                    <td>
+                        <span *ngFor="let site of period.biomass; let ind = index">{{site | number:'1.0-2'}} <span *ngIf="ind < period.biomass.length - 1"> | </span></span>
+                    </td>
+                    <td>
+                        <table class="table" *ngFor="let actor of period.actors">
+                            <colgroup>
+                                <col class="col-md-1">
+                                <col class="col-md-1">
+                                <col class="col-md-10">
+                            </colgroup>
+                            <thead>
+                            <th>Actor</th>
+                            <th>Site</th>
+                            <th>Information by site</th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let site of actor.information;let siteIndex = index">
+                                    <td [attr.rowspan]="actor.information.length" *ngIf="siteIndex == 0">{{actor.name}}</td>
+                                    <td>{{site.name}}</td>
+                                    <td>
+                                        <table class="table">
+                                            <colgroup>
+                                                <col class="col-md-1">
+                                                <col class="col-md-10">
+                                                <col class="col-md-1" />
+                                            </colgroup>
+                                            <thead>
+                                            <th>Set</th>
+                                            <th>Values</th>
+                                            <th>Harvested</th>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let set of site.activated">
+                                                    <td>{{set.name}}</td>
+                                                    <td>
+                                                        <div class="row">
+                                                            <div *ngFor="let heuristic of set.heuristics; let i = index" class="col-md-6">
+                                                                <div class="underline">Layer {{i+1}}</div>
+                                                                <div>{{heuristic.name}}</div>
+                                                                <div>Ancetedent: {{heuristic.sign}}&nbsp;{{heuristic.ancetedent}}</div>
+                                                                <div>Consequent: {{heuristic.consequent}}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{set.harvested | number:'1.0-2'}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6 col-lg-5">
+        <table class="table">
+            <colgroup>
+                <col class="col-md-2">
+                <col class="col-md-2">
+                <col class="col-md-8">
+            </colgroup>
+            <thead>
+            <th>Actor</th>
+            <th>Heuristic set</th>
+            <th>Layers</th>
+            </thead>
+            <tbody *ngIf="data && data.mental_models.length > 0">
+                <template ngFor let-actor [ngForOf]="data.mental_models" let-clauseIndex="index">
+                    <tr *ngFor="let set of actor.mental; let set_index = index">
+                        <td [attr.rowspan]="actor.mental.length" *ngIf="set_index == 0">{{actor.name}}</td>
+                        <td>{{set.set}}</td>
+                        <td>
+                            <div *ngFor="let layer of set.layers" class="layer col-md-6">
+                                <div class="underline">{{layer.layer}}</div>
+                                <div *ngFor="let heuristic of layer.heuristics" class="heuristic">
+                                    <div class="underline">{{heuristic.name}}</div>
+                                    <div>Ancetedent: <strong>{{heuristic.sign}}&nbsp;{{heuristic.ancetedent}}</strong></div>
+                                    <div>Consequent: <strong>{{heuristic.consequent}}</strong></div>
+                                    <div>Is action: <strong>{{heuristic.isaction}}</strong></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 

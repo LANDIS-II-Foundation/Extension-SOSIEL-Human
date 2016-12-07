@@ -17,6 +17,7 @@ namespace SocialHuman.Entities
         public int FreshnessStatus { get; set; }
         public bool IsAction { get; private set; }
         public double ConsequentValue { get; private set; }
+        public double AncetedentConst { get; private set; }
 
         public string Id
         {
@@ -29,7 +30,6 @@ namespace SocialHuman.Entities
 
         #region Private fields
         private Func<double, bool> antecedent;
-        private double ancetedentConst;
         #endregion
 
         #region Constructors
@@ -54,7 +54,7 @@ namespace SocialHuman.Entities
         {
             Heuristic heuristic = new Heuristic
             {
-                ancetedentConst = parameters.AntecedentConst,
+                AncetedentConst = parameters.AntecedentConst,
                 ConsequentValue = parameters.ConsequentValue,
                 AntecedentInequalitySign = parameters.AntecedentInequalitySign,
                 FreshnessStatus = parameters.FreshnessStatus,

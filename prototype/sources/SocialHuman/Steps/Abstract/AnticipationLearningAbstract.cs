@@ -45,7 +45,7 @@ namespace SocialHuman.Steps.Abstract
             ActorGoalState currentState = new ActorGoalState(actorGoal, currentValue);
 
             currentState.DiffCurrentAndMin = currentState.Value - currentState.Goal.MinValue;
-            currentState.DiffPreviousAndMin = priorState.Value - priorState.Goal.MinValue;
+            currentState.DiffPriorAndMin = priorState.Value - priorState.Goal.MinValue;
 
             //1. Calculate anticipated influence(t) == goal variable value(t) – goal variable value(t-1)
             currentState.AnticipatedInfluenceValue = currentState.Value - priorState.Value;
@@ -83,7 +83,7 @@ namespace SocialHuman.Steps.Abstract
                 }
                 else
                 {
-                    confidenceNo[LinearUniformRandom.GetInstance.Next(confidenceNo.Length)].IsSelected = true;
+                    confidenceNo.OrderByDescending(g=>g.DiffPriorAndMin).First().IsSelected = true;
                 }
             }
             else

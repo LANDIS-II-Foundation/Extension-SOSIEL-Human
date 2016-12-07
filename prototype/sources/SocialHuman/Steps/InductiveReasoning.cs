@@ -17,7 +17,15 @@ namespace SocialHuman.Steps
             Period currentPeriod = periodModel.Value;
             Period priorPeriod = periodModel.Previous.Value;
 
+            LinkedListNode<Period> tempNode = periodModel.Previous;
             Heuristic activatedPriorPeriodHeuristic = priorPeriod.GetStateForSite(actor, site).GetActivated(layer);
+
+            while(activatedPriorPeriodHeuristic.IsAction == false && tempNode.Previous != null)
+            {
+                tempNode = tempNode.Previous;
+                priorPeriod = tempNode.Value;
+                activatedPriorPeriodHeuristic = tempNode.Value.GetStateForSite(actor, site).GetActivated(layer);
+            }
 
             HeuristicConsequentRule rule = layer.ConsequentRule;
 
@@ -62,15 +70,16 @@ namespace SocialHuman.Steps
 
                         break;
                     }
-
                 default:
                     {
                         throw new Exception("Not implemented for AnticipatedDirection == 'stay'");
                     }
             }
 
-            Heuristic[] activatedPriorPeriodSiteHeuristics = priorPeriod.GetStateForSite(actor, site).
-                Activated.OrderBy(h => h.Layer.PositionNumber).ToArray();
+            Heuristic[] activatedPriorPeriodSiteHeuristics = priorPeriod.GetStateForSite(actor, site).Activated
+                .Where(h=>h.Layer.Set == layer.Set)
+                .OrderBy(h => h.Layer.PositionNumber)
+                .ToArray();
 
             //calculating new antecedent constant
             double result = priorPeriod.TotalBiomass;

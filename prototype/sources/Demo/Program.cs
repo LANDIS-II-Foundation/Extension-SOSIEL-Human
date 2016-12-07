@@ -94,7 +94,9 @@ namespace Demo
 
             LinkedList<Period> results = algorithm.Run();
 
-            PeriodOutput[] data = results.Select(p => new PeriodOutput
+            Output output = new Output();
+
+            output.Periods = results.Select(p => new PeriodOutput
             {
                 PeriodNumber = p.PeriodNumber,
                 Biomass = p.Sites.Select(s => Math.Round(s.BiomassValue, 2)).ToArray(),
@@ -107,14 +109,41 @@ namespace Demo
                         ActivatedHeuristics = s.Activated.GroupBy(h => h.Layer.Set).Select(hg => new SetOutput
                         {
                             SetName = $"set{hg.Key.PositionNumber}",
-                            Values = hg.OrderBy(h => h.Layer.PositionNumber).Select(h => Math.Round(h.ConsequentValue, 2)).ToArray(),
+                            ActivatedHeuristics = hg.OrderBy(h => h.Layer.PositionNumber).Select(h => new LayerOutput
+                            {
+                                AncetedentConst = h.AncetedentConst,
+                                AncetedentSign = h.AntecedentInequalitySign,
+                                ConsequentValue = h.ConsequentValue,
+                                HeuristicName = h.Id
+                            }).ToArray(),
                             Harvested = s.GetTakeActionForSet(hg.Key).HarvestAmount
                         }).ToArray()
                     }).ToArray()
                 }).ToArray()
             }).ToArray();
 
-            string outputString = JsonConvert.SerializeObject(data);
+            output.MentalModels = algorithm.Actors.Select(a => new
+            {
+                name = a.ActorName,
+                mental = a.MentalModel.Select(hs => new
+                {
+                    set = $"Set{hs.PositionNumber}",
+                    layers = hs.Layers.Select(hl => new
+                    {
+                        layer = $"Layer{hl.PositionNumber}",
+                        heuristics = hl.Heuristics.Select(h => new
+                        {
+                            name = h.Id,
+                            sign = h.AntecedentInequalitySign,
+                            ancetedent = h.AncetedentConst,
+                            consequent = h.ConsequentValue,
+                            isaction = h.IsAction
+                        }).ToArray()
+                    }).ToArray()
+                }).ToArray()
+            }).ToArray();
+
+            string outputString = JsonConvert.SerializeObject(output);
 
             File.WriteAllText(outputFilePath, outputString);
         }

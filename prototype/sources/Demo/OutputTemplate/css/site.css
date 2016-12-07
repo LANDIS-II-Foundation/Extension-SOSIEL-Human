@@ -1,8 +1,21 @@
 es-results{
-    padding: 0 20px;
-    display: block;
+	padding: 0 20px;
+	display: block;
 }
 
 .table table{
-    margin-bottom: 0px;
+	margin-bottom: 0px;
+}
+
+.underline{
+	text-decoration:underline;
+}
+
+.block{
+	margin-bottom:10px;
+}
+
+.heuristic{
+	padding-left:10px;
+	margin:5px 0px;
 }

@@ -21,16 +21,18 @@ namespace SocialHuman.Steps.AboveMin
                 ActorGoal goal = criticalGoal.Goal;
 
                 Heuristic[] selectedHeuristics = matchedHeuristics.Where(h => h.ForGoal(goal).Value >= 0 &&
-                    h.ForGoal(goal).Value > criticalGoal.DiffCurrentAndMin)
-                    .GroupBy(h => h.ForGoal(goal).Value).OrderBy(hg => hg.Key).First().ToArray();
+                    h.ForGoal(goal).Value > criticalGoal.DiffCurrentAndMin).ToArray();
+
+                //if none are identified, then choose the do-nothing heuristic.
+                if (selectedHeuristics.Length == 0)
+                    return matchedHeuristics.Single(h => h.IsAction == false);
+                else
+                    selectedHeuristics = selectedHeuristics.GroupBy(h => h.ForGoal(goal).Value).OrderBy(hg => hg.Key).First().ToArray();
 
                 if (selectedHeuristics.Length == 1)
                     return selectedHeuristics[0];
                 else
                 {
-                    if (selectedHeuristics.Length == 0)
-                        throw new Exception("Heuristic didn't found on HS step");
-
                     return selectedHeuristics[LinearUniformRandom.GetInstance.Next(selectedHeuristics.Length)];
                 }
             }

@@ -59,14 +59,12 @@ namespace SocialHuman.Actors
                 ActorGoalState currentGoal = anticipationLearning.Execute(this, periodModel, goal);
                 goalStatesList.Add(currentGoal);
             }
+            anticipationLearning.SelectCriticalGoal(goalStatesList);
 
             currentPeriod.GoalStates.Add(this, goalStatesList);
 
-            anticipationLearning.SelectCriticalGoal(goalStatesList);
-
 
             ActorGoalState criticalGoal = currentPeriod.GetCriticalGoal(this);
-
 
             //todo: change if possible
             if (counterfactualThinking.Tendency != criticalGoal.Goal.Tendency)
@@ -87,7 +85,10 @@ namespace SocialHuman.Actors
                             Heuristic[] matchedPriorPeriodHeuristics = priorPeriod.GetStateForSite(this, site).
                                 Matched.Where(h => h.Layer == layer).ToArray();
 
-                            bool CTResult = counterfactualThinking.Execute(this, periodModel, site, layer);
+                            bool CTResult = true;
+
+                            if (matchedPriorPeriodHeuristics.Length >= 2)
+                                CTResult = counterfactualThinking.Execute(this, periodModel, site, layer);
 
                             if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
                                 inductiveReasoning.Execute(this, periodModel, site, layer);

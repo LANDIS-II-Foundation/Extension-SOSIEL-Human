@@ -13,7 +13,7 @@ namespace SocialHuman.Entities
 
         public double DiffCurrentAndMin { get; set; }
 
-        public double DiffPreviousAndMin { get; set; }
+        public double DiffPriorAndMin { get; set; }
 
         public double AnticipatedInfluenceValue { get; set; }
         public bool Confidence { get; set; }

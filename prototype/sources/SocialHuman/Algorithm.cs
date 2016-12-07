@@ -93,6 +93,10 @@ namespace SocialHuman
         }
         #endregion
 
+        #region Public fields
+        public IEnumerable<Actor> Actors { get { return actors; } }
+        #endregion
+
         #region Private fields
         List<Actor> actors;
         LinkedList<Period> periods;
