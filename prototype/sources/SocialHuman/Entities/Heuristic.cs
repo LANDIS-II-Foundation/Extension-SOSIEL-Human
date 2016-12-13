@@ -19,6 +19,8 @@ namespace SocialHuman.Entities
         public double ConsequentValue { get; private set; }
         public double AncetedentConst { get; private set; }
 
+
+        public Site CreatedBy { get; set; }
         public string Id
         {
             get
@@ -73,10 +75,11 @@ namespace SocialHuman.Entities
 
             return heuristic;
         }
-        public static Heuristic Create(HeuristicParameters parameters, IEnumerable<ActorGoalState> goalStates)
+        public static Heuristic Create(HeuristicParameters parameters, IEnumerable<ActorGoalState> goalStates, Site site)
         {
             Heuristic heuristic = Create(parameters);
 
+            heuristic.CreatedBy = site;
             heuristic.AnticipatedInfluences = goalStates.Select(gs => new AnticipatedInfluence(gs.Goal, gs.AnticipatedInfluenceValue)).ToArray();
 
             return heuristic;

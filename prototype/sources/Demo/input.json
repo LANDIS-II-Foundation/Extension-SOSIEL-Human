@@ -50,7 +50,7 @@
           "heuristic_layer": 1,
           "heuristic_position_number": 1,
           "antecedent_const": 199,
-          "antecedent_inequality_sign": ">",
+          "antecedent_inequality_sign": ">=",
           "consequent_value": 100,
           "anticipated_influence": [ 1, 10 ],
           "freshness_status": 1,
@@ -92,8 +92,7 @@
           "freshness_status": 5,
           "is_action": false
         }
-      ],
-
+      ]
     }
   ],
   "initial_state": {
