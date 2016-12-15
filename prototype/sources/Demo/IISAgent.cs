@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Demo
 {
-    class IISAgent:IDisposable
+    class IISAgent : IDisposable
     {
         Process process;
 
