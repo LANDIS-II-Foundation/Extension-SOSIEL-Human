@@ -43,7 +43,7 @@ namespace SocialHuman.Steps
                 }
                 else
                 {
-                    antecedentConst = activatedPriorPeriodHeuristic.AncetedentConst;
+                    antecedentConst = activatedPriorPeriodHeuristic.AntecedentConst;
                 }
             }
 

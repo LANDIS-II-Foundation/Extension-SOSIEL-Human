@@ -12,9 +12,9 @@ namespace Demo.Models.Output
         [JsonProperty("name")]
         public string HeuristicName { get; set; }
         [JsonProperty("ancetedent")]
-        public double AncetedentConst { get; set; }
+        public double AntecedentConst { get; set; }
         [JsonProperty("sign")]
-        public string AncetedentSign { get; set; }
+        public string AntecedentSign { get; set; }
         [JsonProperty("consequent")]
         public double ConsequentValue { get; set; }
         #endregion

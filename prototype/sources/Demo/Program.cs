@@ -158,8 +158,8 @@ namespace Demo
                             SetName = $"set{hg.Key.PositionNumber}",
                             ActivatedHeuristics = hg.OrderBy(h => h.Layer.PositionNumber).Select(h => new LayerOutput
                             {
-                                AncetedentConst = h.AncetedentConst,
-                                AncetedentSign = h.AntecedentInequalitySign,
+                                AntecedentConst = h.AntecedentConst,
+                                AntecedentSign = h.AntecedentInequalitySign,
                                 ConsequentValue = h.ConsequentValue,
                                 HeuristicName = h.Id
                             }).ToArray(),
@@ -182,7 +182,7 @@ namespace Demo
                         {
                             name = h.Id,
                             sign = h.AntecedentInequalitySign,
-                            ancetedent = h.AncetedentConst,
+                            antecedent = h.AntecedentConst,
                             consequent = h.ConsequentValue,
                             isaction = h.IsAction
                         }).ToArray()

@@ -17,7 +17,7 @@ namespace SocialHuman.Entities
         public int FreshnessStatus { get; set; }
         public bool IsAction { get; private set; }
         public double ConsequentValue { get; private set; }
-        public double AncetedentConst { get; private set; }
+        public double AntecedentConst { get; private set; }
 
 
         public Site CreatedBy { get; set; }
@@ -56,7 +56,7 @@ namespace SocialHuman.Entities
         {
             Heuristic heuristic = new Heuristic
             {
-                AncetedentConst = parameters.AntecedentConst,
+                AntecedentConst = parameters.AntecedentConst,
                 ConsequentValue = parameters.ConsequentValue,
                 AntecedentInequalitySign = parameters.AntecedentInequalitySign,
                 FreshnessStatus = parameters.FreshnessStatus,

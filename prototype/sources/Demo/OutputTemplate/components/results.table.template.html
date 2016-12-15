@@ -53,7 +53,7 @@
                                                             <div *ngFor="let heuristic of set.heuristics; let i = index" class="col-md-6">
                                                                 <div class="underline">Layer {{i+1}}</div>
                                                                 <div>{{heuristic.name}}</div>
-                                                                <div>Ancetedent: {{heuristic.sign}}&nbsp;{{heuristic.ancetedent}}</div>
+                                                                <div>Ancetedent: {{heuristic.sign}}&nbsp;{{heuristic.antecedent}}</div>
                                                                 <div>Consequent: {{heuristic.consequent}}</div>
                                                             </div>
                                                         </div>
@@ -93,7 +93,7 @@
                                 <div class="underline">{{layer.layer}}</div>
                                 <div *ngFor="let heuristic of layer.heuristics" class="heuristic">
                                     <div class="underline">{{heuristic.name}}</div>
-                                    <div>Ancetedent: <strong>{{heuristic.sign}}&nbsp;{{heuristic.ancetedent}}</strong></div>
+                                    <div>Ancetedent: <strong>{{heuristic.sign}}&nbsp;{{heuristic.antecedent}}</strong></div>
                                     <div>Consequent: <strong>{{heuristic.consequent}}</strong></div>
                                     <div>Is action: <strong>{{heuristic.isaction}}</strong></div>
                                 </div>
