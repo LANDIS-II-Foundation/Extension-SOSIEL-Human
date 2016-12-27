@@ -1,93 +1,122 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 
 namespace SocialHuman
 {
-    using Actors;
     using Enums;
-    using Entities;
-    using Models;
     using Helpers;
+    using Models;
+    using Parsers;
+    using Steps;
+    using Input = Parsers.Models;
 
     public class Algorithm
     {
-        #region Factory methods
-        public static Algorithm Initialize(GlobalParameters globalParameters, ActorParameters[] actors,
-            Dictionary<string, PeriodInitialStateParameters> initialState)
+        #region Static methods
+        public static void ConfigureMapper()
         {
-            Global.Init(globalParameters);
-
-            Algorithm algorithm = new Algorithm
+            Mapper.Initialize(cfg =>
             {
-                actors = new List<Actor>(actors.Length),
-                periods = new LinkedList<Period>(),
-                biomassGrowthRate = globalParameters.BiomassGrowthRate,
-                periodsCount = globalParameters.PeriodsCount,
-                sites = globalParameters.BiomassBySite.Select(s => new Site { BiomassValue = s }).ToArray()
-            };
+                cfg.CreateMap<Input.ActorPrototype, ActorPrototype>();
+                cfg.CreateMap<Input.Goal, Goal>();
+                cfg.CreateMap<Input.Heuristic, Heuristic>().ForMember(m => m.Layer, opt => opt.Ignore());
+                cfg.CreateMap<Input.HeuristicLayerParameters, HeuristicLayerParameters>();
+                cfg.CreateMap<Input.HeuristicAntecedentPart, HeuristicAntecedentPart>();
+                cfg.CreateMap<Input.HeuristicConsequentPart, HeuristicConsequentPart>();
+            });
+        }
+        #endregion
 
-            Site[] sites = algorithm.sites;
+        #region Factory methods
+        public static Algorithm Initialize(string inputJsonPath)
+        {
+            ConfigureMapper();
+
+            IParser parser = new JsonParser(inputJsonPath);
+
+            Input.GlobalInput configuration = parser.ParseGlogalConfiguration();
+            Dictionary<string, Input.ActorPrototype> actorPrototypes = parser.ParseActorPrototypes();
+            Dictionary<string, Input.InitialState> initialStates = parser.ParseInitialState();
+
+            Global.Init(configuration);
+
+            Site[] sites = configuration.BiomassBySite.Select(s => new Site { BiomassValue = s }).ToArray();
+
+            Dictionary<string, ActorPrototype> availablePrototypes = actorPrototypes.ToDictionary(kvp => kvp.Key, kvp => ActorPrototype.Create(kvp.Value));
+
+            List<Actor> actors = initialStates.Select(kvp => Actor.Create(kvp.Key, availablePrototypes[kvp.Value.Class], kvp.Value)).ToList();
 
             Period zeroPeriodModel = new Period(0, sites);
 
 
-            foreach (ActorParameters actorParameters in actors)
+            foreach (var initialState in initialStates)
             {
-                Actor newActor = ActorFactory.Create(actorParameters, sites);
-                algorithm.actors.Add(newActor);
+                Actor actor = actors.Single(a => a.ActorName == initialState.Key);
 
-                PeriodInitialStateParameters periodStateForActor = initialState[actorParameters.ActorName];
 
                 #region Create site states
                 List<SiteState> siteStates = new List<SiteState>(sites.Length);
-                List<TakeActionState> takeActions = new List<TakeActionState>(sites.Length);
+                //List<TakeActionState> takeActions = new List<TakeActionState>(sites.Length);
 
-                string[][] matchedConditionsInPriorPeriod = periodStateForActor.MatchedConditionsInPriorPeriod;
-                string[][] activatedHeuristicsInPriorPeriod = periodStateForActor.ActivatedHeuristicsInPriorPeriod;
+                string[][] matchedConditionsInPriorPeriod = initialState.Value.MatchedConditionsInPriorPeriod;
+                string[][] activatedHeuristicsInPriorPeriod = initialState.Value.ActivatedHeuristicsInPriorPeriod;
+
+                bool isSiteSpecific = actor.IsSiteSpecific;
 
                 for (int i = 0; i < sites.Length; i++)
                 {
-                    if (actorParameters.AssignedSites[i])
+                    IEnumerable<Heuristic> heuristics = actor.AssagnedHeuristics;
+                    Heuristic[] matchedConditions = heuristics.Where(h => matchedConditionsInPriorPeriod[i].Contains(h.Id)).ToArray();
+                    Heuristic[] activatedHeuristics = heuristics.Where(h => activatedHeuristicsInPriorPeriod[i].Contains(h.Id)).ToArray();
+                    if (isSiteSpecific)
                     {
-                        Site site = sites[i];
+                        if (actor[VariablesName.AssignedSites][i])
+                        {
+                            Site site = sites[i];
 
-                        Heuristic[] allHeuristics = newActor.MentalModel.SelectMany(s => s.Layers.SelectMany(l => l.Heuristics)).ToArray();
+                            SiteState ss = SiteState.Create(isSiteSpecific, matchedConditions, activatedHeuristics, site);
 
-                        Heuristic[] matchedConditionsForSiteInPriorPeriod =
-                            allHeuristics.Where(h => matchedConditionsInPriorPeriod[i].Contains(h.Id)).ToArray();
-                        Heuristic[] activatedHeuristicsForSiteInPriorPeriod =
-                            allHeuristics.Where(h => activatedHeuristicsInPriorPeriod[i].Contains(h.Id)).ToArray();
+                            //todo think about it
+                            //ss.TakeActions.Add(new TakeActionState(VariablesName.Harvested, actor[VariablesName.Harvested][i]));
 
-                        SiteState newSiteData = SiteState.Create(site,
-                            matchedConditionsForSiteInPriorPeriod, activatedHeuristicsForSiteInPriorPeriod);
-
-                        //todo: only for one heuristic set now
-                        newSiteData.TakeActions.Add(new TakeActionState(newActor.MentalModel.First(), periodStateForActor.Harvested[i]));
-
-                        siteStates.Add(newSiteData);
+                            siteStates.Add(ss);
+                        }
+                    }
+                    else
+                    {
+                        siteStates.Add(SiteState.Create(isSiteSpecific, matchedConditions, activatedHeuristics));
+                        break;
                     }
                 }
 
-                zeroPeriodModel.SiteStates.Add(newActor, siteStates);
-                //zeroPeriodModel.TakeActions.Add(newActor, takeActions);
+                zeroPeriodModel.SiteStates.Add(actor, siteStates);
                 #endregion
 
-                #region Create goals state for actor  
-                List<ActorGoalState> goalsState = new List<ActorGoalState>(newActor.Goals.Length);
+                //#region Create goals state for actor  
+                //List<GoalState> goalsState = new List<GoalState>(actor.AssignedGoals.Length);
 
-                foreach (ActorGoal goal in newActor.Goals)
-                {
-                    GoalStateParameters goalState = periodStateForActor.GoalsState.Single(gp => gp.GoalName == goal.Name);
+                //foreach (GoalState goalState in actor.AssignedGoals)
+                //{
+                //    GoalStateParameters goalState = periodStateForActor.GoalsState.Single(gp => gp.GoalName == goal.Name);
 
-                    goalsState.Add(new ActorGoalState(goal, goalState.GoalValue));
-                }
+                //    goalsState.Add(new GoalState(goal, goalState.GoalValue));
+                //}
 
-                zeroPeriodModel.GoalStates.Add(newActor, goalsState);
-                #endregion
+                //zeroPeriodModel.GoalStates.Add(newActor, goalsState);
+                //#endregion
             }
 
-            algorithm.periods.AddFirst(zeroPeriodModel);
+            Algorithm algorithm = new Algorithm
+            {
+                actors = actors,
+                periods = new LinkedList<Period>(),
+                biomassGrowthRate = configuration.BiomassGrowthRate,
+                periodsCount = configuration.PeriodsCount,
+                sites = sites
+            };
 
+            algorithm.periods.AddFirst(zeroPeriodModel);
 
             return algorithm;
         }
@@ -104,6 +133,12 @@ namespace SocialHuman
 
         int periodsCount;
         Site[] sites;
+
+        AnticipationLearning anticipationLearning = new AnticipationLearning();
+        CounterfactualThinking counterfactualThinking = new CounterfactualThinking();
+        InductiveReasoning inductiveReasoning = new InductiveReasoning();
+        HeuristicSelection heuristicSelection = new HeuristicSelection();
+        TakeAction takeAction = new TakeAction();
         #endregion
 
         #region Constructors
@@ -127,11 +162,9 @@ namespace SocialHuman
 
         void Maintenance()
         {
-            foreach (Actor actor in actors)
+            foreach (ActorPrototype actorPrototype in actors.Select(a => a.Prototype).Distinct())
             {
-                IEnumerable<Heuristic> heuristics = actor.MentalModel.SelectMany(s => s.Layers).SelectMany(l => l.Heuristics);
-
-                foreach (Heuristic heuristic in heuristics)
+                foreach (Heuristic heuristic in actorPrototype.HeuristicEnumerable)
                 {
                     heuristic.FreshnessStatus += 1;
                 }
@@ -148,15 +181,55 @@ namespace SocialHuman
 
                 BiomassGrowth(biomassGrowthRate[period]);
 
-                var currentPeriod = periods.AddLast(new Period(actualPeriodNumber, sites));
+                Period currentPeriod = periods.AddLast(new Period(actualPeriodNumber, sites)).Value;
+                Period priorPeriod = periods.Last.Previous.Value;
 
-                var actorGroups = actors.GroupBy(a => a.ActorType).OrderBy(ag => ag.Key);
+                var actorGroups = actors.GroupBy(a => a.Prototype).OrderBy(ag => ag.Key.Type);
+
+                GoalState[] rankedGoals = null;
 
                 foreach (var actorGroup in actorGroups)
                 {
                     foreach (Actor actor in actorGroup.Randomize())
                     {
-                        actor.SimulatePart1(currentPeriod);
+                        Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
+
+                        currentPeriod.SiteStates.Add(actor, new List<SiteState>(assignedSites.Length));
+
+                        rankedGoals = anticipationLearning.Execute(actor, periods.Last);
+
+                        //optimization
+                        if (rankedGoals.Any(gs => gs.Confidence == false))
+                        {
+                            foreach (Site site in assignedSites.Randomize())
+                            {
+                                foreach (var set in actor.AssagnedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                                {
+                                    //optimization
+                                    //goals is sorted list
+                                    GoalState criticalGoalState = rankedGoals.First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
+
+                                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                                    {
+                                        //optimization
+                                        if (layer.Key.LayerParameters.Modifiable)
+                                        {
+                                            Heuristic[] matchedPriorPeriodHeuristics = priorPeriod.GetStateForSite(actor, site)
+                                                    .Matched.Where(h => h.Layer == layer.Key).ToArray();
+
+                                            if (criticalGoalState.Confidence == false)
+                                            {
+                                                bool? CTResult = counterfactualThinking.Execute(actor, periods.Last, criticalGoalState,
+                                                    matchedPriorPeriodHeuristics, site, layer.Key);
+
+                                                if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
+                                                    inductiveReasoning.Execute(actor, periods.Last, criticalGoalState, site, layer.Key);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -164,7 +237,26 @@ namespace SocialHuman
                 {
                     foreach (Actor actor in actorGroup.Randomize())
                     {
-                        actor.SimulatePart2(currentPeriod);
+                        Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
+
+                        currentPeriod.SiteStates.Add(actor, new List<SiteState>(assignedSites.Length));
+
+                        foreach (Site site in assignedSites.Randomize())
+                        {
+                            currentPeriod.SiteStates[actor].Add(SiteState.Create(actor.IsSiteSpecific, site));
+
+                            foreach (var set in actor.AssagnedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                            {
+                                //optimization
+                                //goals is sorted list
+                                GoalState criticalGoalState = rankedGoals.First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
+
+                                foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                                {
+                                    heuristicSelection.ExecutePartI(actor, periods.Last, criticalGoalState, layer, site);
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -172,9 +264,9 @@ namespace SocialHuman
                 {
                     foreach (Actor actor in actorGroup)
                     {
-                        actor.SimulateTakeActionPart(currentPeriod);
+                        takeAction.Execute(actor, periods.Last, sites);
 
-                        if (currentPeriod.Value.IsOverconsumption)
+                        if (periods.Last.Value.IsOverconsumption)
                             return periods;
                     }
                 }

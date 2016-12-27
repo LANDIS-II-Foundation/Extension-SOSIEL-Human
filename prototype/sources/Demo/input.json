@@ -3,101 +3,453 @@
     "biomass_by_site": [ 100, 100 ],
     "periods_count": 5,
     "biomass_growth_rate": [ 0.9, 1.2, 1.1, 1.1, 1.1 ],
-    "max_heuristic_in_layer": 10,
     "power_of_distribution": 3
   },
-  "actors": [
-    {
-      "actor_name": "FE1",
-      "actor_classname": "ForestryEnterprise",
+  "actors": {
+    "ForestryEnterprise": {
       "actor_type": 1,
-      "assigned_sites": [ true, true ],
-
       "goals": [
         {
           "name": "PG",
           "comment": "wealth",
           "is_primary": true,
           "tendency": "AboveMin",
-          "min": 100
+          "limit_value": 100,
+          "increased": true
         },
         {
           "name": "SG1",
           "comment": "biomass",
           "is_primary": false,
           "tendency": "AboveMin",
-          "min": 199
+          "limit_value": 199,
+          "increased": false
         }
-      ],
 
-      "heuristics_consequent_rules": [
-        {
-          "heuristic_layer": 1,
-          "consequent_value_interval": [ 0, 200 ],
-          "consequent_relationship_with_goal_variable": "+"
-        },
-        {
-          "heuristic_layer": 2,
-          "consequent_value_interval": [ 0, 100 ],
-          "consequent_relationship_with_goal_variable": "-"
-        }
       ],
-
       "heuristics": [
         {
-          "id": "HS1_L1_H1",
           "heuristic_set": 1,
           "heuristic_layer": 1,
           "heuristic_position_number": 1,
-          "antecedent_const": 199,
-          "antecedent_inequality_sign": ">=",
-          "consequent_value": 100,
-          "anticipated_influence": [ 1, 10 ],
-          "freshness_status": 1,
-          "is_action": true
+          "id": "HS1_L1_H1",
+          "antecedent": [
+            {
+              "param": "total_biomass",
+              "sign": ">=",
+              "const": 0
+            }
+          ],
+          "consequent": {
+            "param": "biomass_threshold",
+            "value": 0
+          },
+          "freshness_status": 5,
+          "is_action": false
         },
         {
           "id": "HS1_L1_H2",
           "heuristic_set": 1,
           "heuristic_layer": 1,
           "heuristic_position_number": 2,
-          "antecedent_const": 0,
-          "antecedent_inequality_sign": ">=",
-          "consequent_value": 0,
-          "anticipated_influence": [ 0, 0 ],
-          "freshness_status": 5,
-          "is_action": false
+          "antecedent": [
+            {
+              "param": "total_biomass",
+              "sign": ">=",
+              "const": 199
+            }
+          ],
+          "consequent": {
+            "param": "biomass_threshold",
+            "value": 100
+          },
+          "freshness_status": 1,
+          "is_action": true
         },
         {
           "id": "HS1_L2_H1",
           "heuristic_set": 1,
           "heuristic_layer": 2,
           "heuristic_position_number": 1,
-          "antecedent_const": 100,
-          "antecedent_inequality_sign": "=",
-          "consequent_value": 10,
-          "anticipated_influence": [ 1, 10 ],
-          "freshness_status": 1,
-          "is_action": true
+          "antecedent": [
+            {
+              "param": "biomass_threshold",
+              "sign": ">=",
+              "const": 0
+            }
+          ],
+          "consequent": {
+            "param": "harvest_percentage",
+            "value": 0
+          },
+          "freshness_status": 5,
+          "is_action": false
         },
         {
           "id": "HS1_L2_H2",
           "heuristic_set": 1,
           "heuristic_layer": 2,
           "heuristic_position_number": 2,
-          "antecedent_const": 0,
-          "antecedent_inequality_sign": ">=",
-          "consequent_value": 0,
-          "anticipated_influence": [ 0, 0 ],
+          "antecedent": [
+            {
+              "param": "biomass_threshold",
+              "sign": "=",
+              "const": 100
+            }
+          ],
+          "consequent": {
+            "param": "harvest_percentage",
+            "value": 10
+          },
+          "freshness_status": 1,
+          "is_action": true
+        }
+      ],
+      "heuristic_layer_parameters": [
+        {
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "modifiable": true,
+          "max_heuristic_count": 10,
+          "consequent_value_interval": [ 0, 200 ],
+          "consequent_relationship_with_goal_variable": "+"
+        },
+        {
+          "heuristic_set": 1,
+          "heuristic_layer": 2,
+          "modifiable": true,
+          "max_heuristic_count": 10,
+          "consequent_value_interval": [ 0, 100 ],
+          "consequent_relationship_with_goal_variable": "-"
+        }
+      ],
+      "heuristic_set_parameters": [
+        {
+          "heuristic_set": 1,
+          "associated_with_goal": [ "PG", "SG1" ]
+        }
+      ]
+    },
+    "HouseholdMember": {
+      "actor_type": 2,
+      "variables": {
+        "age_max": 100,
+        "work_age_min": 18,
+        "work_age_max": 60,
+        "union_age_min": 16,
+        "union_age_max": 60,
+        "average_union_age": 20,
+
+        "income_from_chores_at_home": 0,
+        "income_from_disability": 18000,
+        "income_from_pension": 18000,
+        "income_from_forestry": 33000,
+        "income_from_abroad": 160000,
+        "income_from_picking_mushrooms": 10000,
+        "income_from_green_tourism": 320000,
+
+        "FE1_job_available": true,
+        "required_savings_for_green_tourism": 200000,
+
+        "price_of_timber": 600,
+        "price_of_electricity": 700
+      },
+      "goals": [
+        {
+          "name": "PG",
+          "comment": "income",
+          "is_primary": true,
+          "tendency": "AboveMin",
+          "limit_value": 0,
+          "increased": true
+        },
+        {
+          "name": "SG1",
+          "comment": "expenses",
+          "is_primary": false,
+          "tendency": "BelowMax",
+          "limit_value": 600,
+          "increased": true
+        }
+      ],
+      "heuristics": [
+        {
+          "id": "HS1_L1_H1",
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 1,
+          "antecedent": [
+            {
+              "param": "is_active",
+              "sign": "==",
+              "const": true
+            }
+          ],
+          "consequent": {
+            "param": "income",
+            "link_to_value": "income_from_chores_at_home"
+          },
           "freshness_status": 5,
           "is_action": false
+        },
+        {
+          "id": "HS1_L1_H2",
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 2,
+          "antecedent": [
+            {
+              "param": "age",
+              "sign": ">=",
+              "const": 18
+            },
+            {
+              "param": "age",
+              "sign": "<=",
+              "const": 60
+            },
+            {
+              "param": "gender",
+              "sign": "==",
+              "const": "male"
+            },
+            {
+              "param": "disability",
+              "sign": "==",
+              "const": false
+            },
+            {
+              "param": "FE1_job_available",
+              "sign": "==",
+              "const": true
+            }
+          ],
+          "consequent": {
+            "param": "income",
+            "link_to_value": "income_from_forestry"
+          },
+          "freshness_status": 1,
+          "is_action": true
+        },
+        {
+          "id": "HS1_L1_H3",
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 3,
+          "antecedent": [
+            {
+              "param": "age",
+              "sign": ">=",
+              "const": 18
+            },
+            {
+              "param": "age",
+              "sign": "<=",
+              "const": 60
+            },
+            {
+              "param": "gender",
+              "sign": "==",
+              "const": "male"
+            },
+            {
+              "param": "disability",
+              "sign": "==",
+              "const": false
+            },
+            {
+              "param": "FE1_job_available",
+              "sign": "==",
+              "const": false
+            }
+          ],
+          "consequent": {
+            "param": "income",
+            "link_to_value": "income_from_abroad"
+          },
+          "freshness_status": 5,
+          "is_action": true
+        },
+        {
+          "id": "HS1_L1_H4",
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 4,
+          "antecedent": [
+            {
+              "param": "age",
+              "sign": ">=",
+              "const": 60
+            }
+          ],
+          "consequent": {
+            "param": "income",
+            "link_to_value": "income_from_pension"
+          },
+          "freshness_status": 1,
+          "is_action": true
+        },
+        {
+          "id": "HS1_L1_H5",
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 5,
+          "antecedent": [
+            {
+              "param": "disability",
+              "sign": "==",
+              "const": true
+            }
+          ],
+          "consequent": {
+            "param": "income",
+            "link_to_value": "income_from_disability"
+          },
+          "freshness_status": 1,
+          "is_action": true
+        },
+        {
+          "id": "HS1_L1_H6",
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 6,
+          "antecedent": [
+            {
+              "param": "age",
+              "sign": ">=",
+              "const": 18
+            },
+            {
+              "param": "age",
+              "sign": "<=",
+              "const": 60
+            },
+            {
+              "param": "disability",
+              "sign": "==",
+              "const": false
+            },
+            {
+              "param": "savings",
+              "sign": ">=",
+              "const": 200000
+            }
+          ],
+          "consequent": {
+            "param": "income",
+            "link_to_value": "income_from_green_tourism"
+          },
+          "freshness_status": 1,
+          "is_action": true
+        },
+        {
+          "id": "HS1_L1_H7",
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 7,
+          "antecedent": [
+            {
+              "param": "age",
+              "sign": ">=",
+              "const": 8
+            },
+            {
+              "param": "age",
+              "sign": "<=",
+              "const": 70
+            },
+            {
+              "param": "disability",
+              "sign": "==",
+              "const": false
+            }
+          ],
+          "consequent": {
+            "param": "income",
+            "link_to_value": "income_from_picking_mushrooms"
+          },
+          "freshness_status": 1,
+          "is_action": true
+        },
+        {
+          "id": "HS2_L1_H1",
+          "heuristic_set": 2,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 1,
+          "antecedent": [
+            {
+              "immutable": false,
+              "param": "price_of_timber",
+              "sign": "<=",
+              "link_for_const": "price_of_electricity"
+            }
+          ],
+          "consequent": {
+            "param": "expenses",
+            "link_to_value": "price_of_timber"
+          },
+          "freshness_status": 1,
+          "is_action": true
+        },
+        {
+          "id": "HS2_L1_H2",
+          "heuristic_set": 2,
+          "heuristic_layer": 1,
+          "heuristic_position_number": 2,
+          "antecedent": [
+            {
+              "immutable": false,
+              "param": "price_of_electricity",
+              "sign": "<",
+              "link_for_const": "price_of_timber"
+            }
+          ],
+          "consequent": {
+            "param": "expenses",
+            "link_to_value": "price_of_electricity"
+          },
+          "freshness_status": 5,
+          "is_action": true
+        }
+      ],
+
+      "heuristic_layer_parameters": [
+        {
+          "heuristic_set": 1,
+          "heuristic_layer": 1,
+          "max_heuristic_count": 10,
+          "modifiable": false
+        },
+        {
+          "heuristic_set": 2,
+          "heuristic_layer": 1,
+          "max_heuristic_count": 10,
+          "modifiable": false
+        }
+      ],
+      "heuristic_set_parameters": [
+        {
+          "heuristic_set": 1,
+          "associated_with_goal": [ "PG" ]
+        },
+        {
+          "heuristic_set": 2,
+          "associated_with_goal": [ "SG1" ]
         }
       ]
     }
-  ],
+  },
   "initial_state": {
     "FE1": {
-      "harvested": [ 10, 10 ],
+      "class": "ForestryEnterprise",
+      "variables": {
+        "is_active": true,
+        "biomass": 200,
+        "wealth": 20,
+        "assigned_sites": [ true, true ],
+        "biomass_threshold": 100
+      },
+
       "goals_state": [
         {
           "name": "PG",
@@ -108,6 +460,22 @@
           "value": 200
         }
       ],
+      "assigned_heuristics": [
+        "HS1_L1_H1",
+        "HS1_L1_H2",
+        "HS1_L2_H1",
+        "HS1_L2_H2"
+      ],
+      "anticipated_influence": {
+        "HS1_L1_H2": {
+          "PG": 20,
+          "SG1": 10
+        },
+        "HS1_L2_H2": {
+          "PG": 20,
+          "SG1": 10
+        }
+      },
       "matched_conditions_in_prior_period": [
         [
           "HS1_L1_H1",
@@ -123,8 +491,289 @@
         ]
       ],
       "activated_heuristics_in_prior_period": [
-        [ "HS1_L1_H1", "HS1_L2_H1" ],
-        [ "HS1_L1_H1", "HS1_L2_H1" ]
+        [ "HS1_L1_H2", "HS1_L2_H2" ],
+        [ "HS1_L1_H2", "HS1_L2_H2" ]
+      ]
+    },
+    "HM1": {
+      "class": "HouseholdMember",
+      "variables": {
+        "is_active": true,
+        "age": 35,
+        "gender": "male",
+        "disability": false,
+        "household": "H1",
+        "social_networks": [ "H1" ],
+        "income": 33000,
+        "expenses": 600
+      },
+      "goals_state": [
+        {
+          "name": "PG",
+          "value": 33000
+        },
+        {
+          "name": "SG1",
+          "value": 600
+        }
+      ],
+      "assigned_heuristics": [
+        "HS1_L1_H1",
+        "HS1_L1_H2",
+        "HS1_L1_H3",
+        "HS2_L1_H1",
+        "HS2_L1_H2"
+      ],
+      "anticipated_influence": {
+        "HS1_L1_H2": {
+          "PG": 33000,
+          "SG1": 0
+        },
+        "HS2_L1_H1": {
+          "PG": 0,
+          "SG1": 600
+        }
+      },
+      "matched_conditions_in_prior_period": [
+        [
+          "HS1_L1_H1",
+          "HS1_L1_H2",
+          "HS2_L1_H1"
+        ]
+      ],
+      "activated_heuristics_in_prior_period": [
+        [ "HS1_L1_H2", "HS2_L1_H1" ]
+      ]
+    },
+    "HM2": {
+      "class": "HouseholdMember",
+      "variables": {
+        "is_active": true,
+        "age": 30,
+        "gender": "female",
+        "disability": false,
+        "household": "H1",
+        "social_networks": [ "H1", "Church" ],
+        "income": 0
+      },
+      "goals_state": [
+        {
+          "name": "PG",
+          "value": 0
+        }
+      ],
+      "assigned_heuristics": [
+        "HS1_L1_H1"
+      ],
+      "anticipated_influence": {
+        "HS1_L1_H1": {
+          "PG": 0
+        }
+      },
+      "matched_conditions_in_prior_period": [
+        [ "HS1_L1_H1" ]
+      ],
+      "activated_heuristics_in_prior_period": [
+        [ "HS1_L1_H1" ]
+      ]
+    },
+    "HM3": {
+      "class": "HouseholdMember",
+      "variables": {
+        "is_active": true,
+        "age": 75,
+        "gender": "female",
+        "disability": false,
+        "household": "H1",
+        "social_networks": [ "H1" ],
+        "income": 18000
+      },
+      "goals_state": [
+        {
+          "name": "PG",
+          "value": 18000
+        }
+      ],
+      "assigned_heuristics": [
+        "HS1_L1_H1",
+        "HS1_L1_H4"
+      ],
+      "anticipated_influence": {
+        "HS1_L1_H4": {
+          "PG": 18000
+        }
+      },
+      "matched_conditions_in_prior_period": [
+        [
+          "HS1_L1_H1",
+          "HS1_L1_H4"
+        ]
+      ],
+      "activated_heuristics_in_prior_period": [
+        [ "HS1_L1_H4" ]
+      ]
+    },
+    "HM4": {
+      "class": "HouseholdMember",
+      "variables": {
+        "is_active": true,
+        "age": 40,
+        "gender": "male",
+        "disability": false,
+        "savings": 0,
+        "collective_action_members": 0,
+        "household": "H2",
+        "social_networks": [ "H2" ],
+        "income": 320000,
+        "expenses": 600
+      },
+      "goals_state": [
+        {
+          "name": "PG",
+          "value": 320000
+        },
+        {
+          "name": "SG1",
+          "value": 600
+        }
+      ],
+      "assigned_heuristics": [
+        "HS1_L1_H1",
+        "HS1_L1_H2",
+        "HS1_L1_H3",
+        "HS1_L1_H6",
+        "HS2_L1_H1",
+        "HS2_L1_H2"
+
+      ],
+      "anticipated_influence": {
+        "HS1_L1_H6": {
+          "PG": 320000,
+          "SG1": 0
+        },
+        "HS2_L1_H1": {
+          "PG": 0,
+          "SG1": 600
+        }
+      },
+      "matched_conditions_in_prior_period": [
+        [
+          "HS1_L1_H1",
+          "HS1_L1_H2",
+          "HS1_L1_H6",
+          "HS2_L1_H1"
+        ]
+      ],
+      "activated_heuristics_in_prior_period": [
+        [ "HS1_L1_H6", "HS2_L1_H1" ]
+      ]
+    },
+    "HM5": {
+      "class": "HouseholdMember",
+      "variables": {
+        "is_active": true,
+        "age": 35,
+        "gender": "female",
+        "disability": false,
+        "household": "H2",
+        "social_networks": [ "H2", "Church" ],
+        "income": 320000
+      },
+      "goals_state": [
+        {
+          "name": "PG",
+          "value": 320000
+        }
+      ],
+      "assigned_heuristics": [
+        "HS1_L1_H1",
+        "HS1_L1_H6"
+      ],
+      "anticipated_influence": {
+        "HS1_L1_H6": {
+          "PG": 320000
+        }
+      },
+      "matched_conditions_in_prior_period": [
+        [
+          "HS1_L1_H1",
+          "HS1_L1_H6"
+        ]
+      ],
+      "activated_heuristics_in_prior_period": [
+        [ "HS1_L1_H6" ]
+      ]
+    },
+    "HM6": {
+      "class": "HouseholdMember",
+      "variables": {
+        "is_active": true,
+        "age": 50,
+        "gender": "male",
+        "disability": false,
+        "household": "H2",
+        "social_networks": [ "H2" ],
+        "income": 18000
+      },
+      "goals_state": [
+        {
+          "name": "PG",
+          "value": 18000
+        }
+      ],
+      "assigned_heuristics": [
+        "HS1_L1_H1",
+        "HS1_L1_H5"
+      ],
+      "anticipated_influence": {
+        "HS1_L1_H5": {
+          "PG": 18000
+        }
+      },
+      "matched_conditions_in_prior_period": [
+        [
+          "HS1_L1_H1",
+          "HS1_L1_H5"
+        ]
+      ],
+      "activated_heuristics_in_prior_period": [
+        [ "HS1_L1_H5" ]
+      ]
+    },
+    "HM7": {
+      "class": "HouseholdMember",
+      "variables": {
+        "is_active": true,
+        "age": 12,
+        "gender": "male",
+        "disability": false,
+        "household": "H2",
+        "social_networks": [ "H2" ],
+        "income": 10000
+      },
+      "goals_state": [
+        {
+          "name": "PG",
+          "value": 10000
+        }
+      ],
+      "assigned_heuristics": [
+        "HS1_L1_H1",
+        "HS1_L1_H7"
+      ],
+      "anticipated_influence": {
+        "HS1_L1_H7": {
+          "PG": 10000
+        }
+      },
+      "matched_conditions_in_prior_period": [
+        [
+          "HS1_L1_H1",
+          "HS1_L1_H7"
+        ]
+      ],
+      "activated_heuristics_in_prior_period": [
+        [ "HS1_L1_H7" ]
       ]
     }
   }

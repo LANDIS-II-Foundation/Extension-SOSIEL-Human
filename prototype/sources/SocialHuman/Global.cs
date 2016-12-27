@@ -2,14 +2,14 @@
 
 namespace SocialHuman
 {
-    using Models;
+    using Parsers.Models;
 
-    public class Global
+    class Global
     {
         private static Global instance;
 
         //public double HistoricalTotalBiomassMin { get; private set; }
-        public int MaxHeuristicInLayer { get; private set; }
+        //public int MaxHeuristicInLayer { get; private set; }
         public int PowerOfDistribution { get; private set; }
 
         public static Global Instance
@@ -23,14 +23,14 @@ namespace SocialHuman
             }
         }
 
-        private Global(GlobalParameters parameters)
+        private Global(GlobalInput parameters)
         {
             //HistoricalTotalBiomassMin = parameters.HistoricalTotalBiomassMin;
-            MaxHeuristicInLayer = parameters.MaxHeuristicInLayer;
+            //MaxHeuristicInLayer = parameters.MaxHeuristicInLayer;
             PowerOfDistribution = parameters.PowerOfDistribution;
         }
 
-        public static void Init(GlobalParameters parameters)
+        public static void Init(GlobalInput parameters)
         {
             if(instance == null)
             {

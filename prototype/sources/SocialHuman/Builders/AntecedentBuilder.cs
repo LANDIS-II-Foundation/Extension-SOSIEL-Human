@@ -5,7 +5,7 @@ namespace SocialHuman.Builders
 {
     using Models;
 
-    public class AntecedentBuilder
+    class AntecedentBuilder
     {
         static Func<Expression, Expression, BinaryExpression> GetCondition(string inequalitySign)
         {
@@ -27,19 +27,21 @@ namespace SocialHuman.Builders
             }
         }
 
-        public static Func<double, bool> Build(AntecedentParameters parameters)
+        public static Func<dynamic, bool> Build(HeuristicAntecedentPart antecedentPart)
         {
+            Type paramType = antecedentPart.Const.GetType();
+
             // Create a parameter to use for both of the expression bodies.
-            ParameterExpression intParam = Expression.Parameter(typeof(double), "x");
+            ParameterExpression param = Expression.Parameter(paramType, "x");
 
             // Manually build the expression tree for antecedent
-            ConstantExpression antecedentConst = Expression.Constant(parameters.AntecedentConst, typeof(double));
-            Func<Expression, Expression, BinaryExpression> condition = GetCondition(parameters.AntecedentInequalitySign);
-            BinaryExpression expression = condition(intParam, antecedentConst);
-            Func<double, bool> lambda =
-                Expression.Lambda<Func<double, bool>>(
+            ConstantExpression antecedentConst = Expression.Constant(antecedentPart.Const, paramType);
+            Func<Expression, Expression, BinaryExpression> condition = GetCondition(antecedentPart.Sign);
+            BinaryExpression expression = condition(param, antecedentConst);
+            Func<dynamic, bool> lambda =
+                Expression.Lambda<Func<dynamic, bool>>(
                     expression,
-                    new ParameterExpression[] { intParam }).Compile();
+                    new ParameterExpression[] { param }).Compile();
 
             return lambda;
         }

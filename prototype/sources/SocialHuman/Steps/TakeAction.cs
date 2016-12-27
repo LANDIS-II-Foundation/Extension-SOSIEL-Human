@@ -3,36 +3,35 @@ using System.Linq;
 
 namespace SocialHuman.Steps
 {
-    using Actors;
-    using Entities;
+    using Enums;
     using Models;
 
     sealed class TakeAction
     {
-        public void Execute(Actor actor, LinkedListNode<Period> periodModel)
+        public void Execute(Actor actor, LinkedListNode<Period> periodModel, Site[] sites)
         {
             Period currentPeriod = periodModel.Value;
 
-            foreach (SiteState siteState in currentPeriod.SiteStates[actor])
+            if (actor.Prototype.Type == 1)
             {
-                Heuristic[] activatedHeuristics = siteState.Activated;
-
-                foreach (var set in activatedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                foreach (Site site in currentPeriod.GetAssignedSites(actor))
                 {
-                    double consequentValue = set.OrderBy(h => h.Layer.PositionNumber).Last().ConsequentValue;
+                    //take last layer activated heuristic
+                    Heuristic heuristic = currentPeriod.GetStateForSite(actor, site).Activated.OrderByDescending(h => h.Layer.PositionNumber).First();
 
-                    TakeActionState takeActionState = new TakeActionState(set.Key, siteState.Site.BiomassValue * (consequentValue / 100));
+                    TakeActionState takeActionState = new TakeActionState(heuristic.Consequent.Param, site.BiomassValue * (heuristic.Consequent.Value / 100));
 
-                    siteState.Site.BiomassValue -= takeActionState.HarvestAmount;
+                    site.BiomassValue -= takeActionState.Value;
 
-                    if (siteState.Site.BiomassValue <= 0)
+                    if (site.BiomassValue <= 0)
                     {
                         currentPeriod.IsOverconsumption = true;
                     }
 
-                    siteState.TakeActions.Add(takeActionState);
+                    currentPeriod.GetStateForSite(actor, site).TakeActions.Add(takeActionState);
                 }
 
+                actor[VariablesName.Harvested] = currentPeriod.GetStateForActor(actor).Sum(ss => ss.TakeActions.Sum(ta => ta.Value));
             }
         }
     }
