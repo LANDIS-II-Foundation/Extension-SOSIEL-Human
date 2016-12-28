@@ -189,6 +189,7 @@
             "param": "income",
             "link_to_value": "income_from_chores_at_home"
           },
+          "is_collective_action": false,
           "freshness_status": 5,
           "is_action": false
         },
@@ -228,6 +229,7 @@
             "param": "income",
             "link_to_value": "income_from_forestry"
           },
+          "is_collective_action": false,
           "freshness_status": 1,
           "is_action": true
         },
@@ -267,6 +269,7 @@
             "param": "income",
             "link_to_value": "income_from_abroad"
           },
+          "is_collective_action": false,
           "freshness_status": 5,
           "is_action": true
         },
@@ -286,6 +289,7 @@
             "param": "income",
             "link_to_value": "income_from_pension"
           },
+          "is_collective_action": false,
           "freshness_status": 1,
           "is_action": true
         },
@@ -305,6 +309,7 @@
             "param": "income",
             "link_to_value": "income_from_disability"
           },
+          "is_collective_action": false,
           "freshness_status": 1,
           "is_action": true
         },
@@ -339,6 +344,8 @@
             "param": "income",
             "link_to_value": "income_from_green_tourism"
           },
+          "is_collective_action": true,
+          "required_participants": 2,
           "freshness_status": 1,
           "is_action": true
         },
@@ -368,6 +375,7 @@
             "param": "income",
             "link_to_value": "income_from_picking_mushrooms"
           },
+          "is_collective_action": false,
           "freshness_status": 1,
           "is_action": true
         },
@@ -388,6 +396,7 @@
             "param": "expenses",
             "link_to_value": "price_of_timber"
           },
+          "is_collective_action": false,
           "freshness_status": 1,
           "is_action": true
         },
@@ -408,6 +417,7 @@
             "param": "expenses",
             "link_to_value": "price_of_electricity"
           },
+          "is_collective_action": false,
           "freshness_status": 5,
           "is_action": true
         }
@@ -443,7 +453,6 @@
     "FE1": {
       "class": "ForestryEnterprise",
       "variables": {
-        "is_active": true,
         "biomass": 200,
         "wealth": 20,
         "assigned_sites": [ true, true ],

@@ -10,8 +10,6 @@ namespace SocialHuman.Steps
 
     class HeuristicSelection : VolatileStep
     {
-
-
         #region Private fields
 
         GoalState criticalGoalState;
@@ -91,7 +89,7 @@ namespace SocialHuman.Steps
 
             criticalGoalState = goalState;
 
-            Heuristic[] matchedHeuristics = layer.Where(h => h.IsMatch(actor.Variables)).ToArray();
+            Heuristic[] matchedHeuristics = layer.Except(actor.BlockedHeuristics).Where(h => h.IsMatch(actor.Variables)).ToArray();
 
             aiForMatchedHeuristics = actor.AnticipatedInfluences.Where(ai => matchedHeuristics.Contains(ai.AssociatedHeuristic)).ToArray();
 
@@ -115,6 +113,28 @@ namespace SocialHuman.Steps
 
             siteState.Activated.Add(activatedHeuristic);
             siteState.Matched.AddRange(matchedHeuristics);
+        }
+
+        public void ExecutePartII(Actor actor, Actor[] sameTypeActors, LinkedListNode<Period> periodModel, GoalState goalState, IEnumerable<Heuristic> layer, Site site = null)
+        {
+            Period currentPeriod = periodModel.Value;
+
+            HeuristicLayer heuristicLayer = layer.First().Layer;
+
+            Heuristic selectedHeuristic = currentPeriod.GetStateForSite(actor, site).Activated.Single(h=>h.Layer == heuristicLayer);
+
+            if(selectedHeuristic.IsCollectiveAction)
+            {
+                int actorsCount = sameTypeActors.Count(a => currentPeriod.GetStateForSite(a, site).Activated.Single(h => h.Layer == heuristicLayer) == selectedHeuristic);
+
+                if (actorsCount < selectedHeuristic.RequiredParticipants)
+                {
+                    actor.BlockedHeuristics.Add(selectedHeuristic);
+                    currentPeriod.GetStateForSite(actor, site).Activated.Remove(selectedHeuristic);
+
+                    ExecutePartI(actor, periodModel, goalState, layer, site);
+                }
+            }
         }
     }
     #endregion

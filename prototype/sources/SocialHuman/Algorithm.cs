@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 
@@ -48,6 +49,18 @@ namespace SocialHuman
             List<Actor> actors = initialStates.Select(kvp => Actor.Create(kvp.Key, availablePrototypes[kvp.Value.Class], kvp.Value)).ToList();
 
             Period zeroPeriodModel = new Period(0, sites);
+
+            //assign household object to actor
+            Dictionary<string, Household> households = actors.Where(a => a.Prototype.Type == 2)
+                .GroupBy(a => a[VariablesName.Household]).Where(g => g.Key != null)
+                .Select(g => new Household(g.Key)).ToDictionary(g => g.Name);
+
+            foreach (Actor actor in actors.Where(a => a.Prototype.Type == 2))
+            {
+                string householdName = actor[VariablesName.Household];
+
+                actor[VariablesName.Household] = households[householdName];
+            }
 
 
             foreach (var initialState in initialStates)
@@ -137,6 +150,7 @@ namespace SocialHuman
         AnticipationLearning anticipationLearning = new AnticipationLearning();
         CounterfactualThinking counterfactualThinking = new CounterfactualThinking();
         InductiveReasoning inductiveReasoning = new InductiveReasoning();
+        SocialLearning socialLearning = new SocialLearning();
         HeuristicSelection heuristicSelection = new HeuristicSelection();
         TakeAction takeAction = new TakeAction();
         #endregion
@@ -162,12 +176,30 @@ namespace SocialHuman
 
         void Maintenance()
         {
+            foreach(var householdMembers in actors.Where(a=> a.Prototype.Type == 2).GroupBy(a=>a[VariablesName.Household]))
+            {
+                Household household = householdMembers.Key;
+
+                household.Income += householdMembers.Sum(m => m[VariablesName.Income]);
+                household.Expenses += householdMembers.Sum(m => m[VariablesName.Expenses]);
+
+                foreach(Actor actor in householdMembers)
+                {
+                    actor[VariablesName.Savings] = household.Savings;
+                }
+            }
+
             foreach (ActorPrototype actorPrototype in actors.Select(a => a.Prototype).Distinct())
             {
                 foreach (Heuristic heuristic in actorPrototype.HeuristicEnumerable)
                 {
                     heuristic.FreshnessStatus += 1;
                 }
+            }
+
+            foreach (Actor actor in actors)
+            {
+                actor.BlockedHeuristics.Clear();
             }
         }
         #endregion
@@ -177,6 +209,9 @@ namespace SocialHuman
         {
             for (int period = 0; period < periodsCount; period++)
             {
+                var d = actors[1][VariablesName.Savings]();
+
+
                 int actualPeriodNumber = period + 1;
 
                 BiomassGrowth(biomassGrowthRate[period]);
@@ -184,10 +219,13 @@ namespace SocialHuman
                 Period currentPeriod = periods.AddLast(new Period(actualPeriodNumber, sites)).Value;
                 Period priorPeriod = periods.Last.Previous.Value;
 
-                var actorGroups = actors.GroupBy(a => a.Prototype).OrderBy(ag => ag.Key.Type);
+                var actorGroups = actors.GroupBy(a => a.Prototype).OrderBy(ag => ag.Key.Type).ToList();
 
+                //rankedGoals is sorted list
                 GoalState[] rankedGoals = null;
 
+
+                //1st round: AL, CT, IR
                 foreach (var actorGroup in actorGroups)
                 {
                     foreach (Actor actor in actorGroup.Randomize())
@@ -206,7 +244,6 @@ namespace SocialHuman
                                 foreach (var set in actor.AssagnedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                                 {
                                     //optimization
-                                    //goals is sorted list
                                     GoalState criticalGoalState = rankedGoals.First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
 
                                     foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
@@ -233,6 +270,28 @@ namespace SocialHuman
                     }
                 }
 
+                //2nd round: SL
+                foreach (var actorGroup in actorGroups)
+                {
+                    foreach (Actor actor in actorGroup.Randomize())
+                    {
+                        foreach (var set in actor.AssagnedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                        {
+                            //optimization
+                            GoalState criticalGoalState = rankedGoals.First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
+
+                            foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                            {
+                                socialLearning.ExecuteSelection(actor, periods.Last.Previous.Value, criticalGoalState, layer.Key, null);                                 
+                            }
+                        }
+
+                    }
+                }
+
+                socialLearning.ExecuteLearning();
+
+                //3rd round: HS part I
                 foreach (var actorGroup in actorGroups)
                 {
                     foreach (Actor actor in actorGroup.Randomize())
@@ -248,7 +307,6 @@ namespace SocialHuman
                             foreach (var set in actor.AssagnedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                             {
                                 //optimization
-                                //goals is sorted list
                                 GoalState criticalGoalState = rankedGoals.First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
 
                                 foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
@@ -260,6 +318,39 @@ namespace SocialHuman
                     }
                 }
 
+                //4th round: HS part II
+                foreach (var actorGroup in actorGroups)
+                {
+                    //todo I have question about it
+                    if (actorGroup.Key.Type == 1)
+                        continue;
+
+                    Actor[] sameTypeActors = actorGroup.ToArray();
+
+                    foreach (Actor actor in actorGroup.Randomize())
+                    {
+                        Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
+
+                        foreach (Site site in assignedSites.Randomize())
+                        {
+                            currentPeriod.SiteStates[actor].Add(SiteState.Create(actor.IsSiteSpecific, site));
+
+                            foreach (var set in actor.AssagnedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                            {
+                                //optimization
+                                GoalState criticalGoalState = rankedGoals.First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
+
+                                foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                                {
+
+                                    heuristicSelection.ExecutePartII(actor, sameTypeActors, periods.Last, criticalGoalState, layer, site);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //5th round: TA
                 foreach (var actorGroup in actorGroups)
                 {
                     foreach (Actor actor in actorGroup)

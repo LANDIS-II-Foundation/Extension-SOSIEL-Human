@@ -11,13 +11,21 @@ namespace SocialHuman.Models
     {
         #region Public fields
         public HeuristicLayer Layer { get; set; }
+
         public int PositionNumber { get; set; }
+
         public HeuristicAntecedentPart[] Antecedent { get; private set; }
+
         public HeuristicConsequentPart Consequent { get; private set; }
+
         public int FreshnessStatus { get; set; }
+
         public bool IsAction { get; private set; }
 
-        public Site CreatedBy { get; set; }
+        public bool IsCollectiveAction { get; private set; }
+
+        public int RequiredParticipants { get; private set; }
+
 
         public string Id
         {

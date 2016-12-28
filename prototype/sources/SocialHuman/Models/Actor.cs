@@ -25,6 +25,8 @@ namespace SocialHuman.Models
 
         public List<Heuristic> AssagnedHeuristics { get; private set; }
 
+        public List<Heuristic> BlockedHeuristics { get; private set; } = new List<Heuristic>();
+
         public List<AnticipatedInfluence> AnticipatedInfluences { get; private set; }
 
 
@@ -41,7 +43,10 @@ namespace SocialHuman.Models
                     return Variables[key];
                 else
                 {
-                    return Prototype.Variables[key];
+                    if (Prototype.Variables.ContainsKey(key))
+                        return Prototype.Variables[key];
+                    else
+                        return null;
                 }
             }
             set
@@ -115,12 +120,21 @@ namespace SocialHuman.Models
                 actor[VariablesName.IsSiteSpecific] = false;
             }
 
-            if (input.Variables.ContainsKey(VariablesName.Harvested))
+            if(input.Variables.ContainsKey(VariablesName.SocialNetworks))
             {
-                double[] harvested = ((IEnumerable<JToken>)input.Variables[VariablesName.Harvested]).Select(v => v.ToObject<double>()).ToArray();
+                string[] networks = ((IEnumerable<JToken>)input.Variables[VariablesName.SocialNetworks]).Select(v => v.ToObject<string>()).ToArray();
 
-                actor[VariablesName.Harvested] = harvested;
+                actor[VariablesName.SocialNetworks] = networks;
             }
+
+
+
+            //if (input.Variables.ContainsKey(VariablesName.Wealth))
+            //{
+            //    double[] harvested = ((IEnumerable<JToken>)input.Variables[VariablesName.Wealth]).Select(v => v.ToObject<double>()).ToArray();
+
+            //    actor[VariablesName.Wealth] = harvested;
+            //}
             
             return actor;
         }

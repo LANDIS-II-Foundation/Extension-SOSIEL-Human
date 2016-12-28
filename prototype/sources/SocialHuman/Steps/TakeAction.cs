@@ -12,26 +12,41 @@ namespace SocialHuman.Steps
         {
             Period currentPeriod = periodModel.Value;
 
-            if (actor.Prototype.Type == 1)
+            foreach (Site site in currentPeriod.GetAssignedSites(actor))
             {
-                foreach (Site site in currentPeriod.GetAssignedSites(actor))
+                foreach (var set in currentPeriod.GetStateForSite(actor, site).Activated.GroupBy(h => h.Layer.Set))
                 {
                     //take last layer activated heuristic
-                    Heuristic heuristic = currentPeriod.GetStateForSite(actor, site).Activated.OrderByDescending(h => h.Layer.PositionNumber).First();
+                    Heuristic heuristic = set.OrderByDescending(h => h.Layer.PositionNumber).First();
+                    //Heuristic heuristic = currentPeriod.GetStateForSite(actor, site).Activated.OrderByDescending(h => h.Layer.PositionNumber).First();
+                    TakeActionState takeActionState = null;
 
-                    TakeActionState takeActionState = new TakeActionState(heuristic.Consequent.Param, site.BiomassValue * (heuristic.Consequent.Value / 100));
-
-                    site.BiomassValue -= takeActionState.Value;
-
-                    if (site.BiomassValue <= 0)
+                    if (actor.Prototype.Type == 1)
                     {
-                        currentPeriod.IsOverconsumption = true;
+                        takeActionState = new TakeActionState(heuristic.Consequent.Param, site.BiomassValue * (heuristic.Consequent.Value / 100));
+
+                        site.BiomassValue -= takeActionState.Value;
+
+                        if (site.BiomassValue <= 0)
+                        {
+                            currentPeriod.IsOverconsumption = true;
+                        }
                     }
+                    else
+                    {
+                        takeActionState = new TakeActionState(heuristic.Consequent.Param, heuristic.Consequent.Value);
+
+                        heuristic.Apply(actor);
+                    }
+                
 
                     currentPeriod.GetStateForSite(actor, site).TakeActions.Add(takeActionState);
                 }
+            }
 
-                actor[VariablesName.Harvested] = currentPeriod.GetStateForActor(actor).Sum(ss => ss.TakeActions.Sum(ta => ta.Value));
+            if (actor.Prototype.Type == 1)
+            {
+                actor[VariablesName.Wealth] = currentPeriod.GetStateForActor(actor).Sum(ss => ss.TakeActions.Sum(ta => ta.Value));
             }
         }
     }
