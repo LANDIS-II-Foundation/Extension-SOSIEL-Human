@@ -27,7 +27,7 @@ namespace SocialHuman.Models
         #region Public fields
         public string Param { get; private set; }
 
-        public double Value { get; private set; }
+        public double Value { get; set; }
 
         public string LinkToValue { get; private set; }
         #endregion

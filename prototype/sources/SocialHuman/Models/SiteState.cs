@@ -25,7 +25,7 @@ namespace SocialHuman.Models
             SiteState siteState = Create(isSiteSpecific, site);
 
             siteState.Matched.AddRange(matched);
-            siteState.Activated.AddRange(matched);
+            siteState.Activated.AddRange(activated);
 
             return siteState;
         }

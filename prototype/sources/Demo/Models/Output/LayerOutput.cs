@@ -10,13 +10,10 @@ namespace Demo.Models.Output
     {
         #region Public fields
         [JsonProperty("name")]
-        public string HeuristicName { get; set; }
-        [JsonProperty("ancetedent")]
-        public double AntecedentConst { get; set; }
-        [JsonProperty("sign")]
-        public string AntecedentSign { get; set; }
-        [JsonProperty("consequent")]
-        public double ConsequentValue { get; set; }
+        public string LayerName { get; set; }
+
+        [JsonProperty("heuristics")]
+        public HeuristicOutput[] Heuristics { get; set; }
         #endregion
     }
 }

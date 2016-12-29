@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SocialHuman.Models
 {
-    public sealed class Goal: ICloneable
+    public sealed class Goal: ICloneable, IEquatable<Goal>
     {
         #region Private fields
         #endregion
@@ -35,6 +35,15 @@ namespace SocialHuman.Models
         public object Clone()
         {
             return this.MemberwiseClone();
+        }
+        public bool Equals(Goal other)
+        {
+            return Name == other.Name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals((Goal)obj);
         }
         #endregion
     }

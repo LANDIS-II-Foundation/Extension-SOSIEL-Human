@@ -28,6 +28,24 @@ namespace SocialHuman.Models
                 return MentalModel.SelectMany(s => s.Layers.SelectMany(l => l.Heuristics));
             }
         }
+
+        public dynamic this[string key]
+        {
+            get
+            {
+                if (Variables.ContainsKey(key))
+                    return Variables[key];
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                Variables[key] = value;
+            }
+
+        }
         #endregion
 
         #region Constructors
@@ -37,7 +55,7 @@ namespace SocialHuman.Models
         #endregion
 
         #region Public methods
-        
+
         #endregion
 
         #region Factory methods
@@ -51,16 +69,16 @@ namespace SocialHuman.Models
             return prototype;
         }
 
-        internal static IEnumerable<HeuristicSet> CreateHeuristicSets(Goal[] goals, Input.Heuristic[] heuristics, Input.HeuristicLayerParameters[] layerParameters, 
+        internal static IEnumerable<HeuristicSet> CreateHeuristicSets(Goal[] goals, Input.Heuristic[] heuristics, Input.HeuristicLayerParameters[] layerParameters,
             Input.HeuristicSetParameters[] setParameters)
         {
             foreach (var _set in heuristics.GroupBy(h => h.Set))
             {
                 string[] associatedWith = setParameters.Single(sp => sp.HeuristicSet == _set.Key).AssociatedWith;
 
-                HeuristicSet set = new HeuristicSet(_set.Key, goals.Where(g=> associatedWith.Contains(g.Name)).ToArray());
+                HeuristicSet set = new HeuristicSet(_set.Key, goals.Where(g => associatedWith.Contains(g.Name)).ToArray());
 
-                foreach(var _layer in _set.GroupBy(s=>s.Layer).OrderBy(g=>g.Key))
+                foreach (var _layer in _set.GroupBy(s => s.Layer).OrderBy(g => g.Key))
                 {
                     Input.HeuristicLayerParameters parameters = layerParameters.Single(lp => lp.HeuristicSet == _set.Key && lp.HeuristicLayer == _layer.Key);
 

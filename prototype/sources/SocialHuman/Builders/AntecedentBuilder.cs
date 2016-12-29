@@ -3,45 +3,43 @@ using System.Linq.Expressions;
 
 namespace SocialHuman.Builders
 {
+    using Microsoft.CSharp.RuntimeBinder;
     using Models;
 
     class AntecedentBuilder
     {
-        static Func<Expression, Expression, BinaryExpression> GetCondition(string inequalitySign)
+        static ExpressionType GetExpressionType(string inequalitySign)
         {
             switch (inequalitySign)
             {
                 case ">":
-                    return Expression.GreaterThan;
+                    return ExpressionType.GreaterThan;
                 case ">=":
-                    return Expression.GreaterThanOrEqual;
+                    return ExpressionType.GreaterThanOrEqual;
                 case "<":
-                    return Expression.LessThan;
+                    return ExpressionType.LessThan;
                 case "<=":
-                    return Expression.LessThanOrEqual;
+                    return ExpressionType.LessThanOrEqual;
                 case "=":
-                    return Expression.Equal;
+                    return ExpressionType.Equal;
 
                 default:
                     throw new ArgumentException("Unsupported antecedent condition");
             }
         }
 
-        public static Func<dynamic, bool> Build(HeuristicAntecedentPart antecedentPart)
+        public static Func<dynamic, dynamic, dynamic> Build(string inequalitySign)
         {
-            Type paramType = antecedentPart.Const.GetType();
-
-            // Create a parameter to use for both of the expression bodies.
-            ParameterExpression param = Expression.Parameter(paramType, "x");
-
-            // Manually build the expression tree for antecedent
-            ConstantExpression antecedentConst = Expression.Constant(antecedentPart.Const, paramType);
-            Func<Expression, Expression, BinaryExpression> condition = GetCondition(antecedentPart.Sign);
-            BinaryExpression expression = condition(param, antecedentConst);
-            Func<dynamic, bool> lambda =
-                Expression.Lambda<Func<dynamic, bool>>(
-                    expression,
-                    new ParameterExpression[] { param }).Compile();
+            ParameterExpression x = Expression.Parameter(typeof(object), "x");
+            ParameterExpression y = Expression.Parameter(typeof(object), "y");
+            var binder = Binder.BinaryOperation(
+                CSharpBinderFlags.None, GetExpressionType(inequalitySign), typeof(Algorithm),
+                new CSharpArgumentInfo[] {
+                    CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null),
+                    CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)
+                });
+            Func<dynamic, dynamic, dynamic> lambda =
+                Expression.Lambda<Func<object, object, object>>(Expression.Dynamic(binder, typeof(object), x, y), new[] { x, y }).Compile();
 
             return lambda;
         }

@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 namespace SocialHuman.Models
 {
     using Enums;
-    
+    using Helpers;
     using Input = Parsers.Models;
 
     public sealed class Actor
@@ -23,7 +23,7 @@ namespace SocialHuman.Models
 
         public GoalState[] AssignedGoals { get; private set; }
 
-        public List<Heuristic> AssagnedHeuristics { get; private set; }
+        public List<Heuristic> AssignedHeuristics { get; private set; }
 
         public List<Heuristic> BlockedHeuristics { get; private set; } = new List<Heuristic>();
 
@@ -44,7 +44,7 @@ namespace SocialHuman.Models
                 else
                 {
                     if (Prototype.Variables.ContainsKey(key))
-                        return Prototype.Variables[key];
+                        return Prototype[key];
                     else
                         return null;
                 }
@@ -52,7 +52,7 @@ namespace SocialHuman.Models
             set
             {
                 if (Prototype.Variables.ContainsKey(key))
-                    Prototype.Variables[key] = value;
+                    Prototype[key] = value;
                 else
                 {
                     Variables[key] = value;
@@ -65,7 +65,7 @@ namespace SocialHuman.Models
         {
             get
             {
-                return this[VariablesName.IsSiteSpecific];
+                return this[VariableNames.IsSiteSpecific];
             }
         }
         #endregion
@@ -97,34 +97,36 @@ namespace SocialHuman.Models
 
             actor.Variables = input.Variables;
 
-            actor.AssagnedHeuristics = actor.Prototype.HeuristicEnumerable.Where(h => input.AssagnedHeuristics.Contains(h.Id)).ToList();
+            actor.AssignedHeuristics = actor.Prototype.HeuristicEnumerable.Where(h => input.AssagnedHeuristics.Contains(h.Id)).ToList();
 
             actor.AssignedGoals = input.AssignedGoals.Join(prototype.Goals, gs => gs.Name, g => g.Name, (gs, g) => new GoalState((Goal)g.Clone(), gs.Value))
                 .ToArray();
 
-            actor.AnticipatedInfluences = actor.AssagnedHeuristics
+            actor.AssignedGoals.ForEach(ag => ag.Goal.LimitValue = ag.Value);
+
+            actor.AnticipatedInfluences = actor.AssignedHeuristics
                 .SelectMany(h => actor.AssignedGoals.Select(g => 
                     new AnticipatedInfluence(h, g.Goal, input.AnticipatedInfluences.ContainsKey(h.Id) ? input.AnticipatedInfluences[h.Id] : null))).ToList();
 
             
-            if (input.Variables.ContainsKey(VariablesName.AssignedSites))
+            if (input.Variables.ContainsKey(VariableNames.AssignedSites))
             {
-                bool[] assignedSiteFlags = ((IEnumerable<JToken>)input.Variables[VariablesName.AssignedSites]).Select(v => v.ToObject<bool>()).ToArray();
+                bool[] assignedSiteFlags = ((IEnumerable<JToken>)input.Variables[VariableNames.AssignedSites]).Select(v => v.ToObject<bool>()).ToArray();
 
-                actor[VariablesName.AssignedSites] = assignedSiteFlags;
+                actor[VariableNames.AssignedSites] = assignedSiteFlags;
 
-                actor[VariablesName.IsSiteSpecific] = true;
+                actor[VariableNames.IsSiteSpecific] = true;
             }
             else
             {
-                actor[VariablesName.IsSiteSpecific] = false;
+                actor[VariableNames.IsSiteSpecific] = false;
             }
 
-            if(input.Variables.ContainsKey(VariablesName.SocialNetworks))
+            if(input.Variables.ContainsKey(VariableNames.SocialNetworks))
             {
-                string[] networks = ((IEnumerable<JToken>)input.Variables[VariablesName.SocialNetworks]).Select(v => v.ToObject<string>()).ToArray();
+                string[] networks = ((IEnumerable<JToken>)input.Variables[VariableNames.SocialNetworks]).Select(v => v.ToObject<string>()).ToArray();
 
-                actor[VariablesName.SocialNetworks] = networks;
+                actor[VariableNames.SocialNetworks] = networks;
             }
 
 

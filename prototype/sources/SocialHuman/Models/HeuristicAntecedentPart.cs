@@ -23,7 +23,7 @@ namespace SocialHuman.Models
         #endregion
 
         #region Private fields
-        private Func<dynamic, bool> antecedent;
+        private Func<dynamic, dynamic, dynamic> antecedent;
         #endregion
 
         #region Public fields
@@ -33,30 +33,31 @@ namespace SocialHuman.Models
 
         public string Sign { get; private set; }
 
-        public dynamic Const { get; private set; }
+        public dynamic Const { get; set; }
 
         public string LinkForConst { get; private set; }
         #endregion
 
         #region Constructors
+
         #endregion
 
         #region Private methods
         private void BuildAntecedent()
         {
-            antecedent = AntecedentBuilder.Build(this);
+            antecedent = AntecedentBuilder.Build(Sign);
         }
         #endregion
 
         #region Public methods
         public bool IsMatch(dynamic value)
         {
-            if (antecedent == null || Immutable == false)
+            if (antecedent == null)
             {
                 BuildAntecedent();
             }
 
-            return antecedent(value);
+            return antecedent(value, Const);
         }
 
         public object Clone()

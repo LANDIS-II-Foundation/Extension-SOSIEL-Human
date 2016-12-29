@@ -14,9 +14,9 @@ namespace SocialHuman.Models
 
         public int PositionNumber { get; set; }
 
-        public HeuristicAntecedentPart[] Antecedent { get; private set; }
+        public HeuristicAntecedentPart[] Antecedent { get; set; }
 
-        public HeuristicConsequentPart Consequent { get; private set; }
+        public HeuristicConsequentPart Consequent { get; set; }
 
         public int FreshnessStatus { get; set; }
 
@@ -51,9 +51,21 @@ namespace SocialHuman.Models
             return Antecedent.All(a=>a.IsMatch(variables[a.Param]));
         }
 
+        public double GetConsequentValue()
+        {
+            double value = Consequent.Value;
+
+            if (IsCollectiveAction)
+            {
+                value /= RequiredParticipants;
+            }
+
+            return value;
+        }
+
         public void Apply(Actor actor)
         {
-            actor[Consequent.Param] = Consequent.Value;
+            actor[Consequent.Param] = GetConsequentValue();
         }
         #endregion
 

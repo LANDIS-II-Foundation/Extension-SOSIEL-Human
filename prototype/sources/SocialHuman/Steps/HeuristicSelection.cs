@@ -91,7 +91,7 @@ namespace SocialHuman.Steps
 
             Heuristic[] matchedHeuristics = layer.Except(actor.BlockedHeuristics).Where(h => h.IsMatch(actor.Variables)).ToArray();
 
-            aiForMatchedHeuristics = actor.AnticipatedInfluences.Where(ai => matchedHeuristics.Contains(ai.AssociatedHeuristic)).ToArray();
+            aiForMatchedHeuristics = actor.AnticipatedInfluences.Where(ai => matchedHeuristics.Contains(ai.AssociatedHeuristic) && ai.AssociatedGoal.Equals(goalState.Goal)).ToArray();
 
             Heuristic activatedHeuristic = null;
 

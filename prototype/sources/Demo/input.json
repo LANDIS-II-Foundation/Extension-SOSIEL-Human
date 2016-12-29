@@ -19,7 +19,7 @@
         },
         {
           "name": "SG1",
-          "comment": "biomass",
+          "comment": "total_biomass",
           "is_primary": false,
           "tendency": "AboveMin",
           "limit_value": 199,
@@ -152,7 +152,7 @@
         "required_savings_for_green_tourism": 200000,
 
         "price_of_timber": 600,
-        "price_of_electricity": 700
+        "price_of_electricity": 700,
       },
       "goals": [
         {
@@ -453,7 +453,8 @@
     "FE1": {
       "class": "ForestryEnterprise",
       "variables": {
-        "biomass": 200,
+        "job_available": true,
+        "total_biomass": 200,
         "wealth": 20,
         "assigned_sites": [ true, true ],
         "biomass_threshold": 100
@@ -633,13 +634,13 @@
         "collective_action_members": 0,
         "household": "H2",
         "social_networks": [ "H2" ],
-        "income": 320000,
+        "income": 160000,
         "expenses": 600
       },
       "goals_state": [
         {
           "name": "PG",
-          "value": 320000
+          "value": 160000
         },
         {
           "name": "SG1",
@@ -657,7 +658,7 @@
       ],
       "anticipated_influence": {
         "HS1_L1_H6": {
-          "PG": 320000,
+          "PG": 160000,
           "SG1": 0
         },
         "HS2_L1_H1": {
@@ -686,12 +687,12 @@
         "disability": false,
         "household": "H2",
         "social_networks": [ "H2", "Church" ],
-        "income": 320000
+        "income": 160000
       },
       "goals_state": [
         {
           "name": "PG",
-          "value": 320000
+          "value": 160000
         }
       ],
       "assigned_heuristics": [
@@ -700,7 +701,7 @@
       ],
       "anticipated_influence": {
         "HS1_L1_H6": {
-          "PG": 320000
+          "PG": 160000
         }
       },
       "matched_conditions_in_prior_period": [

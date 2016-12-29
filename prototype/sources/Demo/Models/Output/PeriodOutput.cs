@@ -6,8 +6,10 @@ namespace Demo.Models.Output
     {
         [JsonProperty("period_number")]
         public int PeriodNumber { get; set; }
+
         [JsonProperty("biomass")]
         public double[] Biomass { get; set; }
+
         [JsonProperty("actors")]
         public ActorOutput[] Actors { get; set; }
     }

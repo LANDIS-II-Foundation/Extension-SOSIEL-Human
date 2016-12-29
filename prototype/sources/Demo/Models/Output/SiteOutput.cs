@@ -6,6 +6,7 @@ namespace Demo.Models.Output
     {
         [JsonProperty("name")]
         public string Name { get; set; }
+
         [JsonProperty("activated")]
         public SetOutput[] ActivatedHeuristics { get; set; }
     }

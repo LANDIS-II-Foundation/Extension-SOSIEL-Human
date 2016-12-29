@@ -11,6 +11,8 @@ using SocialHuman.Models;
 
 namespace Demo
 {
+    using Models.Output;
+
     class Program
     {
         static string inputFilePath = Path.Combine(Environment.CurrentDirectory, "input.json");
@@ -41,7 +43,7 @@ namespace Demo
         private static bool Handler(CtrlType sig)
         {
             //iis killing
-            if(iis != null)
+            if (iis != null)
             {
                 iis.Dispose();
             }
@@ -60,7 +62,7 @@ namespace Demo
             program.Start();
         }
 
-        
+
         void Start()
         {
             ConfigureMapper();
@@ -89,7 +91,7 @@ namespace Demo
                 Console.WriteLine("\n\nERROR! Input is incorrect : " + ex.Message);
                 WaitKeyPress();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("\n\nERROR! " + ex.Message);
                 WaitKeyPress();
@@ -101,7 +103,7 @@ namespace Demo
             Console.WriteLine("Configurating....");
 
 
-            
+
         }
 
         void Initialize()
@@ -109,7 +111,7 @@ namespace Demo
             //todo: clear
             Console.WriteLine("Initializing....");
 
-            
+
 
             algorithm = Algorithm.Initialize(inputFilePath);
         }
@@ -120,58 +122,80 @@ namespace Demo
 
             LinkedList<Period> results = algorithm.Run();
 
-            //Output output = new Output();
+            Output output = new Output();
 
-            //output.Periods = results.Select(p => new PeriodOutput
-            //{
-            //    PeriodNumber = p.PeriodNumber,
-            //    Biomass = p.Sites.Select(s => Math.Round(s.BiomassValue, 2)).ToArray(),
-            //    Actors = p.SiteStates.Select(g => new ActorOutput
-            //    {
-            //        Name = g.Key.ActorName,
-            //        Information = g.Value.OrderBy(s => s.Site.Id).Select(s => new SiteOutput
-            //        {
-            //            Name = $"site{s.Site.Id}",
-            //            ActivatedHeuristics = s.Activated.GroupBy(h => h.Layer.Set).Select(hg => new SetOutput
-            //            {
-            //                SetName = $"set{hg.Key.PositionNumber}",
-            //                ActivatedHeuristics = hg.OrderBy(h => h.Layer.PositionNumber).Select(h => new LayerOutput
-            //                {
-            //                    AntecedentConst = h.AntecedentConst,
-            //                    AntecedentSign = h.AntecedentInequalitySign,
-            //                    ConsequentValue = h.ConsequentValue,
-            //                    HeuristicName = h.Id
-            //                }).ToArray(),
-            //                Harvested = s.GetTakeActionForSet(hg.Key).HarvestAmount
-            //            }).ToArray()
-            //        }).ToArray()
-            //    }).ToArray()
-            //}).ToArray();
+            output.Periods = results.Select(p => new PeriodOutput
+            {
+                PeriodNumber = p.PeriodNumber,
+                Biomass = p.Sites.Select(s => Math.Round(s.BiomassValue, 2)).ToArray(),
+                Actors = p.SiteStates.Select(g => new ActorOutput
+                {
+                    Name = g.Key.ActorName,
+                    Information = g.Value.OrderBy(s => s.Site.Id).Select(s => new SiteOutput
+                    {
+                        Name = $"site{s.Site.Id}",
+                        ActivatedHeuristics = s.Activated.GroupBy(h => h.Layer.Set).Select(hg => new SetOutput
+                        {
+                            SetName = $"set{hg.Key.PositionNumber}",
+                            ActivatedHeuristics = hg.OrderBy(h => h.Layer.PositionNumber).Select(h => new LayerOutput
+                            {
+                                LayerName = $"layer{h.Layer.PositionNumber}",
+                                Heuristics = new HeuristicOutput[] { new HeuristicOutput
+                                    {
+                                        HeuristicName = h.Id,
+                                        Antecedents = h.Antecedent.Select(ap => new AntecedentOutput
+                                        {
+                                            AntecedentConst = ap.Const,
+                                            AntecedentParam = ap.Param,
+                                            AntecedentSign = ap.Sign
+                                        }).ToArray(),
+                                        ConsequentParam = h.Consequent.Param,
+                                        ConsequentValue = h.Consequent.Value,
+                                        IsAction = h.IsAction,
+                                        isCollective = h.IsCollectiveAction
+                                    }
+                                }
+                            }).ToArray(),
+                            TakeActions = s.TakeActions.Select(ta => new TakeActionOutput
+                            {
+                                Param = ta.VariableName,
+                                Value = ta.Value
+                            }).ToArray()
+                        }).ToArray()
+                    }).ToArray()
+                }).ToArray()
+            }).ToArray();
 
-            //output.MentalModels = algorithm.Actors.Select(a => new
-            //{
-            //    name = a.ActorName,
-            //    mental = a.MentalModel.Select(hs => new
-            //    {
-            //        set = $"Set{hs.PositionNumber}",
-            //        layers = hs.Layers.Select(hl => new
-            //        {
-            //            layer = $"Layer{hl.PositionNumber}",
-            //            heuristics = hl.Heuristics.Select(h => new
-            //            {
-            //                name = h.Id,
-            //                sign = h.AntecedentInequalitySign,
-            //                antecedent = h.AntecedentConst,
-            //                consequent = h.ConsequentValue,
-            //                isaction = h.IsAction
-            //            }).ToArray()
-            //        }).ToArray()
-            //    }).ToArray()
-            //}).ToArray();
+            output.MentalModels = algorithm.Actors.Select(a => new
+            {
+                name = a.ActorName,
+                mental = a.AssignedHeuristics.GroupBy(h => h.Layer.Set).Select(hs => new SetOutput
+                {
+                    SetName = $"set{hs.Key.PositionNumber}",
+                    Layers = hs.GroupBy(h => h.Layer).Select(hl => new LayerOutput
+                    {
+                        LayerName = $"Layer{hl.Key.PositionNumber}",
+                        Heuristics = hl.Select(h => new HeuristicOutput
+                        {
+                            HeuristicName = h.Id,
+                            Antecedents = h.Antecedent.Select(ap => new AntecedentOutput
+                            {
+                                AntecedentConst = ap.Const,
+                                AntecedentParam = ap.Param,
+                                AntecedentSign = ap.Sign
+                            }).ToArray(),
+                            ConsequentParam = h.Consequent.Param,
+                            ConsequentValue = h.Consequent.Value,
+                            IsAction = h.IsAction,
+                            isCollective = h.IsCollectiveAction
+                        }).ToArray()
+                    }).ToArray()
+                }).ToArray()
+            }).ToArray();
 
-            //string outputString = JsonConvert.SerializeObject(output);
+            string outputString = JsonConvert.SerializeObject(output);
 
-            //File.WriteAllText(outputFilePath, outputString);
+            File.WriteAllText(outputFilePath, outputString);
         }
 
         void WaitKeyPress()

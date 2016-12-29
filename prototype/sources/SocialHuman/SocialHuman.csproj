@@ -63,7 +63,8 @@
   <ItemGroup>
     <Compile Include="Algorithm.cs" />
     <Compile Include="Builders\AntecedentBuilder.cs" />
-    <Compile Include="Enums\VariablesName.cs" />
+    <Compile Include="Enums\VariableNames.cs" />
+    <Compile Include="Helpers\IEnumerableHelper.cs" />
     <Compile Include="Models\Actor.cs" />
     <Compile Include="Models\ActorPrototype.cs" />
     <Compile Include="Models\AnticipatedInfluence.cs" />

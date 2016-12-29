@@ -6,9 +6,14 @@ namespace Demo.Models.Output
     {
         [JsonProperty("name")]
         public string SetName { get; set; }
+
         [JsonProperty("heuristics")]
         public LayerOutput[] ActivatedHeuristics { get; set; }
-        [JsonProperty("harvested")]
-        public double Harvested { get; set; }
+
+        [JsonProperty("layers")]
+        public LayerOutput[] Layers { get; set; } 
+
+        [JsonProperty("take_actions")]
+        public TakeActionOutput[] TakeActions { get; set; }
     }
 }

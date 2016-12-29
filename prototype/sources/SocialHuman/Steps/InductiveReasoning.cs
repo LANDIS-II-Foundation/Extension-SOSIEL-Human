@@ -97,7 +97,7 @@ namespace SocialHuman.Steps
 
             layer.Add(generatedHeuristic);
 
-            actor.AssagnedHeuristics.Add(generatedHeuristic);
+            actor.AssignedHeuristics.Add(generatedHeuristic);
 
 
             //set consequent to actor's variables for next layers

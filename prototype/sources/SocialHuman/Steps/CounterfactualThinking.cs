@@ -62,7 +62,7 @@ namespace SocialHuman.Steps
         #endregion
 
         #region Public methods
-        public bool? Execute(Actor actor, LinkedListNode<Period> periodModel, GoalState criticalState, 
+        public bool? Execute(Actor actor, LinkedListNode<Period> periodModel, GoalState criticalState,
             Heuristic[] matched, Site site, HeuristicLayer layer)
         {
             confidence = null;
@@ -72,19 +72,15 @@ namespace SocialHuman.Steps
 
             criticalGoalState = criticalState;
 
-            
+            //criticalGoalState = currentPeriod.GetCriticalGoalState(actor);
+            activatedHeuristic = priorPeriod.GetStateForSite(actor, site).GetActivated(layer);
 
-            if (criticalGoalState.Confidence == false && matched.Length >= 2)
-            {
-                //criticalGoalState = currentPeriod.GetCriticalGoalState(actor);
-                activatedHeuristic = priorPeriod.GetStateForSite(actor, site).GetActivated(layer);
+            anticipatedInfluences = actor.AnticipatedInfluences
+                            .Where(ai => matched.Contains(ai.AssociatedHeuristic) && ai.AssociatedGoal == criticalGoalState.Goal)
+                            .ToArray();
 
-                anticipatedInfluences = actor.AnticipatedInfluences
-                                .Where(ai => matched.Contains(ai.AssociatedHeuristic) && ai.AssociatedGoal == criticalGoalState.Goal)
-                                .ToArray();
+            SpecificLogic(criticalGoalState.Goal.Tendency);
 
-                SpecificLogic(criticalGoalState.Goal.Tendency);
-            }
 
             return confidence;
         }

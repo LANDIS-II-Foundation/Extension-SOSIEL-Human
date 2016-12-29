@@ -65,10 +65,10 @@ namespace SocialHuman.Models
 
             if (actor.IsSiteSpecific)
             {
-                assignedSites = Sites.Zip((bool[])actor[VariablesName.AssignedSites], (s, sf) => new { s, sf })
+                assignedSites = Sites.Zip((bool[])actor[VariableNames.AssignedSites], (s, sf) => new { s, sf })
                     .Where(o => o.sf).Select(o => o.s).ToArray();
 
-                actor[VariablesName.TotalBiomass] = assignedSites.Sum(s => s.BiomassValue);
+                actor[VariableNames.TotalBiomass] = assignedSites.Sum(s => s.BiomassValue);
             }
 
             return assignedSites;

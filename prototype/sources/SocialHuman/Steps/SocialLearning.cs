@@ -15,7 +15,7 @@ namespace SocialHuman.Steps
 
         Dictionary<Actor, List<Heuristic>> confidentActors = new Dictionary<Actor, List<Heuristic>>();
 
-        List<Actor> unconfidentActors = new List<Actor>();
+        Dictionary<Actor, Goal> unconfidentActors = new Dictionary<Actor, Goal>();
         #endregion
 
         #region Public fields
@@ -31,33 +31,35 @@ namespace SocialHuman.Steps
                     confidentActors.Add(actor, new List<Heuristic>() { heuristic });
             }
             else
-                unconfidentActors.Add(actor);
+                unconfidentActors.Add(actor, goalState.Goal);
 
         }
 
         public void ExecuteLearning()
         {
-            foreach (Actor actor in unconfidentActors.OrderByDescending(a => a[VariablesName.SocialNetworks].Length))
+            foreach (var actor in unconfidentActors.OrderByDescending(a => a.Key[VariableNames.SocialNetworks].Length))
             {
-                string[] socialNetworks = actor[VariablesName.SocialNetworks];
+                string[] socialNetworks = actor.Key[VariableNames.SocialNetworks];
 
                 foreach (string sn in socialNetworks.Reverse())
                 {
-                    IEnumerable<Actor> suitableActors = confidentActors.Where(kvp => kvp.Key[VariablesName.SocialNetworks].Contains(sn)).Select(kvp => kvp.Key);
+                    IEnumerable<Actor> suitableActors = confidentActors.Where(kvp => ((string[])kvp.Key[VariableNames.SocialNetworks]).Contains(sn))
+                        .Where(kvp => kvp.Value.Any(h => h.Layer.Set.AssociatedWith.Contains(actor.Value)))
+                        .Select(kvp => kvp.Key);
 
                     foreach (Actor sActor in suitableActors)
                     {
-                        foreach (Heuristic heuristic in confidentActors[sActor])
+                        foreach (Heuristic heuristic in confidentActors[sActor].Where(h => h.Layer.Set.AssociatedWith.Contains(actor.Value)))
                         {
-                            if (actor.AssagnedHeuristics.Any(h => h != heuristic)
-                                && actor.AssignedGoals.Any(g => heuristic.Layer.Set.AssociatedWith.Any(a => a == g.Goal)))
+                            if (actor.Key.AssignedHeuristics.Any(h => h != heuristic)
+                                && actor.Key.AssignedGoals.Any(g => heuristic.Layer.Set.AssociatedWith.Any(a => a.Equals(g.Goal))))
                             {
                                 IEnumerable<AnticipatedInfluence> clonedAI = sActor.AnticipatedInfluences
-                                    .Where(ai => ai.AssociatedHeuristic == heuristic && actor.AssignedGoals.Any(gs => gs.Goal == ai.AssociatedGoal))
+                                    .Where(ai => ai.AssociatedHeuristic == heuristic && actor.Key.AssignedGoals.Any(gs => gs.Goal.Equals(ai.AssociatedGoal)))
                                     .Select(ai => (AnticipatedInfluence)ai.Clone());
 
-                                actor.AssagnedHeuristics.Add(heuristic);
-                                actor.AnticipatedInfluences.AddRange(clonedAI);
+                                actor.Key.AssignedHeuristics.Add(heuristic);
+                                actor.Key.AnticipatedInfluences.AddRange(clonedAI);
                             }
                         }
                     }

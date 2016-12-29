@@ -37,7 +37,7 @@ namespace SocialHuman.Steps
             //    return goals.OrderBy(gs=>gs.Goal.Name).ToArray();
             //}
 
-            return goals.OrderByDescending(gs => gs.Confidence)
+            return goals.OrderBy(gs => gs.Confidence)
                 .ThenByDescending(gs => gs.DiffPriorAndMin)
                 .ThenBy(gs => gs.Goal.Name).ToArray();
         }
@@ -114,7 +114,7 @@ namespace SocialHuman.Steps
                 //2.Update the anticipated influence of heuristics activated in prior period
                 IEnumerable<Heuristic> activatedInPriorPeriod = priorPeriod.GetStateForActor(actor).SelectMany(pd => pd.Activated);
 
-                foreach (AnticipatedInfluence ai in actor.AnticipatedInfluences.Where(ai => activatedInPriorPeriod.Contains(ai.AssociatedHeuristic)))
+                foreach (AnticipatedInfluence ai in actor.AnticipatedInfluences.Where(ai => activatedInPriorPeriod.Contains(ai.AssociatedHeuristic) && ai.AssociatedGoal == goalState.Goal))
                 {
                     ai.Value = goalState.AnticipatedInfluenceValue;
                 }
