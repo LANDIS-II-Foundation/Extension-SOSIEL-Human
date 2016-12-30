@@ -93,7 +93,7 @@
           "antecedent": [
             {
               "param": "biomass_threshold",
-              "sign": "=",
+              "sign": "==",
               "const": 100
             }
           ],
@@ -190,7 +190,7 @@
             "link_to_value": "income_from_chores_at_home"
           },
           "is_collective_action": false,
-          "freshness_status": 5,
+          "freshness_status": 1,
           "is_action": false
         },
         {
@@ -536,11 +536,9 @@
       ],
       "anticipated_influence": {
         "HS1_L1_H2": {
-          "PG": 33000,
-          "SG1": 0
+          "PG": 33000
         },
         "HS2_L1_H1": {
-          "PG": 0,
           "SG1": 600
         }
       },
@@ -658,11 +656,9 @@
       ],
       "anticipated_influence": {
         "HS1_L1_H6": {
-          "PG": 160000,
-          "SG1": 0
+          "PG": 160000
         },
         "HS2_L1_H1": {
-          "PG": 0,
           "SG1": 600
         }
       },

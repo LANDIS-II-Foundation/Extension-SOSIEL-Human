@@ -19,26 +19,9 @@ namespace SocialHuman.Steps
         #region Private methods
         GoalState[] SelectCriticalGoal(IEnumerable<GoalState> goals)
         {
-            //GoalState[] confidenceIsNo = goals.Where(g => g.Confidence == false).ToArray();
-
-            //if (confidenceIsNo.Length > 0)
-            //{
-            //    if (confidenceIsNo.Length == 1)
-            //    {
-            //        return goals.OrderByDescending(gs=>gs.Confidence).ThenBy(gs => gs.Goal.Name).ToArray();
-            //    }
-            //    else
-            //    {
-            //        return confidenceIsNo.OrderByDescending(g => g.DiffPriorAndMin).ToArray();
-            //    }
-            //}
-            //else
-            //{
-            //    return goals.OrderBy(gs=>gs.Goal.Name).ToArray();
-            //}
-
             return goals.OrderBy(gs => gs.Confidence)
-                .ThenByDescending(gs => gs.DiffPriorAndMin)
+                //todo: may be otherwise 
+                .ThenByDescending(gs => Math.Abs(gs.AnticipatedInfluenceValue))
                 .ThenBy(gs => gs.Goal.Name).ToArray();
         }
         #endregion

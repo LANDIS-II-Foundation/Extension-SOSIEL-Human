@@ -105,8 +105,8 @@ namespace SocialHuman.Models
             actor.AssignedGoals.ForEach(ag => ag.Goal.LimitValue = ag.Value);
 
             actor.AnticipatedInfluences = actor.AssignedHeuristics
-                .SelectMany(h => actor.AssignedGoals.Select(g => 
-                    new AnticipatedInfluence(h, g.Goal, input.AnticipatedInfluences.ContainsKey(h.Id) ? input.AnticipatedInfluences[h.Id] : null))).ToList();
+                .SelectMany(h => h.Layer.Set.AssociatedWith.Select(g => 
+                    new AnticipatedInfluence(h, g, input.AnticipatedInfluences.ContainsKey(h.Id) ? input.AnticipatedInfluences[h.Id] : null))).ToList();
 
             
             if (input.Variables.ContainsKey(VariableNames.AssignedSites))

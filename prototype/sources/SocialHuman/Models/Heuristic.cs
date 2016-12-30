@@ -46,9 +46,14 @@ namespace SocialHuman.Models
 
 
         #region Public methods
-        public bool IsMatch(Dictionary<string, dynamic> variables)
+        public bool IsMatch(Func<string, dynamic> func)
         {
-            return Antecedent.All(a=>a.IsMatch(variables[a.Param]));
+            return Antecedent.All(a=>a.IsMatch(func(a.Param)));
+        }
+
+        public int CountRightCondition(Func<string, dynamic> func)
+        {
+            return Antecedent.Count(a => a.IsMatch(func(a.Param)));
         }
 
         public double GetConsequentValue()

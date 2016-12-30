@@ -12,8 +12,8 @@ namespace Demo.Models.Output
         #endregion
 
         #region Public fields
-        [JsonProperty("ancetedent")]
-        public double AntecedentConst { get; set; }
+        [JsonProperty("const")]
+        public dynamic AntecedentConst { get; set; }
 
         [JsonProperty("sign")]
         public string AntecedentSign { get; set; }

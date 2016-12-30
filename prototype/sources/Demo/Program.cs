@@ -131,9 +131,9 @@ namespace Demo
                 Actors = p.SiteStates.Select(g => new ActorOutput
                 {
                     Name = g.Key.ActorName,
-                    Information = g.Value.OrderBy(s => s.Site.Id).Select(s => new SiteOutput
+                    Information = g.Value.OrderBy(s => s.Site?.Id ?? 0).Select(s => new SiteOutput
                     {
-                        Name = $"site{s.Site.Id}",
+                        Name = s.Site != null ? $"site{s.Site.Id}" : "-",
                         ActivatedHeuristics = s.Activated.GroupBy(h => h.Layer.Set).Select(hg => new SetOutput
                         {
                             SetName = $"set{hg.Key.PositionNumber}",

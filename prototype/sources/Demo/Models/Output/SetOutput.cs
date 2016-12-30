@@ -7,7 +7,7 @@ namespace Demo.Models.Output
         [JsonProperty("name")]
         public string SetName { get; set; }
 
-        [JsonProperty("heuristics")]
+        [JsonProperty("layers_act")]
         public LayerOutput[] ActivatedHeuristics { get; set; }
 
         [JsonProperty("layers")]

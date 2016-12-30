@@ -159,6 +159,10 @@ namespace SocialHuman
 
             //save new state
             sites = copy;
+
+            double totalBiomass = copy.Sum(s => s.BiomassValue);
+
+            actors.Where(a => a.Prototype.Type == 1).ForEach(a => a[VariableNames.TotalBiomass] = totalBiomass);
         }
 
         void Maintenance()
@@ -218,7 +222,7 @@ namespace SocialHuman
             {
                 bool jobAvailable = false;
 
-                if (period.SiteStates[type1].Any(ss => ss.Activated.All(h => h.IsAction)))
+                if (period.SiteStates[type1].Any(ss => ss.Activated.Where(g => g.Layer.Set.AssociatedWith.Any(a => a.IsPrimary)).All(h => h.IsAction)))
                 {
                     jobAvailable = true;
                 }
@@ -300,7 +304,7 @@ namespace SocialHuman
                 //2nd round: SL
                 foreach (var actorGroup in actorGroups)
                 {
-                    if (actorGroup.Count(a=>a[VariableNames.SocialNetworks] != null) >= 2)
+                    if (actorGroup.Count(a => a[VariableNames.SocialNetworks] != null) >= 2)
                     {
                         foreach (Actor actor in actorGroup.Randomize())
                         {
@@ -315,10 +319,12 @@ namespace SocialHuman
                                 }
                             }
                         }
+
+                        socialLearning.ExecuteLearning(actorGroup.ToArray());
                     }
                 }
 
-                socialLearning.ExecuteLearning();
+
 
                 //3rd round: HS part I
                 foreach (var actorGroup in actorGroups)
@@ -357,27 +363,27 @@ namespace SocialHuman
                 //4th round: HS part II
                 foreach (var actorGroup in actorGroups)
                 {
-                    //todo I have question about it
-                    if (actorGroup.Key.Type == 1)
-                        continue;
-
-                    Actor[] sameTypeActors = actorGroup.ToArray();
-
                     foreach (Actor actor in actorGroup.Randomize())
                     {
-                        Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
+                        List<Actor> sameTypeActors = actorGroup.ToList();
 
-                        foreach (Site site in assignedSites.Randomize())
+                        sameTypeActors.Remove(actor);
+
+                        if (sameTypeActors.Count > 0)
                         {
-                            foreach (var set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                            Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
+
+                            foreach (Site site in assignedSites.Randomize())
                             {
-                                //optimization
-                                GoalState criticalGoalState = rankedGoals[actor].First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
-
-                                foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                                foreach (var set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                                 {
+                                    //optimization
+                                    GoalState criticalGoalState = rankedGoals[actor].First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
 
-                                    heuristicSelection.ExecutePartII(actor, sameTypeActors, periods.Last, criticalGoalState, layer, site);
+                                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                                    {
+                                        heuristicSelection.ExecutePartII(actor, sameTypeActors, periods.Last, criticalGoalState, layer, site);
+                                    }
                                 }
                             }
                         }

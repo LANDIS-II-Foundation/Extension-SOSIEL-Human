@@ -7,6 +7,7 @@ namespace SocialHuman.Steps
 {
     using Enums;
     using Models;
+    using Helpers;
 
 
     sealed class SocialLearning
@@ -19,6 +20,27 @@ namespace SocialHuman.Steps
         #endregion
 
         #region Public fields
+
+
+
+        #endregion
+
+        #region Constructors
+        #endregion
+
+        #region Private methods
+        private void AssignHeuristic(Actor actor, Actor suitableActor, Heuristic heuristic)
+        {
+            IEnumerable<AnticipatedInfluence> clonedAI = suitableActor.AnticipatedInfluences
+                .Where(ai => ai.AssociatedHeuristic == heuristic && actor.AssignedGoals.Any(gs => gs.Goal.Equals(ai.AssociatedGoal)))
+                .Select(ai => (AnticipatedInfluence)ai.Clone());
+
+            actor.AssignedHeuristics.Add(heuristic);
+            actor.AnticipatedInfluences.AddRange(clonedAI);
+        }
+        #endregion
+
+        #region Public methods
         public void ExecuteSelection(Actor actor, Period priorPeriod, GoalState goalState, HeuristicLayer layer, Site site)
         {
             if (goalState.Confidence)
@@ -31,11 +53,12 @@ namespace SocialHuman.Steps
                     confidentActors.Add(actor, new List<Heuristic>() { heuristic });
             }
             else
-                unconfidentActors.Add(actor, goalState.Goal);
+                if(unconfidentActors.ContainsKey(actor) == false)
+                    unconfidentActors.Add(actor, goalState.Goal);
 
         }
 
-        public void ExecuteLearning()
+        public void ExecuteLearning(Actor[] allActors)
         {
             foreach (var actor in unconfidentActors.OrderByDescending(a => a.Key[VariableNames.SocialNetworks].Length))
             {
@@ -52,14 +75,23 @@ namespace SocialHuman.Steps
                         foreach (Heuristic heuristic in confidentActors[sActor].Where(h => h.Layer.Set.AssociatedWith.Contains(actor.Value)))
                         {
                             if (actor.Key.AssignedHeuristics.Any(h => h != heuristic)
-                                && actor.Key.AssignedGoals.Any(g => heuristic.Layer.Set.AssociatedWith.Any(a => a.Equals(g.Goal))))
+                                                && actor.Key.AssignedGoals.Any(g => heuristic.Layer.Set.AssociatedWith.Any(a => a.Equals(g.Goal)))
+                                                && heuristic.IsMatch((param) => actor.Key[param]))
                             {
-                                IEnumerable<AnticipatedInfluence> clonedAI = sActor.AnticipatedInfluences
-                                    .Where(ai => ai.AssociatedHeuristic == heuristic && actor.Key.AssignedGoals.Any(gs => gs.Goal.Equals(ai.AssociatedGoal)))
-                                    .Select(ai => (AnticipatedInfluence)ai.Clone());
 
-                                actor.Key.AssignedHeuristics.Add(heuristic);
-                                actor.Key.AnticipatedInfluences.AddRange(clonedAI);
+                                if (heuristic.IsCollectiveAction)
+                                {
+                                    List<Actor> relatedActors = allActors.Where(a => ((string[])a[VariableNames.SocialNetworks])
+                                        .Any(s => socialNetworks.Contains(s))).ToList();
+
+                                    relatedActors.Remove(sActor);
+
+                                    relatedActors.ForEach(a => AssignHeuristic(a, sActor, heuristic));
+                                }
+                                else
+                                {
+                                    AssignHeuristic(actor.Key, sActor, heuristic);
+                                }
                             }
                         }
                     }
@@ -70,15 +102,6 @@ namespace SocialHuman.Steps
             confidentActors.Clear();
             unconfidentActors.Clear();
         }
-        #endregion
-
-        #region Constructors
-        #endregion
-
-        #region Private methods
-        #endregion
-
-        #region Public methods
         #endregion
     }
 }

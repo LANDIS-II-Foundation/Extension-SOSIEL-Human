@@ -20,11 +20,11 @@ namespace SocialHuman.Builders
                     return ExpressionType.LessThan;
                 case "<=":
                     return ExpressionType.LessThanOrEqual;
-                case "=":
+                case "==":
                     return ExpressionType.Equal;
 
                 default:
-                    throw new ArgumentException("Unsupported antecedent condition");
+                    throw new ArgumentException($"Unsupported antecedent condition: {inequalitySign}");
             }
         }
 

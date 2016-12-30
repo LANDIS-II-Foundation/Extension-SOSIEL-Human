@@ -37,28 +37,38 @@
                                         <table class="table">
                                             <colgroup>
                                                 <col class="col-md-1">
-                                                <col class="col-md-10">
-                                                <col class="col-md-1" />
+                                                <col class="col-md-9">
+                                                <col class="col-md-2" />
                                             </colgroup>
                                             <thead>
                                             <th>Set</th>
                                             <th>Values</th>
-                                            <th>Harvested</th>
+                                            <th>Take Action</th>
                                             </thead>
                                             <tbody>
                                                 <tr *ngFor="let set of site.activated">
                                                     <td>{{set.name}}</td>
                                                     <td>
                                                         <div class="row">
-                                                            <div *ngFor="let heuristic of set.heuristics; let i = index" class="col-md-6">
-                                                                <div class="underline">Layer {{i+1}}</div>
-                                                                <div>{{heuristic.name}}</div>
-                                                                <div>Ancetedent: {{heuristic.sign}}&nbsp;{{heuristic.antecedent}}</div>
-                                                                <div>Consequent: {{heuristic.consequent}}</div>
+                                                            <div *ngFor="let layer of set.layers_act" class="col-md-6">
+                                                                <strong class="underline">{{layer.name}}</strong>
+                                                                <div *ngFor="let heuristic of layer.heuristics; let i = index">
+                                                                    <div>{{heuristic.name}}</div>
+                                                                    <div>Ancetedent:</div>
+                                                                    <div *ngFor="let antecedent of heuristic.antecedents">
+                                                                        {{antecedent.param}}&nbsp;{{antecedent.sign}}&nbsp;{{antecedent.const}}
+                                                                    </div>
+                                                                    <div>Consequent: {{heuristic.consequent_param}}={{heuristic.consequent}}</div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>{{set.harvested | number:'1.0-2'}}</td>
+                                                    <td>
+                                                        <div *ngFor="let ta of set.take_actions"  class="row">
+                                                            <div>Param: {{ta.param}}</div>
+                                                            <div>Value: {{ta.value | number:'1.0-2'}}</div>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -87,15 +97,19 @@
                 <template ngFor let-actor [ngForOf]="data.mental_models" let-clauseIndex="index">
                     <tr *ngFor="let set of actor.mental; let set_index = index">
                         <td [attr.rowspan]="actor.mental.length" *ngIf="set_index == 0">{{actor.name}}</td>
-                        <td>{{set.set}}</td>
+                        <td>{{set.name}}</td>
                         <td>
                             <div *ngFor="let layer of set.layers" class="layer col-md-6">
-                                <div class="underline">{{layer.layer}}</div>
+                                <strong class="underline">{{layer.name}}</strong>
                                 <div *ngFor="let heuristic of layer.heuristics" class="heuristic">
-                                    <div class="underline">{{heuristic.name}}</div>
-                                    <div>Ancetedent: <strong>{{heuristic.sign}}&nbsp;{{heuristic.antecedent}}</strong></div>
-                                    <div>Consequent: <strong>{{heuristic.consequent}}</strong></div>
-                                    <div>Is action: <strong>{{heuristic.isaction}}</strong></div>
+                                    <strong class="underline">{{heuristic.name}}</strong>
+                                    <div>Ancetedent:</div>
+                                    <div *ngFor="let antecedent of heuristic.antecedents">
+                                        {{antecedent.param}}&nbsp;{{antecedent.sign}}&nbsp;{{antecedent.const}}
+                                    </div>
+                                    <div>Consequent: {{heuristic.consequent_param}}={{heuristic.consequent}}</div>
+                                    <div>Action: {{heuristic.is_action}}</div>
+                                    <div>Collective: {{heuristic.is_collective}}</div>
                                 </div>
                             </div>
                         </td>
