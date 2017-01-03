@@ -13,10 +13,7 @@ namespace SocialHuman.Steps
     sealed class SocialLearning
     {
         #region Private fields
-
         Dictionary<Actor, List<Heuristic>> confidentActors = new Dictionary<Actor, List<Heuristic>>();
-
-        Dictionary<Actor, Goal> unconfidentActors = new Dictionary<Actor, Goal>();
         #endregion
 
         #region Public fields
@@ -29,15 +26,7 @@ namespace SocialHuman.Steps
         #endregion
 
         #region Private methods
-        private void AssignHeuristic(Actor actor, Actor suitableActor, Heuristic heuristic)
-        {
-            IEnumerable<AnticipatedInfluence> clonedAI = suitableActor.AnticipatedInfluences
-                .Where(ai => ai.AssociatedHeuristic == heuristic && actor.AssignedGoals.Any(gs => gs.Goal.Equals(ai.AssociatedGoal)))
-                .Select(ai => (AnticipatedInfluence)ai.Clone());
-
-            actor.AssignedHeuristics.Add(heuristic);
-            actor.AnticipatedInfluences.AddRange(clonedAI);
-        }
+        
         #endregion
 
         #region Public methods
@@ -52,45 +41,39 @@ namespace SocialHuman.Steps
                 else
                     confidentActors.Add(actor, new List<Heuristic>() { heuristic });
             }
-            else
-                if(unconfidentActors.ContainsKey(actor) == false)
-                    unconfidentActors.Add(actor, goalState.Goal);
-
         }
 
         public void ExecuteLearning(Actor[] allActors)
         {
-            foreach (var actor in unconfidentActors.OrderByDescending(a => a.Key[VariableNames.SocialNetworks].Length))
+            foreach (var actor in allActors)
             {
-                string[] socialNetworks = actor.Key[VariableNames.SocialNetworks];
+                string[] socialNetworks = actor[VariableNames.SocialNetworks];
 
-                foreach (string sn in socialNetworks.Reverse())
+                if (socialNetworks.Length > 0)
                 {
-                    IEnumerable<Actor> suitableActors = confidentActors.Where(kvp => ((string[])kvp.Key[VariableNames.SocialNetworks]).Contains(sn))
-                        .Where(kvp => kvp.Value.Any(h => h.Layer.Set.AssociatedWith.Contains(actor.Value)))
-                        .Select(kvp => kvp.Key);
-
-                    foreach (Actor sActor in suitableActors)
+                    foreach (string sn in socialNetworks)
                     {
-                        foreach (Heuristic heuristic in confidentActors[sActor].Where(h => h.Layer.Set.AssociatedWith.Contains(actor.Value)))
+                        IEnumerable<Actor> suitableActors = confidentActors.Keys.Where(a => ((string[])a[VariableNames.SocialNetworks]).Contains(sn) && a != actor);
+
+                        foreach (Actor sActor in suitableActors)
                         {
-                            if (actor.Key.AssignedHeuristics.Any(h => h != heuristic)
-                                                && actor.Key.AssignedGoals.Any(g => heuristic.Layer.Set.AssociatedWith.Any(a => a.Equals(g.Goal)))
-                                                && heuristic.IsMatch((param) => actor.Key[param]))
+                            foreach (Heuristic heuristic in confidentActors[sActor].Where(h => h.Layer.Set.AssociatedWith.Any(g=> actor.AssignedGoals.Any(ag=> g.Equals(ag.Goal)))))
                             {
-
-                                if (heuristic.IsCollectiveAction)
+                                if (actor.AssignedHeuristics.Any(h => h != heuristic))
                                 {
-                                    List<Actor> relatedActors = allActors.Where(a => ((string[])a[VariableNames.SocialNetworks])
-                                        .Any(s => socialNetworks.Contains(s))).ToList();
+                                    //if (heuristic.IsCollectiveAction)
+                                    //{
+                                    //    List<Actor> relatedActors = allActors.Where(a => ((string[])a[VariableNames.SocialNetworks])
+                                    //        .Any(s => socialNetworks.Contains(s))).ToList();
 
-                                    relatedActors.Remove(sActor);
+                                    //    relatedActors.Remove(sActor);
 
-                                    relatedActors.ForEach(a => AssignHeuristic(a, sActor, heuristic));
-                                }
-                                else
-                                {
-                                    AssignHeuristic(actor.Key, sActor, heuristic);
+                                    //    relatedActors.ForEach(a => AssignHeuristic(a, sActor, heuristic));
+                                    //}
+                                    //else
+                                    //{
+                                        actor.AssignHeuristic(sActor, heuristic);
+                                    //}
                                 }
                             }
                         }
@@ -100,7 +83,6 @@ namespace SocialHuman.Steps
 
             //clean state
             confidentActors.Clear();
-            unconfidentActors.Clear();
         }
         #endregion
     }

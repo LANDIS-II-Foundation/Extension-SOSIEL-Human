@@ -21,10 +21,16 @@ namespace SocialHuman.Models
         public int FreshnessStatus { get; set; }
 
         public bool IsAction { get; private set; }
-
-        public bool IsCollectiveAction { get; private set; }
-
+               
         public int RequiredParticipants { get; private set; }
+
+        public bool IsCollectiveAction
+        {
+            get
+            {
+                return RequiredParticipants > 1;
+            }
+        }
 
 
         public string Id
@@ -60,10 +66,10 @@ namespace SocialHuman.Models
         {
             double value = Consequent.Value;
 
-            if (IsCollectiveAction)
-            {
-                value /= RequiredParticipants;
-            }
+            //if (IsCollectiveAction)
+            //{
+            //    value /= RequiredParticipants;
+            //}
 
             return value;
         }

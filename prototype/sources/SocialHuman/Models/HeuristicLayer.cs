@@ -31,6 +31,8 @@ namespace SocialHuman.Models
             {
                 Heuristic oldestHeuristics = Heuristics.OrderByDescending(h => h.FreshnessStatus).First(h => h.IsAction == true);
 
+                Set.UnassignHeuristic(oldestHeuristics);
+
                 Heuristics.Remove(oldestHeuristics);
             }
         }

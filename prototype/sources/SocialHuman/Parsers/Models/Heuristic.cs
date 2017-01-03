@@ -33,9 +33,6 @@ namespace SocialHuman.Parsers.Models
         [JsonProperty("consequent", Required = Required.Always)]
         public HeuristicConsequentPart Consequent { get; private set; }
 
-        [JsonProperty("is_collective_action")]
-        public bool IsCollectiveAction { get; private set; }
-
         [JsonProperty("required_participants")]
         public int RequiredParticipants { get; private set; }
         #endregion

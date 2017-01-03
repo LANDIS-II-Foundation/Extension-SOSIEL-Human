@@ -23,7 +23,7 @@ namespace SocialHuman.Steps
 
                     if (actor.Prototype.Type == 1)
                     {
-                        takeActionState = new TakeActionState(heuristic.Consequent.Param, site.BiomassValue * (heuristic.GetConsequentValue() / 100));
+                        takeActionState = new TakeActionState(VariableNames.Wealth, site.BiomassValue * (heuristic.GetConsequentValue() / 100));
 
                         site.BiomassValue -= takeActionState.Value;
 
@@ -38,7 +38,8 @@ namespace SocialHuman.Steps
 
                         heuristic.Apply(actor);
                     }
-                
+
+                    heuristic.FreshnessStatus = 0;
 
                     currentPeriod.GetStateForSite(actor, site).TakeActions.Add(takeActionState);
                 }

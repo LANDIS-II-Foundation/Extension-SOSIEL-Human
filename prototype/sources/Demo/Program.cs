@@ -122,6 +122,8 @@ namespace Demo
 
             LinkedList<Period> results = algorithm.Run();
 
+            results.RemoveFirst();
+
             Output output = new Output();
 
             output.Periods = results.Select(p => new PeriodOutput
@@ -156,7 +158,7 @@ namespace Demo
                                     }
                                 }
                             }).ToArray(),
-                            TakeActions = s.TakeActions.Select(ta => new TakeActionOutput
+                            TakeActions = s.TakeActions.Where(ta=> hg.Key.AssociatedWith.Any(a=> a.Comment == ta.VariableName)).Select(ta => new TakeActionOutput
                             {
                                 Param = ta.VariableName,
                                 Value = ta.Value

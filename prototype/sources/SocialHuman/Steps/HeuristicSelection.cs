@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace SocialHuman.Steps
 {
+    using Enums;
     using Models;
     using Randoms;
 
@@ -22,7 +23,7 @@ namespace SocialHuman.Steps
         #region Override methods
         protected override void AboveMin()
         {
-            if (criticalGoalState.DiffCurrentAndMin > 0 && aiForMatchedHeuristics.Any(ai=>ai.AssociatedHeuristic == priorPeriodActivatedHeuristic))
+            if (criticalGoalState.DiffCurrentAndMin > 0 && aiForMatchedHeuristics.Any(ai => ai.AssociatedHeuristic == priorPeriodActivatedHeuristic))
                 heuristicForActivating = priorPeriodActivatedHeuristic;
             else
             {
@@ -79,10 +80,19 @@ namespace SocialHuman.Steps
         #endregion
 
         #region Private methods
+        void ShareCollectiveAction(ICollection<Actor> sameTypeActors, Actor currentActor, Heuristic heuristic)
+        {
+            string socialNetwork = ((string[])currentActor[VariableNames.SocialNetworks])[0];
+
+            foreach (Actor actor in sameTypeActors.Where(a => ((string[])a[VariableNames.SocialNetworks]).Any(sn => sn == socialNetwork) && a != currentActor))
+            {
+                actor.AssignHeuristic(currentActor, heuristic);
+            }
+        }
         #endregion
 
         #region Public methods
-        public void ExecutePartI(Actor actor, LinkedListNode<Period> periodModel, GoalState goalState, IEnumerable<Heuristic> layer, Site site = null)
+        public void ExecutePartI(Actor actor, ICollection<Actor> sameTypeActors, LinkedListNode<Period> periodModel, GoalState goalState, IEnumerable<Heuristic> layer, Site site = null)
         {
             Period currentPeriod = periodModel.Value,
                 priorPeriod = periodModel.Previous.Value;
@@ -105,7 +115,15 @@ namespace SocialHuman.Steps
 
             //activatedHeuristic.FreshnessStatus = 0;
 
+
+
             heuristicForActivating.Apply(actor);
+
+            if (heuristicForActivating.IsCollectiveAction)
+            {
+                ShareCollectiveAction(sameTypeActors, actor, heuristicForActivating);
+            }
+
 
             SiteState siteState = currentPeriod.GetStateForSite(actor, site);
 
@@ -119,9 +137,9 @@ namespace SocialHuman.Steps
 
             HeuristicLayer heuristicLayer = layer.First().Layer;
 
-            Heuristic selectedHeuristic = currentPeriod.GetStateForSite(actor, site).Activated.Single(h=>h.Layer == heuristicLayer);
+            Heuristic selectedHeuristic = currentPeriod.GetStateForSite(actor, site).Activated.Single(h => h.Layer == heuristicLayer);
 
-            if(selectedHeuristic.IsCollectiveAction)
+            if (selectedHeuristic.IsCollectiveAction)
             {
                 int actorsCount = sameTypeActors.Count(a => currentPeriod.GetStateForSite(a, site).Activated.Single(h => h.Layer == heuristicLayer) == selectedHeuristic);
 
@@ -133,7 +151,7 @@ namespace SocialHuman.Steps
                     siteState.Activated.Clear();
                     siteState.Matched.Clear();
 
-                    ExecutePartI(actor, periodModel, goalState, layer, site);
+                    ExecutePartI(actor, sameTypeActors, periodModel, goalState, layer, site);
                 }
             }
         }

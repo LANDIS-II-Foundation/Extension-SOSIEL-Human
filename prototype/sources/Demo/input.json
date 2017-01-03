@@ -45,6 +45,7 @@
             "value": 0
           },
           "freshness_status": 5,
+          "required_participants": 1,
           "is_action": false
         },
         {
@@ -64,6 +65,7 @@
             "value": 100
           },
           "freshness_status": 1,
+          "required_participants": 1,
           "is_action": true
         },
         {
@@ -83,6 +85,7 @@
             "value": 0
           },
           "freshness_status": 5,
+          "required_participants": 1,
           "is_action": false
         },
         {
@@ -102,6 +105,7 @@
             "value": 10
           },
           "freshness_status": 1,
+          "required_participants": 1,
           "is_action": true
         }
       ],
@@ -152,7 +156,7 @@
         "required_savings_for_green_tourism": 200000,
 
         "price_of_timber": 600,
-        "price_of_electricity": 700,
+        "price_of_electricity": 700
       },
       "goals": [
         {
@@ -189,8 +193,8 @@
             "param": "income",
             "link_to_value": "income_from_chores_at_home"
           },
-          "is_collective_action": false,
           "freshness_status": 1,
+          "required_participants": 1,
           "is_action": false
         },
         {
@@ -229,8 +233,8 @@
             "param": "income",
             "link_to_value": "income_from_forestry"
           },
-          "is_collective_action": false,
           "freshness_status": 1,
+          "required_participants": 1,
           "is_action": true
         },
         {
@@ -269,8 +273,8 @@
             "param": "income",
             "link_to_value": "income_from_abroad"
           },
-          "is_collective_action": false,
           "freshness_status": 5,
+          "required_participants": 1,
           "is_action": true
         },
         {
@@ -289,8 +293,8 @@
             "param": "income",
             "link_to_value": "income_from_pension"
           },
-          "is_collective_action": false,
           "freshness_status": 1,
+          "required_participants": 1,
           "is_action": true
         },
         {
@@ -309,8 +313,8 @@
             "param": "income",
             "link_to_value": "income_from_disability"
           },
-          "is_collective_action": false,
           "freshness_status": 1,
+          "required_participants": 1,
           "is_action": true
         },
         {
@@ -344,9 +348,8 @@
             "param": "income",
             "link_to_value": "income_from_green_tourism"
           },
-          "is_collective_action": true,
-          "required_participants": 2,
           "freshness_status": 1,
+          "required_participants": 2,
           "is_action": true
         },
         {
@@ -375,8 +378,8 @@
             "param": "income",
             "link_to_value": "income_from_picking_mushrooms"
           },
-          "is_collective_action": false,
           "freshness_status": 1,
+          "required_participants": 1,
           "is_action": true
         },
         {
@@ -396,8 +399,8 @@
             "param": "expenses",
             "link_to_value": "price_of_timber"
           },
-          "is_collective_action": false,
           "freshness_status": 1,
+          "required_participants": 1,
           "is_action": true
         },
         {
@@ -417,8 +420,8 @@
             "param": "expenses",
             "link_to_value": "price_of_electricity"
           },
-          "is_collective_action": false,
           "freshness_status": 5,
+          "required_participants": 1,
           "is_action": true
         }
       ],
@@ -632,13 +635,13 @@
         "collective_action_members": 0,
         "household": "H2",
         "social_networks": [ "H2" ],
-        "income": 160000,
+        "income": 320000,
         "expenses": 600
       },
       "goals_state": [
         {
           "name": "PG",
-          "value": 160000
+          "value": 320000
         },
         {
           "name": "SG1",
@@ -656,7 +659,7 @@
       ],
       "anticipated_influence": {
         "HS1_L1_H6": {
-          "PG": 160000
+          "PG": 320000
         },
         "HS2_L1_H1": {
           "SG1": 600
@@ -683,12 +686,12 @@
         "disability": false,
         "household": "H2",
         "social_networks": [ "H2", "Church" ],
-        "income": 160000
+        "income": 320000
       },
       "goals_state": [
         {
           "name": "PG",
-          "value": 160000
+          "value": 320000
         }
       ],
       "assigned_heuristics": [
@@ -697,7 +700,7 @@
       ],
       "anticipated_influence": {
         "HS1_L1_H6": {
-          "PG": 160000
+          "PG": 320000
         }
       },
       "matched_conditions_in_prior_period": [

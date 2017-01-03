@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
@@ -78,11 +79,31 @@ namespace SocialHuman.Models
         }
         #endregion
 
+        #region Private methods
+        public void UnassignHeuristic(object sender, HeuristicEventArgs e)
+        {
+            if(AssignedHeuristics.Contains(e.TargetHeuristic))
+            {
+                AssignedHeuristics.Remove(e.TargetHeuristic);
+            }
+        }
+        #endregion
+
         #region Public methods
-        //public bool IsSiteAssigned(Site site)
-        //{
-        //    return AssignedSites.Any(s => s.Equals(site));
-        //}
+        internal void AssignHeuristic(Actor from, Heuristic heuristic)
+        {
+            if (AssignedHeuristics.Contains(heuristic) == false)
+            {
+                IEnumerable<AnticipatedInfluence> clonedAI = from.AnticipatedInfluences
+                    .Where(ai => ai.AssociatedHeuristic == heuristic && this.AssignedGoals.Any(gs => gs.Goal.Equals(ai.AssociatedGoal)))
+                    .Select(ai => (AnticipatedInfluence)ai.Clone());
+
+                this.AssignedHeuristics.Add(heuristic);
+                this.AnticipatedInfluences.AddRange(clonedAI);
+            }
+        }
+
+
 
         public bool ContainsVariable(string name)
         {
@@ -103,6 +124,11 @@ namespace SocialHuman.Models
                 .ToArray();
 
             actor.AssignedGoals.ForEach(ag => ag.Goal.LimitValue = ag.Value);
+
+            foreach(HeuristicSet set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).Select(kvp => kvp.Key).Distinct())
+            {
+                set.OnRemovingHeuristic += actor.UnassignHeuristic;
+            }
 
             actor.AnticipatedInfluences = actor.AssignedHeuristics
                 .SelectMany(h => h.Layer.Set.AssociatedWith.Select(g => 
@@ -140,6 +166,8 @@ namespace SocialHuman.Models
             
             return actor;
         }
+
+        
         #endregion
     }
 }

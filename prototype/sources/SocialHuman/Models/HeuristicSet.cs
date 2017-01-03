@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SocialHuman.Models
 {
+    public delegate void RemovingEventHandler(object sender, HeuristicEventArgs e);
+
     public class HeuristicSet
     {
         int layerIndexer = 0;
@@ -25,5 +28,12 @@ namespace SocialHuman.Models
 
             Layers.Add(layer);
         }
+
+        public void UnassignHeuristic(Heuristic heuristic)
+        {
+            OnRemovingHeuristic(this, new HeuristicEventArgs(heuristic));
+        }
+
+        public event RemovingEventHandler OnRemovingHeuristic;
     }
 }

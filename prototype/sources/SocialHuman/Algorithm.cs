@@ -46,6 +46,8 @@ namespace SocialHuman
 
             Dictionary<string, ActorPrototype> availablePrototypes = actorPrototypes.ToDictionary(kvp => kvp.Key, kvp => ActorPrototype.Create(kvp.Value));
 
+            UpdateDynamicHeuristics(availablePrototypes.Values);
+
             List<Actor> actors = initialStates.Select(kvp => Actor.Create(kvp.Key, availablePrototypes[kvp.Value.Class], kvp.Value)).ToList();
 
             Period zeroPeriodModel = new Period(0, sites);
@@ -114,8 +116,6 @@ namespace SocialHuman
 
             algorithm.periods.AddFirst(zeroPeriodModel);
 
-            algorithm.UpdateDynamicHeuristics();
-
             algorithm.UpdateHouseholdState();
 
             return algorithm;
@@ -177,7 +177,7 @@ namespace SocialHuman
 
             UpdateDynamicVariables();
 
-            UpdateDynamicHeuristics();
+            UpdateDynamicHeuristics(actors.Select(a => a.Prototype).Distinct());
         }
 
         void UpdateHouseholdState()
@@ -198,9 +198,9 @@ namespace SocialHuman
 
         }
 
-        void UpdateDynamicHeuristics()
+        static void UpdateDynamicHeuristics(IEnumerable<ActorPrototype> prototypes)
         {
-            foreach (ActorPrototype prototype in actors.Select(a => a.Prototype).Distinct())
+            foreach (ActorPrototype prototype in prototypes)
             {
                 foreach (Heuristic heuristic in prototype.HeuristicEnumerable)
                 {
@@ -346,7 +346,7 @@ namespace SocialHuman
 
                                 foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                                 {
-                                    heuristicSelection.ExecutePartI(actor, periods.Last, criticalGoalState, layer, site);
+                                    heuristicSelection.ExecutePartI(actor, actorGroup.ToArray(), periods.Last, criticalGoalState, layer, site);
                                 }
                             }
                         }

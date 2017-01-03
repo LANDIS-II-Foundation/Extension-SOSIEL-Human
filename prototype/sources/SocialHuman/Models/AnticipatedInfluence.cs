@@ -23,10 +23,10 @@ namespace SocialHuman.Models
 
             if (values != null)
             {
-                Value = values.ContainsKey(key) ? values[key] : 0;
+                Value = values.ContainsKey(key) ? values[key] : AssociatedHeuristic.GetConsequentValue();
             }
             else
-                Value = 0;
+                Value = AssociatedHeuristic.GetConsequentValue();
         }
         #endregion
 
