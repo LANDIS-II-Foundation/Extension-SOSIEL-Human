@@ -30,6 +30,22 @@ namespace SocialHuman.Models
 
         public List<AnticipatedInfluence> AnticipatedInfluences { get; private set; }
 
+        public bool IsHouseholdMember
+        {
+            get
+            {
+                return this[VariableNames.Household] != null;
+            }
+        }
+
+        public Household Household
+        {
+            get
+            {
+                return this[VariableNames.Household];
+            }
+        }
+
 
         /// <summary>
         /// 
@@ -59,7 +75,7 @@ namespace SocialHuman.Models
                     Variables[key] = value;
                 }
             }
-            
+
         }
 
         public bool IsSiteSpecific
@@ -82,7 +98,7 @@ namespace SocialHuman.Models
         #region Private methods
         public void UnassignHeuristic(object sender, HeuristicEventArgs e)
         {
-            if(AssignedHeuristics.Contains(e.TargetHeuristic))
+            if (AssignedHeuristics.Contains(e.TargetHeuristic))
             {
                 AssignedHeuristics.Remove(e.TargetHeuristic);
             }
@@ -125,16 +141,16 @@ namespace SocialHuman.Models
 
             actor.AssignedGoals.ForEach(ag => ag.Goal.LimitValue = ag.Value);
 
-            foreach(HeuristicSet set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).Select(kvp => kvp.Key).Distinct())
+            foreach (HeuristicSet set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).Select(kvp => kvp.Key).Distinct())
             {
                 set.OnRemovingHeuristic += actor.UnassignHeuristic;
             }
 
             actor.AnticipatedInfluences = actor.AssignedHeuristics
-                .SelectMany(h => h.Layer.Set.AssociatedWith.Select(g => 
+                .SelectMany(h => h.Layer.Set.AssociatedWith.Select(g =>
                     new AnticipatedInfluence(h, g, input.AnticipatedInfluences.ContainsKey(h.Id) ? input.AnticipatedInfluences[h.Id] : null))).ToList();
 
-            
+
             if (input.Variables.ContainsKey(VariableNames.AssignedSites))
             {
                 bool[] assignedSiteFlags = ((IEnumerable<JToken>)input.Variables[VariableNames.AssignedSites]).Select(v => v.ToObject<bool>()).ToArray();
@@ -148,7 +164,7 @@ namespace SocialHuman.Models
                 actor[VariableNames.IsSiteSpecific] = false;
             }
 
-            if(input.Variables.ContainsKey(VariableNames.SocialNetworks))
+            if (input.Variables.ContainsKey(VariableNames.SocialNetworks))
             {
                 string[] networks = ((IEnumerable<JToken>)input.Variables[VariableNames.SocialNetworks]).Select(v => v.ToObject<string>()).ToArray();
 
@@ -163,11 +179,11 @@ namespace SocialHuman.Models
 
             //    actor[VariablesName.Wealth] = harvested;
             //}
-            
+
             return actor;
         }
 
-        
+
         #endregion
     }
 }

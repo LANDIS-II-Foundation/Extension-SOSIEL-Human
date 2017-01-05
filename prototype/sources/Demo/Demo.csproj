@@ -79,6 +79,7 @@
     <Compile Include="Models\Output\ActorOutput.cs" />
     <Compile Include="Models\Output\AntecedentOutput.cs" />
     <Compile Include="Models\Output\HeuristicOutput.cs" />
+    <Compile Include="Models\Output\HouseholdOutput.cs" />
     <Compile Include="Models\Output\LayerOutput.cs" />
     <Compile Include="Models\Output\Output.cs" />
     <Compile Include="Models\Output\PeriodOutput.cs" />
@@ -198,7 +199,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_ConfigurationName="Release" BuildVersion_BuildAction="ReBuild" BuildVersion_StartDate="2016/11/14" BuildVersion_BuildVersioningStyle="None.None.Increment.None" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_DetectChanges="True" />
+      <UserProperties BuildVersion_DetectChanges="True" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_BuildVersioningStyle="None.None.Increment.None" BuildVersion_StartDate="2016/11/14" BuildVersion_BuildAction="ReBuild" BuildVersion_ConfigurationName="Release" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -85,6 +85,29 @@
         <table class="table">
             <colgroup>
                 <col class="col-md-2">
+                <col class="col-md-10">
+            </colgroup>
+            <thead>
+                <th>Household</th>
+                <th>State</th>
+            </thead>
+            <tbody *ngIf="data && data.households.length > 0">
+                <tr *ngFor="let household of data.households">
+                    <td>
+                        {{household.name}}
+                    </td>
+                    <td>
+                        <div>Income: {{household.income}}</div>
+                        <div>Expenses: {{household.expenses}}</div>
+                        <div>Savings: {{household.savings}}</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="table">
+            <colgroup>
+                <col class="col-md-2">
                 <col class="col-md-2">
                 <col class="col-md-8">
             </colgroup>
@@ -117,6 +140,7 @@
                 </template>
             </tbody>
         </table>
+        
     </div>
 </div>
 

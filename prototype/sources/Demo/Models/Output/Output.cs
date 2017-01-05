@@ -14,6 +14,9 @@ namespace Demo.Models.Output
 
         [JsonProperty("mental_models")]
         public dynamic[] MentalModels { get; set; }
+
+        [JsonProperty("households")]
+        public HouseholdOutput[] Households { get; set; }
         #endregion
     }
 }

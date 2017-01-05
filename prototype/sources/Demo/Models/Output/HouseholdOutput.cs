@@ -1,36 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
-
-namespace SocialHuman.Models
+namespace Demo.Models.Output
 {
-    public sealed class Household
+    class HouseholdOutput
     {
         #region Private fields
         #endregion
 
         #region Public fields
-        public string Name { get; private set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
+        [JsonProperty("income")]
         public double Income { get; set; }
 
+        [JsonProperty("expenses")]
         public double Expenses { get; set; }
 
-        public double Savings
-        {
-            get
-            {
-                return Income - Expenses;
-            }
-        }
+        [JsonProperty("savings")]
+        public double Savings { get; set; }
         #endregion
 
         #region Constructors
-        public Household(string name)
-        {
-            Name = name;
-        }
         #endregion
 
         #region Private methods

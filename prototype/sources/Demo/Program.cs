@@ -195,6 +195,16 @@ namespace Demo
                 }).ToArray()
             }).ToArray();
 
+            output.Households = algorithm.Actors.Where(a => a.IsHouseholdMember)
+                .Select(a => a.Household).Distinct()
+                .Select(h => new HouseholdOutput
+                {
+                    Name = h.Name,
+                    Income = h.Income,
+                    Expenses = h.Expenses,
+                    Savings = h.Savings
+                }).ToArray();
+
             string outputString = JsonConvert.SerializeObject(output);
 
             File.WriteAllText(outputFilePath, outputString);

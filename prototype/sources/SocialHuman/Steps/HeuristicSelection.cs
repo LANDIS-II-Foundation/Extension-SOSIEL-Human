@@ -23,59 +23,78 @@ namespace SocialHuman.Steps
         #region Override methods
         protected override void AboveMin()
         {
-            if (criticalGoalState.DiffCurrentAndMin > 0 && aiForMatchedHeuristics.Any(ai => ai.AssociatedHeuristic == priorPeriodActivatedHeuristic))
-                heuristicForActivating = priorPeriodActivatedHeuristic;
+            AnticipatedInfluence[] selectedAI = new AnticipatedInfluence[] { };
+
+            if (criticalGoalState.DiffCurrentAndMin > 0)
+            {
+                if (aiForMatchedHeuristics.Any(ai => ai.AssociatedHeuristic == priorPeriodActivatedHeuristic))
+                {
+                    heuristicForActivating = priorPeriodActivatedHeuristic;
+                    return;
+                }
+                else
+                {
+                    selectedAI = aiForMatchedHeuristics.Where(ai => ai.Value >= 0 &&
+                        ai.Value < criticalGoalState.DiffCurrentAndMin).ToArray();
+                }
+            }
             else
             {
                 Goal goal = criticalGoalState.Goal;
 
-                AnticipatedInfluence[] selectedAI = aiForMatchedHeuristics.Where(ai => ai.Value >= 0 &&
+                selectedAI = aiForMatchedHeuristics.Where(ai => ai.Value >= 0 &&
                     ai.Value > criticalGoalState.DiffCurrentAndMin).ToArray();
+            }
 
-                //if none are identified, then choose the do-nothing heuristic.
-                if (selectedAI.Length == 0)
-                    heuristicForActivating = aiForMatchedHeuristics.Select(ai => ai.AssociatedHeuristic).Single(h => h.IsAction == false);
+            if (selectedAI.Length > 0)
+            {
+                selectedAI = selectedAI.GroupBy(ai => ai.Value).OrderBy(hg => hg.Key).First().ToArray();
+
+                if (selectedAI.Length == 1)
+                    heuristicForActivating = selectedAI[0].AssociatedHeuristic;
                 else
                 {
-                    selectedAI = selectedAI.GroupBy(ai => ai.Value).OrderBy(hg => hg.Key).First().ToArray();
-
-                    if (selectedAI.Length == 1)
-                        heuristicForActivating = selectedAI[0].AssociatedHeuristic;
-                    else
-                    {
-                        heuristicForActivating = selectedAI[LinearUniformRandom.GetInstance.Next(selectedAI.Length)].AssociatedHeuristic;
-                    }
+                    heuristicForActivating = selectedAI[LinearUniformRandom.GetInstance.Next(selectedAI.Length)].AssociatedHeuristic;
                 }
             }
         }
 
         protected override void BelowMax()
         {
+            AnticipatedInfluence[] selectedAI = new AnticipatedInfluence[] { };
+
             if (criticalGoalState.DiffCurrentAndMin < 0)
-                heuristicForActivating = priorPeriodActivatedHeuristic;
+            {
+                if (aiForMatchedHeuristics.Any(ai => ai.AssociatedHeuristic == priorPeriodActivatedHeuristic))
+                {
+                    heuristicForActivating = priorPeriodActivatedHeuristic;
+                    return;
+                }
+                else
+                {
+                    selectedAI = aiForMatchedHeuristics.Where(ai => ai.Value <= 0 &&
+                        Math.Abs(ai.Value) < Math.Abs(criticalGoalState.DiffCurrentAndMin)).ToArray();
+                }
+            }
             else
             {
                 Goal goal = criticalGoalState.Goal;
 
-                AnticipatedInfluence[] selectedAI = aiForMatchedHeuristics.Where(ai => ai.Value < 0 &&
+                selectedAI = aiForMatchedHeuristics.Where(ai => ai.Value < 0 &&
                     Math.Abs(ai.Value) > Math.Abs(criticalGoalState.DiffCurrentAndMin)).ToArray();
-
-                //if none are identified, then choose the do-nothing heuristic.
-                if (selectedAI.Length == 0)
-                    heuristicForActivating = aiForMatchedHeuristics.Select(ai => ai.AssociatedHeuristic).Single(h => h.IsAction == false);
-                else
-                {
-                    selectedAI = selectedAI.GroupBy(ai => ai.Value).OrderBy(hg => hg.Key).First().ToArray();
-
-                    if (selectedAI.Length == 1)
-                        heuristicForActivating = selectedAI[0].AssociatedHeuristic;
-                    else
-                    {
-                        heuristicForActivating = selectedAI[LinearUniformRandom.GetInstance.Next(selectedAI.Length)].AssociatedHeuristic;
-                    }
-                }
             }
 
+            if (selectedAI.Length > 0)
+            {
+                selectedAI = selectedAI.GroupBy(ai => ai.Value).OrderBy(hg => hg.Key).First().ToArray();
+
+                if (selectedAI.Length == 1)
+                    heuristicForActivating = selectedAI[0].AssociatedHeuristic;
+                else
+                {
+                    heuristicForActivating = selectedAI[LinearUniformRandom.GetInstance.Next(selectedAI.Length)].AssociatedHeuristic;
+                }
+            }
         }
         #endregion
 
@@ -94,6 +113,8 @@ namespace SocialHuman.Steps
         #region Public methods
         public void ExecutePartI(Actor actor, ICollection<Actor> sameTypeActors, LinkedListNode<Period> periodModel, GoalState goalState, IEnumerable<Heuristic> layer, Site site = null)
         {
+            heuristicForActivating = null;
+
             Period currentPeriod = periodModel.Value,
                 priorPeriod = periodModel.Previous.Value;
 
@@ -109,6 +130,10 @@ namespace SocialHuman.Steps
                     .GetActivated(layer.First().Layer);
 
                 SpecificLogic(criticalGoalState.Goal.Tendency);
+
+                //if none are identified, then choose the do-nothing heuristic.
+                if (heuristicForActivating == null)
+                    heuristicForActivating = aiForMatchedHeuristics.Select(ai => ai.AssociatedHeuristic).Single(h => h.IsAction == false);
             }
             else
                 heuristicForActivating = aiForMatchedHeuristics[0].AssociatedHeuristic;

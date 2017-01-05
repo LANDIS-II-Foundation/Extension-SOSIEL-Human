@@ -53,9 +53,9 @@ namespace SocialHuman
             Period zeroPeriodModel = new Period(0, sites);
 
             //assign household object to actor
-            Dictionary<string, Household> households = actors.Where(a => a.Prototype.Type == 2)
-                .GroupBy(a => a[VariableNames.Household]).Where(g => g.Key != null)
-                .Select(g => new Household(g.Key)).ToDictionary(g => g.Name);
+            Dictionary<string, Household> households = actors.Where(a => a.IsHouseholdMember)
+                .GroupBy(a => a[VariableNames.Household]).Select(g => new Household(g.Key))
+                .ToDictionary(g => g.Name);
 
             foreach (Actor actor in actors.Where(a => a.Prototype.Type == 2))
             {
@@ -182,7 +182,7 @@ namespace SocialHuman
 
         void UpdateHouseholdState()
         {
-            foreach (var householdMembers in actors.Where(a => a.Prototype.Type == 2).GroupBy(a => a[VariableNames.Household]))
+            foreach (var householdMembers in actors.Where(a => a.IsHouseholdMember).GroupBy(a => a[VariableNames.Household]))
             {
                 Household household = householdMembers.Key;
 
