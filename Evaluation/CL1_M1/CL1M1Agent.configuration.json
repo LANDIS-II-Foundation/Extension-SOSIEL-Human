@@ -1,0 +1,31 @@
+﻿{
+  "AgentConfiguration": {
+    "Variables": {
+      "AgentPG": 1
+    },
+    "Rules": [
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "SubtypeProportion",
+            "Sign": "<",
+            "Value": 0,
+            "ReferenceVariable": "AgentPG"
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentSite",
+          "Value": 0,
+          "VariableValue": "AgentBetterSite"
+        },
+        "FreshnessStatus": 1,
+        "RequiredParticipants": 1,
+        "IsAction": true
+      }
+    ]
+  }
+}

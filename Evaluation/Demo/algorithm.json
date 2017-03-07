@@ -6,11 +6,5 @@
     "IterationCount": 1000,
     "AgentCount": 1000,
     "VacantProportion": 0.3
-  },
-  "AgentConfiguration": {
-    "Variables": {
-
-    },
-    "Rules": []
   }
 }

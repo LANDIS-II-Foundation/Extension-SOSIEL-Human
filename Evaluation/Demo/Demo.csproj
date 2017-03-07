@@ -45,11 +45,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="input.json">
+    <None Include="algorithm.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CL1_M1\CL1_M1.csproj">
+      <Project>{423b1ade-7ac2-4feb-8725-e700f149c197}</Project>
+      <Name>CL1_M1</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{50a0dc05-47bd-455a-b32e-ca2c9fc924fb}</Project>
       <Name>Common</Name>

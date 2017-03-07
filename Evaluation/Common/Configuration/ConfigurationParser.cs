@@ -10,25 +10,33 @@ namespace Common.Configuration
 {
     public static class ConfigurationParser
     {
-        static JsonSerializer serializer;
+        //static JsonSerializer serializer;
 
-        static ConfigurationParser()
-        {
-            var contractResolver = new DefaultContractResolver();
-            contractResolver.NamingStrategy = new DefaultNamingStrategy();
+        //static ConfigurationParser()
+        //{
+        //    var contractResolver = new DefaultContractResolver();
+        //    contractResolver.NamingStrategy = new DefaultNamingStrategy();
 
-            serializer = new JsonSerializer();
+        //    serializer = new JsonSerializer();
 
-            serializer.ContractResolver = contractResolver;
-            serializer.Formatting = Formatting.None;
-        }
+        //    serializer.ContractResolver = contractResolver;
+        //    serializer.Formatting = Formatting.None;
+        //}
 
         public static AlgorithmConfiguration ParseAlgorithmConfiguration(string jsonContent)
         {
             JToken json = JToken.Parse(jsonContent);
 
-            return json.SelectToken("AlgorithmConfiguration").ToObject<AlgorithmConfiguration>(serializer);
+            return json.SelectToken("AlgorithmConfiguration").ToObject<AlgorithmConfiguration>();
         }
+
+        public static T ParseAgentConfiguration<T>(string jsonContent) where T: class
+        {
+            JToken json = JToken.Parse(jsonContent);
+
+            return json.SelectToken("AgentConfiguration").ToObject<T>();
+        }
+
 
         public static Configuration<T> ParseConfiguration<T>(string jsonContent) where T : class
         {

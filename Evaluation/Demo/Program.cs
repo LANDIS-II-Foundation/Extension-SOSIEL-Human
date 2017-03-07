@@ -16,15 +16,15 @@ namespace Demo
 
             Console.WriteLine("Reading configuration");
 
-            string fileName = "input.json";
-            string configFilePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            string algorithmConfigurationFileName = "algorithm.json";
+            string algorithmConfigurationFilePath = Path.Combine(Directory.GetCurrentDirectory(), algorithmConfigurationFileName);
 
-            if(File.Exists(configFilePath) == false)
+            if(File.Exists(algorithmConfigurationFilePath) == false)
             {
-                throw new FileNotFoundException($"{fileName} not found at {Directory.GetCurrentDirectory()}");
+                throw new FileNotFoundException($"{algorithmConfigurationFileName} not found at {Directory.GetCurrentDirectory()}");
             }
 
-            string jsonContent = File.ReadAllText(configFilePath);
+            string jsonContent = File.ReadAllText(algorithmConfigurationFilePath);
 
             var algorithm = AlgorithmFactory.Create(jsonContent);
 
