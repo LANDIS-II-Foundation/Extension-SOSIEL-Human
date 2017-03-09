@@ -49,9 +49,9 @@ namespace Common.Entities
 
 
         #region Public methods
-        public bool IsMatch(Func<string, dynamic> func)
+        public bool IsMatch(IAgent agent)
         {
-            return Antecedent.All(a=>a.IsMatch(func(a.Param)));
+            return Antecedent.All(a=>a.IsMatch(agent));
         }
 
         //public int CountRightCondition(Func<string, dynamic> func)
@@ -59,7 +59,7 @@ namespace Common.Entities
         //    return Antecedent.Count(a => a.IsMatch(func(a.Param)));
         //}
 
-        public void Apply(Agent agent)
+        public void Apply(IAgent agent)
         {
             if(string.IsNullOrEmpty(Consequent.VariableValue) == false)
             {

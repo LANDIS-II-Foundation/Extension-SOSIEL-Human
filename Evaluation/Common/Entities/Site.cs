@@ -7,7 +7,7 @@ namespace Common.Entities
 {
     using Enums;
 
-    public class Site
+    public class Site: IEquatable<Site> 
     {
         public SiteType Type { get; set; }
 
@@ -18,14 +18,31 @@ namespace Common.Entities
         public int GroupSize { get; set; }
 
 
-        public Agent OccupiedBy { get; set; }
+        public IAgent OccupiedBy { get; set; }
 
         public bool IsOccupied
         {
             get
             {
-                return OccupiedBy == null ? true : false;
+                return OccupiedBy == null ? false : true;
             }
+        }
+
+        //public bool IsAdjacent(Site target)
+        //{
+
+        //    return (target.HorizontalPosition - 1 <= HorizontalPosition && HorizontalPosition <= target.HorizontalPosition + 1)
+        //        && (target.VerticalPosition - 1 <= VerticalPosition && VerticalPosition <= target.VerticalPosition + 1);
+        //}
+
+        public int DistanceToAnother(Site site)
+        {
+            return Math.Max(Math.Abs(HorizontalPosition - site.HorizontalPosition), Math.Abs(VerticalPosition - site.VerticalPosition));
+        }
+
+        public bool Equals(Site other)
+        {
+            return HorizontalPosition == other.HorizontalPosition && VerticalPosition == other.VerticalPosition;
         }
     }
 }

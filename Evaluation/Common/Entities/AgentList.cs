@@ -10,33 +10,34 @@ namespace Common.Entities
 
     public class AgentList
     {
-        public List<Agent> Agents { get; set; }
+        public List<IAgent> Agents { get; set; }
 
 
         private AgentList() { }
 
-        public static AgentList Generate(int agentCount, Agent prototype, SiteList siteList)
+        public static AgentList Generate<T>(int agentCount, T prototype, SiteList siteList) where T : class, ICloneableAgent<T>
         {
-            List<Site> availableSites = new List<Site>(siteList.Sites);
+            List<Site> availableSites = siteList.AsSiteEnumerable().ToList();
 
             AgentList agentList = new AgentList();
 
-            agentList.Agents = new List<Agent>(agentCount);
+            agentList.Agents = new List<IAgent>(agentCount);
 
             for (int i = 1; i <= agentCount; i++)
             {
-                Agent agent = prototype.Clone();
+                T agent = prototype.Clone();
+
+                agent.GenerateCustomParams();
 
                 agent.Id = i;
 
-                agentList.Agents.Add(agent);
-
                 Site selectedSite = availableSites[LinearUniformRandom.GetInstance.Next(availableSites.Count)];
 
-                selectedSite.OccupiedBy = agent;
+                //selectedSite.OccupiedBy = agent;
 
-                agent[Agent.UsingInCodeVariables.AgentSite] = selectedSite;
+                agent[Agent.VariablesUsedInCode.AgentSite] = selectedSite;
 
+                agentList.Agents.Add(agent);
                 availableSites.Remove(selectedSite);
             }
 

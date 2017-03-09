@@ -7,13 +7,24 @@ namespace Common.Entities
 {
     using Environment;
 
-    public class Agent : ICloneable<Agent>
+    public class Agent : ICloneableAgent<Agent>
     {
-        public static class UsingInCodeVariables
+        public static class VariablesUsedInCode
         {
-            public const string AgentSubtype = "AgentSubtype";
+            //Common
+            public const string AgentType = "AgentType";
             public const string AgentStatus = "AgentStatus";
             public const string AgentSite = "AgentSite";
+            //public const string NeighborhoodSize = "NeighborhoodSize";
+            public const string NeighborhoodVacantSites = "NeighborhoodVacantSites";
+            public const string AgentBetterSite = "AgentBetterSite";
+            public const string AgentBetterSiteAvailable = "AgentBetterSiteAvailable";
+
+
+            //M1
+            public const string AgentSubtype = "AgentSubtype";
+            public const string NeighborhoodUnalike = "NeighborhoodUnalike";
+            public const string NeighborhoodSubtypeProportion = "NeighborhoodSubtypeProportion";
         }
 
 
@@ -34,20 +45,31 @@ namespace Common.Entities
             }
             set
             {
-
                 Variables[key] = value;
             }
 
         }
 
+
+
         public virtual Agent Clone()
         {
-            Agent agent = new Agent();
+            Agent agent = CreateInstance();
 
             agent.Variables = new Dictionary<string, dynamic>(Variables);
             agent.Rules = Rules;
 
             return agent;
+        }
+
+        protected virtual Agent CreateInstance()
+        {
+            return new Agent();
+        }
+
+        public void GenerateCustomParams()
+        {
+            
         }
     }
 }

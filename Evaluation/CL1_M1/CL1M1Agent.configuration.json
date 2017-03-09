@@ -1,7 +1,8 @@
 ﻿{
   "AgentConfiguration": {
     "Variables": {
-      "AgentPG": 1
+      "AgentPG": 1,
+      "AgentBetterSiteAvailable": false
     },
     "Rules": [
       {

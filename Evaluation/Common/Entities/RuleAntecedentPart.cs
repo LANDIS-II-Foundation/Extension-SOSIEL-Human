@@ -37,12 +37,13 @@ namespace Common.Entities
             antecedent = AntecedentBuilder.Build(Sign);
         }
 
-        public bool IsMatch(Agent agent)
+        public bool IsMatch(IAgent agent)
         {
             if (antecedent == null)
             {
                 BuildAntecedent();
             }
+
             dynamic value = Value;
 
             if (string.IsNullOrEmpty(ReferenceVariable) == false)

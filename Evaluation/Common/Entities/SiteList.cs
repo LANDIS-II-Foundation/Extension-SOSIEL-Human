@@ -9,7 +9,7 @@ namespace Common.Entities
 
     public class SiteList
     {
-        public List<Site> Sites { get; private set; }
+        public Site[][] Sites { get; private set; }
 
         private SiteList() { }
 
@@ -20,7 +20,7 @@ namespace Common.Entities
 
         private static Site CreateSite(int horizontalPosition, int verticalPosition, int startIndex, int size)
         {
-            Site cell = new Site
+            Site site = new Site
             {
                 HorizontalPosition = horizontalPosition,
                 VerticalPosition = verticalPosition
@@ -28,25 +28,46 @@ namespace Common.Entities
 
             if (horizontalPosition == verticalPosition && (horizontalPosition == startIndex || horizontalPosition == size))
             {
-                cell.Type = SiteType.Corner;
-                cell.GroupSize = 3;
+                site.Type = SiteType.Corner;
+                site.GroupSize = 3;
 
-                return cell;
+                return site;
             }
 
             if (horizontalPosition == startIndex || horizontalPosition == size
                 || verticalPosition == startIndex || verticalPosition == size)
             {
-                cell.Type = SiteType.Edge;
-                cell.GroupSize = 5;
+                site.Type = SiteType.Edge;
+                site.GroupSize = 5;
 
-                return cell;
+                return site;
             }
 
-            cell.Type = SiteType.Center;
-            cell.GroupSize = 8;
+            site.Type = SiteType.Center;
+            site.GroupSize = 8;
 
-            return cell;
+            return site;
+        }
+
+        public IEnumerable<Site> AsSiteEnumerable()
+        {
+            return Sites.SelectMany(s => s);
+        }
+
+        public IEnumerable<Site> AdjacentSites(Site centerSite)
+        {
+            List<Site> temp = new List<Site>(centerSite.GroupSize);
+
+            for (int i = centerSite.VerticalPosition - 1; i <= centerSite.VerticalPosition + 1 && 0 <= i && i < Sites.Length; i++)
+                for (int j = centerSite.HorizontalPosition - 1; j <= centerSite.HorizontalPosition + 1 && 0 <= j && j < Sites.Length; j++)
+                {
+                    Site site = Sites[i][j];
+
+                    if (site.Equals(centerSite) == false)
+                        temp.Add(site);
+                }
+
+            return temp;
         }
 
         public static SiteList Generate(int agentCount, double vacantProportion)
@@ -54,17 +75,22 @@ namespace Common.Entities
             SiteList siteList = new SiteList();
 
             int size = CalculateMatrixSize(agentCount, vacantProportion);
-            int startIndex = 1;
+            int startIndex = 0;
 
-            siteList.Sites = new List<Site>(size ^ 2);
+            siteList.Sites = new Site[size][];
 
-            for (int i = 1; i <= size; i++)
-                for (int j = 1; j <= size; j++)
+            for (int i = startIndex; i < size; i++)
+            {
+                siteList.Sites[i] = new Site[size];
+
+                for (int j = startIndex; j < size; j++)
                 {
-                    siteList.Sites.Add(CreateSite(i, j, startIndex, size));
+                    siteList.Sites[i][j] = CreateSite(j, i, startIndex, size - 1);
                 }
-
+            }
             return siteList;
         }
+
+
     }
 }
