@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 
 using Factory;
+using System.Threading.Tasks;
 
 namespace Demo
 {
@@ -30,7 +31,7 @@ namespace Demo
 
             Console.WriteLine($"{algorithm.Name} algorithm is running....");
             
-            algorithm.Run();
+            Task.WaitAll(algorithm.Run());
 
             Console.WriteLine("Algorithm has completed");
 

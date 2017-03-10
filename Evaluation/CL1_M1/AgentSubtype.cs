@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace CL1_M1
 {
-    public enum AgentType
+    public enum AgentSubtype
     {
         TypeA = 1,
         TypeB

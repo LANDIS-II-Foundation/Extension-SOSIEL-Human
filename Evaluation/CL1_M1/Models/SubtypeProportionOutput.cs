@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Threading.Tasks;
+
 using FileHelpers;
 
 namespace CL1_M1.Models
 {
     [DelimitedRecord(";")]
-    public class NodeOutput
+    class SubtypeProportionOutput
     {
-        public int AgentId { get; set; }
+        public int Iteration { get; set; }
 
-        public AgentSubtype Type { get; set; }
+        public double Proportion { get; set; }
     }
 }

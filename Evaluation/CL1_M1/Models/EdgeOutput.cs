@@ -7,10 +7,12 @@ using FileHelpers;
 namespace CL1_M1.Models
 {
     [DelimitedRecord(";")]
-    class EdgeOutput
+    class EdgeOutput 
     {
         public int AgentId { get; set; }
 
         public int AdjacentAgentId { get; set; }
+
+      
     }
 }

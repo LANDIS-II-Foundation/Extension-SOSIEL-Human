@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+
 
 using Common.Configuration;
 using Common.Algorithm;
@@ -14,57 +16,77 @@ namespace CL1_M1
     using Models;
 
 
-
     public class CL1M1Algorithm : IAlgorithm
     {
+        const string OutputFolder = @"Output\CL1_M1";
+
         readonly Configuration<CL1M1Agent> _configuration;
 
         SiteList _siteList;
         AgentList _agentList;
+
+        List<SubtypeProportionOutput> _subtypeProportionStatistic;
 
         public string Name { get { return "Cognitive level 1 Model 1"; } }
 
         public CL1M1Algorithm(Configuration<CL1M1Agent> configuration)
         {
             _configuration = configuration;
+
+            _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+
+            if (Directory.Exists(OutputFolder) == false)
+                Directory.CreateDirectory(OutputFolder);
         }
 
-        public async void Run()
+        public async Task Run()
         {
-            await Initialize();
+            Initialize();
+
+            await SaveState("initial");
 
             ExecuteAlgorithm();
 
+            await SaveState("final");
+
+            SaveProportionStatistic();
         }
 
         private void ExecuteAlgorithm()
         {
+            _subtypeProportionStatistic.Add(CalculateSubtypeProportion(0));
+
             for (int i = 1; i <= _configuration.AlgorithmConfiguration.IterationCount; i++)
             {
+                Console.WriteLine($"Starting {i} iteration");
+
                 List<IAgent> orderingAgents = RandomizeHelper.Randomize(_agentList.Agents);
 
                 List<Site> vacantSites = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied == false).ToList();
 
                 foreach (var agent in orderingAgents)
                 {
-                    Site currentSite = agent[Agent.VariablesUsedInCode.AgentSite];
-
                     CalculateParamsDependentOnSite(agent);
 
-                    Site[] betterSites = vacantSites.Where(
-                        s => (_siteList.AdjacentSites(s)
-                                .Where(adjs => adjs.IsOccupied)
-                                .Count(adjs => adjs.OccupiedBy.Variables[Agent.VariablesUsedInCode.AgentSubtype] == agent[Agent.VariablesUsedInCode.AgentSubtype]))
-                            > agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion]).ToArray();
+                    Site[] betterSites = vacantSites
+                        .Select(site => new {
+                            Proportion = _siteList.AdjacentSites(site).Where(s => s.IsOccupied)
+                                    .Count(s => s.OccupiedBy.Variables[Agent.VariablesUsedInCode.AgentSubtype] == agent[Agent.VariablesUsedInCode.AgentSubtype])
+                                    / (double)site.GroupSize,
+                            site
+                        })
+                        .Where(obj => obj.Proportion > agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion])
+                        .GroupBy(obj => obj.Proportion).OrderByDescending(obj => obj.Key)
+                        .Take(1).SelectMany(g => g.Select(o=>o.site)).ToArray();
 
                     agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = betterSites.Length > 0;
 
-                    //DistanceComparer distComparer = new DistanceComparer(agent[Agent.VariablesUsedInCode.AgentSite]);
-
                     if (agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable])
                     {
+                        Site currentSite = agent[Agent.VariablesUsedInCode.AgentSite];
+
                         Site bestSite = betterSites.Select(site => new { Distance = site.DistanceToAnother(currentSite), site }).GroupBy(o => o.Distance)
-                            .OrderBy(g => g.Key).First().Select(g => g.site).RandomizeOne();
+                            .OrderBy(g => g.Key).Take(1).SelectMany(g => g.Select(o=>o.site)).RandomizeOne();
 
                         Rule rule = agent.Rules.First();
 
@@ -72,11 +94,7 @@ namespace CL1_M1
                         {
                             Site oldSite = agent[Agent.VariablesUsedInCode.AgentSite];
 
-                            oldSite.OccupiedBy = null;
-
                             agent[Agent.VariablesUsedInCode.AgentBetterSite] = bestSite;
-
-                            bestSite.OccupiedBy = agent;
 
                             rule.Apply(agent);
 
@@ -85,6 +103,8 @@ namespace CL1_M1
                         }
                     }
                 }
+
+                _subtypeProportionStatistic.Add(CalculateSubtypeProportion(i));
             }
         }
 
@@ -94,17 +114,33 @@ namespace CL1_M1
 
             Site[] adjacentSites = _siteList.AdjacentSites(currentSite).ToArray();
 
+            agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion] = (adjacentSites.Where(s => s.IsOccupied)
+                .Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] != agent[Agent.VariablesUsedInCode.AgentSubtype])) / (double)currentSite.GroupSize;
+
+            //optional calculations
+
             agent[Agent.VariablesUsedInCode.NeighborhoodVacantSites] = adjacentSites.Count(s => s.IsOccupied == false);
 
             agent[Agent.VariablesUsedInCode.NeighborhoodUnalike] = adjacentSites.Where(s => s.IsOccupied)
                 .Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] != agent[Agent.VariablesUsedInCode.AgentSubtype]);
 
-            agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion] = currentSite.GroupSize -
-                (agent[Agent.VariablesUsedInCode.NeighborhoodVacantSites] + agent[Agent.VariablesUsedInCode.NeighborhoodUnalike]);
+            //agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion] = currentSite.GroupSize -
+            //    (agent[Agent.VariablesUsedInCode.NeighborhoodVacantSites] + agent[Agent.VariablesUsedInCode.NeighborhoodUnalike]);
+
+
         }
 
+        private SubtypeProportionOutput CalculateSubtypeProportion(int iteration)
+        {
+            SubtypeProportionOutput sp = new SubtypeProportionOutput { Iteration = iteration };
 
-        private async Task Initialize()
+            sp.Proportion = _siteList.AsSiteEnumerable().Average(site => _siteList.AdjacentSites(site).Where(s => s.IsOccupied)
+                .Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.TypeA) / (double)site.GroupSize);
+
+            return sp;
+        }
+
+        private void Initialize()
         {
             _siteList = SiteList.Generate(_configuration.AlgorithmConfiguration.AgentCount,
                 _configuration.AlgorithmConfiguration.VacantProportion);
@@ -112,7 +148,7 @@ namespace CL1_M1
             _agentList = AgentList.Generate(_configuration.AlgorithmConfiguration.AgentCount,
                 _configuration.AgentConfiguration, _siteList);
 
-            await SaveState("initial");
+            
         }
 
         private async Task SaveState(string state)
@@ -129,7 +165,7 @@ namespace CL1_M1
             {
                 FileHelpers.DelimitedFileEngine<NodeOutput> engine = new FileHelpers.DelimitedFileEngine<NodeOutput>();
 
-                engine.WriteFile($"nodes_{state}.csv", data.Result);
+                engine.WriteFile($@"{OutputFolder}\nodes_{state}.csv", data.Result);
             });
 
             Task edgeTask = Task.Factory.StartNew(
@@ -142,16 +178,24 @@ namespace CL1_M1
                     AdjacentAgentId = s.OccupiedBy.Id
                 }
                 ))
+                .Distinct(new EdgeOutputComparer())
                 .ToArray())
             .ContinueWith(data =>
             {
                 FileHelpers.DelimitedFileEngine<EdgeOutput> engine = new FileHelpers.DelimitedFileEngine<EdgeOutput>();
 
-                engine.WriteFile($"edges_{state}.csv", data.Result);
+                engine.WriteFile($@"{OutputFolder}\edges_{state}.csv", data.Result);
             });
 
             await nodeTask;
             await edgeTask;
+        }
+
+        private void SaveProportionStatistic()
+        {
+            FileHelpers.DelimitedFileEngine<SubtypeProportionOutput> engine = new FileHelpers.DelimitedFileEngine<SubtypeProportionOutput>();
+
+            engine.WriteFile($@"{OutputFolder}\subtype_A_proportion.csv", _subtypeProportionStatistic);
         }
     }
 }

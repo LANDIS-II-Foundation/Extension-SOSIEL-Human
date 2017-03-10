@@ -45,12 +45,33 @@ namespace Common.Entities
             }
             set
             {
+                if (Variables.ContainsKey(key))
+                    PreSetValue(key, Variables[key]);
+
                 Variables[key] = value;
+
+                PostSetValue(key, value);
             }
 
         }
 
+        protected virtual void PostSetValue(string variable, dynamic newValue)
+        {
+            if (variable == VariablesUsedInCode.AgentSite)
+            {
+                Site newSite = (Site)newValue;
+                newSite.OccupiedBy = this;
+            }
+        }
 
+        protected virtual void PreSetValue(string variable, dynamic oldValue)
+        {
+            if (variable == VariablesUsedInCode.AgentSite)
+            {
+                Site oldSite = (Site)oldValue;
+                oldSite.OccupiedBy = null;
+            }
+        }
 
         public virtual Agent Clone()
         {
@@ -69,7 +90,7 @@ namespace Common.Entities
 
         public void GenerateCustomParams()
         {
-            
+
         }
     }
 }

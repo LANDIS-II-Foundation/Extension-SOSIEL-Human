@@ -33,7 +33,7 @@ namespace Common.Entities
 
                 Site selectedSite = availableSites[LinearUniformRandom.GetInstance.Next(availableSites.Count)];
 
-                //selectedSite.OccupiedBy = agent;
+                selectedSite.OccupiedBy = agent;
 
                 agent[Agent.VariablesUsedInCode.AgentSite] = selectedSite;
 

@@ -1,7 +1,9 @@
 ﻿{
   "AgentConfiguration": {
     "Variables": {
-      "AgentPG": 1,
+      "AgentType": 1,
+      "AgentStatus": "active",
+      "AgentPG": 0.25,
       "AgentBetterSiteAvailable": false
     },
     "Rules": [
@@ -12,7 +14,7 @@
         "Id": "RS1_L1_R1",
         "Antecedent": [
           {
-            "Param": "SubtypeProportion",
+            "Param": "NeighborhoodSubtypeProportion",
             "Sign": "<",
             "Value": 0,
             "ReferenceVariable": "AgentPG"

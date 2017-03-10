@@ -46,12 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AgentType.cs" />
+    <Compile Include="AgentSubtype.cs" />
     <Compile Include="CL1M1Algorithm.cs" />
     <Compile Include="CL1M1Agent.cs" />
     <Compile Include="DistanceComparer.cs" />
     <Compile Include="Models\EdgeOutput.cs" />
+    <Compile Include="Models\EdgeOutputComparer.cs" />
     <Compile Include="Models\NodeOutput.cs" />
+    <Compile Include="Models\SubtypeProportionOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -61,12 +63,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="CL1M1Agent.configuration.json">
+    <Content Include="CL1M1Agent.configuration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.None" BuildVersion_ConfigurationName="Release" BuildVersion_BuildAction="ReBuild" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_StartDate="2000/1/1" />
+    </VisualStudio>
+  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

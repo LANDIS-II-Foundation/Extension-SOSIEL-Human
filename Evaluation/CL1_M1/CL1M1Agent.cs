@@ -23,7 +23,7 @@ namespace CL1_M1
 
         public new void GenerateCustomParams()
         {
-            this[VariablesUsedInCode.AgentSubtype] = (AgentType)LinearUniformRandom.GetInstance.Next(1, 3);
+            this[VariablesUsedInCode.AgentSubtype] = (AgentSubtype)LinearUniformRandom.GetInstance.Next(1, 3);
         }
     }
 }
