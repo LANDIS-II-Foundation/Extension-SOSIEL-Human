@@ -18,6 +18,12 @@
             "Sign": "<",
             "Value": 0,
             "ReferenceVariable": "AgentPG"
+          },
+          {
+            "Param": "AgentBetterSiteAvailable",
+            "Sign": "==",
+            "Value": true,
+            "ReferenceVariable": ""
           }
         ],
         "Consequent": {
