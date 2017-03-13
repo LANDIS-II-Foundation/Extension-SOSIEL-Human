@@ -27,6 +27,8 @@ namespace CL1_M1
 
         List<SubtypeProportionOutput> _subtypeProportionStatistic;
 
+        bool isAgentMovement;
+
         public string Name { get { return "Cognitive level 1 Model 1"; } }
 
         public CL1M1Algorithm(Configuration<CL1M1Agent> configuration)
@@ -60,7 +62,9 @@ namespace CL1_M1
             {
                 Console.WriteLine($"Starting {i} iteration");
 
-                List<IAgent> orderingAgents = RandomizeHelper.Randomize(_agentList.Agents);
+                isAgentMovement = false;
+
+                List<IAgent> orderingAgents = RandomizeHelper.Randomize(_agentList.Agents.Where(a=> a[Agent.VariablesUsedInCode.AgentStatus] == "active"));
 
                 List<Site> vacantSites = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied == false).ToList();
 
@@ -92,6 +96,8 @@ namespace CL1_M1
 
                         if (rule.IsMatch(agent))
                         {
+                            isAgentMovement = true;
+
                             Site oldSite = agent[Agent.VariablesUsedInCode.AgentSite];
 
                             agent[Agent.VariablesUsedInCode.AgentBetterSite] = bestSite;
@@ -105,6 +111,11 @@ namespace CL1_M1
                 }
 
                 _subtypeProportionStatistic.Add(CalculateSubtypeProportion(i));
+
+                if(isAgentMovement == false)
+                {
+                    break;
+                }
             }
         }
 
