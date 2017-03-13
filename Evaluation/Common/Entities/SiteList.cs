@@ -54,16 +54,16 @@ namespace Common.Entities
             return Sites.SelectMany(s => s);
         }
 
-        public IEnumerable<Site> AdjacentSites(Site centerSite)
+        public IEnumerable<Site> AdjacentSites(Site centerSite, bool includeCenter = false)
         {
             List<Site> temp = new List<Site>(centerSite.GroupSize);
 
-            for (int i = centerSite.VerticalPosition - 1; i <= centerSite.VerticalPosition + 1 && 0 <= i && i < Sites.Length; i++)
-                for (int j = centerSite.HorizontalPosition - 1; j <= centerSite.HorizontalPosition + 1 && 0 <= j && j < Sites.Length; j++)
+            for (int i = centerSite.VerticalPosition > 0 ? centerSite.VerticalPosition - 1 : 0; i <= centerSite.VerticalPosition + 1 && i < Sites.Length; i++)
+                for (int j = centerSite.HorizontalPosition > 0 ? centerSite.HorizontalPosition - 1 : 0; j <= centerSite.HorizontalPosition + 1 && j < Sites.Length; j++)
                 {
                     Site site = Sites[i][j];
 
-                    if (site.Equals(centerSite) == false)
+                    if (site.Equals(centerSite) == false || includeCenter)
                         temp.Add(site);
                 }
 

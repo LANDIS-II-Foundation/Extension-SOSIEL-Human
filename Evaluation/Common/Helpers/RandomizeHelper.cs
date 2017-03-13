@@ -20,10 +20,10 @@ namespace Common.Helpers
         }
 
 
-        public static List<T> Randomize<T>(List<T> original)
+        public static List<T> Randomize<T>(IEnumerable<T> original)
         {
-            List<T> temp = new List<T>(original.Count);
-            List<T> result = new List<T>(original.Count);
+            List<T> temp = new List<T>();
+            List<T> result = new List<T>();
 
 
             temp.AddRange(original);

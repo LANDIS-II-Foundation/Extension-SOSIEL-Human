@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Newtonsoft.Json;
 
 namespace Common.Entities
 {
-    using Environment;
+    using Exceptions;
 
     public class Agent : ICloneableAgent<Agent>
     {
@@ -15,22 +16,33 @@ namespace Common.Entities
             public const string AgentType = "AgentType";
             public const string AgentStatus = "AgentStatus";
             public const string AgentSite = "AgentSite";
-            //public const string NeighborhoodSize = "NeighborhoodSize";
+            public const string NeighborhoodSize = "NeighborhoodSize";
             public const string NeighborhoodVacantSites = "NeighborhoodVacantSites";
             public const string AgentBetterSite = "AgentBetterSite";
             public const string AgentBetterSiteAvailable = "AgentBetterSiteAvailable";
-
-
-            //M1
             public const string AgentSubtype = "AgentSubtype";
             public const string NeighborhoodUnalike = "NeighborhoodUnalike";
+            
+            //M1
+            
             public const string NeighborhoodSubtypeProportion = "NeighborhoodSubtypeProportion";
+
+            //M2
+            public const string AgentC = "AgentC";
+            public const string MaxE = "MaxE";
+            public const string E = "E";
+            public const string M = "M";
+            public const string CommonPoolSize = "CommonPoolSize";
+            public const string CommonPoolSubtupeProportion = "CommonPoolSubtupeProportion";
+            public const string CommonPoolC = "CommonPoolC";
+            public const string AgentSiteWellbeing = "AgentSiteWellbeing";
         }
 
 
         public int Id { get; set; }
 
-        public Dictionary<string, dynamic> Variables { get; set; }
+        [JsonProperty("Variables")]
+        protected Dictionary<string, dynamic> Variables { get; set; }
 
         public List<Rule> Rules { get; set; }
 
@@ -41,7 +53,7 @@ namespace Common.Entities
                 if (Variables.ContainsKey(key))
                     return Variables[key];
 
-                throw new ArgumentException($"Unknown agent variable: {key}");
+                throw new ConfigVariableException(key, GetType().Name);
             }
             set
             {

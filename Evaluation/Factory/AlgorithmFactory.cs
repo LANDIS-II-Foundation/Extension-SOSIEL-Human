@@ -5,6 +5,7 @@ using System.IO;
 
 
 using CL1_M1;
+//using CL1_M2;
 
 
 using Common.Algorithm;
@@ -59,9 +60,23 @@ namespace Factory
                                     return new CL1M1Algorithm(config);
                                 }
                             default:
-                                throw new NotImplementedException($"Model M{algorithmConfig.Model} has unsupported cognitive level {algorithmConfig.CognitiveLevel} or it has not implemented  yet");
+                                throw new NotImplementedException($"Model M{algorithmConfig.Model} has unsupported cognitive level {algorithmConfig.CognitiveLevel} or it hasn't implemented  yet");
                         }
                     }
+                //case Common.Enums.Model.M2:
+                //    {
+                //        switch(algorithmConfig.CognitiveLevel)
+                //        {
+                //            case Common.Enums.CognitiveLevel.CL1:
+                //                {
+                //                    Configuration<CL1M2Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL1M2Agent>());
+
+                //                    return new CL1M2Algorithm(config);
+                //                }
+                //            default:
+                //                throw new NotImplementedException($"Model M{algorithmConfig.Model} has unsupported cognitive level {algorithmConfig.CognitiveLevel} or it hasn't implemented  yet");
+                //        }
+                //    }
 
                 default:
                     throw new NotImplementedException($"Model M{algorithmConfig.Model} has not implemented yet");

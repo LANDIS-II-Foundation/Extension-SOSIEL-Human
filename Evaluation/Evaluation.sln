@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CL1_M1", "CL1_M1\CL1_M1.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Factory", "Factory\Factory.csproj", "{63AF9FF4-E7F0-4137-BD01-AE5792ACF2BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CL1_M2", "CL1_M2\CL1_M2.csproj", "{C9891968-5BF0-4BEA-9289-234E0131BAD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,16 +35,27 @@ Global
 		{63AF9FF4-E7F0-4137-BD01-AE5792ACF2BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63AF9FF4-E7F0-4137-BD01-AE5792ACF2BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63AF9FF4-E7F0-4137-BD01-AE5792ACF2BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9891968-5BF0-4BEA-9289-234E0131BAD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9891968-5BF0-4BEA-9289-234E0131BAD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9891968-5BF0-4BEA-9289-234E0131BAD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9891968-5BF0-4BEA-9289-234E0131BAD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_BuildVersioningStyle = None.None.None.None
-		BuildVersion_ConfigurationName = Release
-		BuildVersion_BuildAction = ReBuild
+		BuildVersion_ConfigurationName = 
+		BuildVersion_BuildAction = Both
 		BuildVersion_UpdateFileVersion = True
 		BuildVersion_UpdateAssemblyVersion = True
-		BuildVersion_StartDate = 2000/1/1
+		BuildVersion_StartDate = 2017/3/6
+		BuildVersion_UseGlobalSettings = False
+	EndGlobalSection
+	GlobalSection(AutomaticVersions) = postSolution
+		UpdateAssemblyVersion.Debug|Any CPU = True
+		UpdateAssemblyFileVersion.Debug|Any CPU = False
+		UpdateAssemblyInfoVersion.Debug|Any CPU = False
+		AssemblyVersionSettings.Debug|Any CPU = None.None.None.Increment
 	EndGlobalSection
 EndGlobal
