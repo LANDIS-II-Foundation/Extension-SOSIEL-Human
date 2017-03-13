@@ -89,18 +89,22 @@ namespace CL1_M1
                     {
                         Site currentSite = agent[Agent.VariablesUsedInCode.AgentSite];
 
+                        
+
                         Site bestSite = betterSites.Select(site => new { Distance = site.DistanceToAnother(currentSite), site }).GroupBy(o => o.Distance)
                             .OrderBy(g => g.Key).Take(1).SelectMany(g => g.Select(o=>o.site)).RandomizeOne();
+
+                        agent[Agent.VariablesUsedInCode.AgentBetterSite] = bestSite;
 
                         Rule rule = agent.Rules.First();
 
                         if (rule.IsMatch(agent))
                         {
+                            var temp = _siteList.AdjacentSites(currentSite);
+
                             isAgentMovement = true;
 
                             Site oldSite = agent[Agent.VariablesUsedInCode.AgentSite];
-
-                            agent[Agent.VariablesUsedInCode.AgentBetterSite] = bestSite;
 
                             rule.Apply(agent);
 
@@ -125,8 +129,10 @@ namespace CL1_M1
 
             Site[] adjacentSites = _siteList.AdjacentSites(currentSite).ToArray();
 
+            agent[Agent.VariablesUsedInCode.NeighborhoodSize] = (double)currentSite.GroupSize;
+
             agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion] = (adjacentSites.Where(s => s.IsOccupied)
-                .Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] != agent[Agent.VariablesUsedInCode.AgentSubtype])) / (double)currentSite.GroupSize;
+                .Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == agent[Agent.VariablesUsedInCode.AgentSubtype])) / agent[Agent.VariablesUsedInCode.NeighborhoodSize];
 
             //optional calculations
 
@@ -134,11 +140,6 @@ namespace CL1_M1
 
             agent[Agent.VariablesUsedInCode.NeighborhoodUnalike] = adjacentSites.Where(s => s.IsOccupied)
                 .Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] != agent[Agent.VariablesUsedInCode.AgentSubtype]);
-
-            //agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion] = currentSite.GroupSize -
-            //    (agent[Agent.VariablesUsedInCode.NeighborhoodVacantSites] + agent[Agent.VariablesUsedInCode.NeighborhoodUnalike]);
-
-
         }
 
         private SubtypeProportionOutput CalculateSubtypeProportion(int iteration)

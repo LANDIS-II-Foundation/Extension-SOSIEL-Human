@@ -3,7 +3,7 @@
     "Variables": {
       "AgentType": 1,
       "AgentStatus": "active",
-      "AgentPG": 0.25,
+      "AgentPG": 0.125,
       "AgentBetterSiteAvailable": false
     },
     "Rules": [
