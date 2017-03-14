@@ -13,6 +13,8 @@ namespace Common.Models
     {
         public string Value { get; set; }
 
+        public SimpleLineOutput() { }
+
         public SimpleLineOutput(object obj)
         {
             Value = obj.ToString();

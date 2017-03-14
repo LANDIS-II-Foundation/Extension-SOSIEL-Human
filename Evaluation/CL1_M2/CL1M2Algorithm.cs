@@ -159,8 +159,11 @@ namespace CL1_M2
 
         private double CalculateAgentWellbeing(IAgent agent, IEnumerable<Site> occupied)
         {
+            int commonPoolC = occupied.Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
+
+
             return agent[Agent.VariablesUsedInCode.E] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.M] * (occupied.Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC]) / ((double)occupied.Count() + 1);
+                + agent[Agent.VariablesUsedInCode.M] * commonPoolC / ((double)occupied.Count() + 1);
         }
         
 
@@ -186,7 +189,7 @@ namespace CL1_M2
 
             return new CommonPoolProportion
             {
-                Center = new CommonPoolCenter { X = centerSite.HorizontalPosition, Y = centerSite.VerticalPosition },
+                Center = new CommonPoolCenter { X = centerSite.HorizontalPosition + 1, Y = centerSite.VerticalPosition + 1 },  //zero-based numeration
                 Wellbeing = agent[Agent.VariablesUsedInCode.E] * poolSize + commonPoolC
                     * (agent[Agent.VariablesUsedInCode.M] / (double)poolSize - 1),
                 CoProportion = pool.Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.Co) / (double)poolSize
