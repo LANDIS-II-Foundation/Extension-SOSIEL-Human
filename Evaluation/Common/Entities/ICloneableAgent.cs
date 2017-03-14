@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Entities
 {
-    using Environment;
+    using Environments;
 
     public interface ICloneableAgent<T> : IAgent, ICloneable<T> where T : class
     {

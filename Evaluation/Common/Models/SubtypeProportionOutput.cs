@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 using FileHelpers;
 
-namespace CL1_M1.Models
+namespace Common.Models
 {
     [DelimitedRecord(";")]
-    class SubtypeProportionOutput
+    public class SubtypeProportionOutput
     {
         public int Iteration { get; set; }
 

@@ -4,13 +4,15 @@ using System.Linq;
 
 using FileHelpers;
 
-namespace CL1_M1.Models
+namespace Common.Models
 {
     [DelimitedRecord(";")]
-    public class NodeOutput
+    public class EdgeOutput 
     {
         public int AgentId { get; set; }
 
-        public AgentSubtype Type { get; set; }
+        public int AdjacentAgentId { get; set; }
+
+      
     }
 }

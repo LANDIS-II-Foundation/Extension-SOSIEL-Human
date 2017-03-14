@@ -5,27 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-
 using Common.Configuration;
 using Common.Algorithm;
 using Common.Entities;
 using Common.Helpers;
+using Common.Models;
 
 namespace CL1_M1
 {
-    using Models;
-
-
-    public class CL1M1Algorithm : IAlgorithm
+    public sealed class CL1M1Algorithm : AlgorithmBase, IAlgorithm
     {
-        const string OutputFolder = @"Output\CL1_M1";
-
         readonly Configuration<CL1M1Agent> _configuration;
-
-        SiteList _siteList;
-        AgentList _agentList;
-
-        List<SubtypeProportionOutput> _subtypeProportionStatistic;
 
         bool isAgentMovement;
 
@@ -35,26 +25,24 @@ namespace CL1_M1
         {
             _configuration = configuration;
 
+            _outputFolder = @"Output\CL1_M1";
+
             _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.IterationCount);
 
-            if (Directory.Exists(OutputFolder) == false)
-                Directory.CreateDirectory(OutputFolder);
+            if (Directory.Exists(_outputFolder) == false)
+                Directory.CreateDirectory(_outputFolder);
         }
 
-        public async Task Run()
+        protected override void Initialize()
         {
-            Initialize();
+            _siteList = SiteList.Generate(_configuration.AlgorithmConfiguration.AgentCount,
+                _configuration.AlgorithmConfiguration.VacantProportion);
 
-            await SaveState("initial");
-
-            ExecuteAlgorithm();
-
-            await SaveState("final");
-
-            SaveProportionStatistic();
+            _agentList = AgentList.Generate(_configuration.AlgorithmConfiguration.AgentCount,
+                _configuration.AgentConfiguration, _siteList);
         }
 
-        private void ExecuteAlgorithm()
+        protected override void ExecuteAlgorithm()
         {
             _subtypeProportionStatistic.Add(CalculateSubtypeProportion(0));
 
@@ -70,7 +58,7 @@ namespace CL1_M1
 
                 foreach (var agent in orderingAgents)
                 {
-                    CalculateParamsDependentOnSite(agent);
+                    CalculateParamsDependOnSite(agent);
 
                     Site[] betterSites = vacantSites
                         .Select(site => new {
@@ -119,7 +107,7 @@ namespace CL1_M1
             }
         }
 
-        private void CalculateParamsDependentOnSite(IAgent agent)
+        private void CalculateParamsDependOnSite(IAgent agent)
         {
             Site currentSite = (Site)agent[Agent.VariablesUsedInCode.AgentSite];
 
@@ -149,60 +137,6 @@ namespace CL1_M1
             return sp;
         }
 
-        private void Initialize()
-        {
-            _siteList = SiteList.Generate(_configuration.AlgorithmConfiguration.AgentCount,
-                _configuration.AlgorithmConfiguration.VacantProportion);
-
-            _agentList = AgentList.Generate(_configuration.AlgorithmConfiguration.AgentCount,
-                _configuration.AgentConfiguration, _siteList);
-        }
-
-        private async Task SaveState(string state)
-        {
-            Task nodeTask = Task.Factory.StartNew(
-                () => _agentList.Agents
-                .Select(a => new NodeOutput
-                {
-                    AgentId = a.Id,
-                    Type = a[Agent.VariablesUsedInCode.AgentSubtype]
-                })
-                .ToArray()
-            ).ContinueWith(data =>
-            {
-                FileHelpers.DelimitedFileEngine<NodeOutput> engine = new FileHelpers.DelimitedFileEngine<NodeOutput>();
-
-                engine.WriteFile($@"{OutputFolder}\nodes_{state}.csv", data.Result);
-            });
-
-            Task edgeTask = Task.Factory.StartNew(
-                () => _agentList.Agents
-                .SelectMany(a => _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentSite])
-                .Where(s => s.IsOccupied)
-                .Select(s => new EdgeOutput
-                {
-                    AgentId = a.Id,
-                    AdjacentAgentId = s.OccupiedBy.Id
-                }
-                ))
-                .Distinct(new EdgeOutputComparer())
-                .ToArray())
-            .ContinueWith(data =>
-            {
-                FileHelpers.DelimitedFileEngine<EdgeOutput> engine = new FileHelpers.DelimitedFileEngine<EdgeOutput>();
-
-                engine.WriteFile($@"{OutputFolder}\edges_{state}.csv", data.Result);
-            });
-
-            await nodeTask;
-            await edgeTask;
-        }
-
-        private void SaveProportionStatistic()
-        {
-            FileHelpers.DelimitedFileEngine<SubtypeProportionOutput> engine = new FileHelpers.DelimitedFileEngine<SubtypeProportionOutput>();
-
-            engine.WriteFile($@"{OutputFolder}\subtype_A_proportion.csv", _subtypeProportionStatistic);
-        }
+        
     }
 }

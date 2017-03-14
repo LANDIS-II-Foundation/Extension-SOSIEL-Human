@@ -8,9 +8,11 @@ namespace Common.Helpers
 {
     public static class ResultSavingHelper
     {
-        public static void Save(string fileName, IEnumerable<dynamic> data)
+        public static void Save<T>(IEnumerable<T> data, string fileName) where T:class
         {
+            DelimitedFileEngine<T> engine = new DelimitedFileEngine<T>();
 
+            engine.WriteFile(fileName, data);
         }
 
     }

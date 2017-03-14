@@ -2,7 +2,7 @@
 
 namespace Common.Entities
 {
-    using Environment;
+    using Environments;
 
     public interface IAgent
     {

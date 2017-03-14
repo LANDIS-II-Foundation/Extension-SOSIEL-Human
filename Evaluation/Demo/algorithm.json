@@ -3,7 +3,7 @@
     "Model": 1,
     "CognitiveLevel": 1,
     "ActionTaking": 1,
-    "IterationCount": 1000,
+    "IterationCount": 10,
     "AgentCount": 1000,
     "VacantProportion": 0.3
   }

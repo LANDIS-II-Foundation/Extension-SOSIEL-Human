@@ -4,9 +4,9 @@ using System.Linq;
 
 using System.Threading.Tasks;
 
-namespace CL1_M1.Models
+namespace Common.Models
 {
-    class EdgeOutputComparer : IEqualityComparer<EdgeOutput>
+    public class EdgeOutputComparer : IEqualityComparer<EdgeOutput>
     {
         public bool Equals(EdgeOutput x, EdgeOutput y)
         {

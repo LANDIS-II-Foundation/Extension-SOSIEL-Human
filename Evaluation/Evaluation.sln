@@ -44,18 +44,12 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_BuildVersioningStyle = None.None.None.None
-		BuildVersion_ConfigurationName = 
-		BuildVersion_BuildAction = Both
-		BuildVersion_UpdateFileVersion = True
-		BuildVersion_UpdateAssemblyVersion = True
-		BuildVersion_StartDate = 2017/3/6
 		BuildVersion_UseGlobalSettings = False
-	EndGlobalSection
-	GlobalSection(AutomaticVersions) = postSolution
-		UpdateAssemblyVersion.Debug|Any CPU = True
-		UpdateAssemblyFileVersion.Debug|Any CPU = False
-		UpdateAssemblyInfoVersion.Debug|Any CPU = False
-		AssemblyVersionSettings.Debug|Any CPU = None.None.None.Increment
+		BuildVersion_StartDate = 2017/3/6
+		BuildVersion_UpdateAssemblyVersion = True
+		BuildVersion_UpdateFileVersion = True
+		BuildVersion_BuildAction = Both
+		BuildVersion_ConfigurationName = 
+		BuildVersion_BuildVersioningStyle = None.None.None.None
 	EndGlobalSection
 EndGlobal

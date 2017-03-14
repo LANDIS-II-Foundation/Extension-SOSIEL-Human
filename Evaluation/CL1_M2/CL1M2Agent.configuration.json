@@ -4,6 +4,7 @@
       "AgentType": 1,
       "AgentStatus": "active",
       "MaxE": 10,
+      "M": -2,
       "AgentBetterSiteAvailable": false
     },
     "Rules": [
