@@ -15,11 +15,11 @@ namespace CL1_M1
 {
     public sealed class CL1M1Algorithm : AlgorithmBase, IAlgorithm
     {
+        public string Name { get { return "Cognitive level 1 Model 1"; } }
+
         readonly Configuration<CL1M1Agent> _configuration;
 
-        bool isAgentMovement;
-
-        public string Name { get { return "Cognitive level 1 Model 1"; } }
+        bool _isAgentMovement;
 
         public CL1M1Algorithm(Configuration<CL1M1Agent> configuration)
         {
@@ -50,7 +50,7 @@ namespace CL1_M1
             {
                 Console.WriteLine($"Starting {i} iteration");
 
-                isAgentMovement = false;
+                _isAgentMovement = false;
 
                 List<IAgent> orderingAgents = RandomizeHelper.Randomize(_agentList.Agents.Where(a=> a[Agent.VariablesUsedInCode.AgentStatus] == "active"));
 
@@ -75,7 +75,7 @@ namespace CL1_M1
 
                     if (agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable])
                     {
-                        Site currentSite = agent[Agent.VariablesUsedInCode.AgentSite];
+                        Site currentSite = agent[Agent.VariablesUsedInCode.AgentCurrentSite];
 
                         Site bestSite = betterSites.Select(site => new { Distance = site.DistanceToAnother(currentSite), site }).GroupBy(o => o.Distance)
                             .OrderBy(g => g.Key).Take(1).SelectMany(g => g.Select(o=>o.site)).RandomizeOne();
@@ -86,11 +86,11 @@ namespace CL1_M1
 
                         if (rule.IsMatch(agent))
                         {
-                            Site oldSite = agent[Agent.VariablesUsedInCode.AgentSite];
+                            Site oldSite = agent[Agent.VariablesUsedInCode.AgentCurrentSite];
 
                             rule.Apply(agent);
 
-                            isAgentMovement = true;
+                            _isAgentMovement = true;
 
                             vacantSites.Add(oldSite);
                             vacantSites.Remove(bestSite);
@@ -100,7 +100,7 @@ namespace CL1_M1
 
                 _subtypeProportionStatistic.Add(CalculateSubtypeProportion(i));
 
-                if(isAgentMovement == false)
+                if(_isAgentMovement == false)
                 {
                     break;
                 }
@@ -109,7 +109,7 @@ namespace CL1_M1
 
         private void CalculateParamsDependOnSite(IAgent agent)
         {
-            Site currentSite = (Site)agent[Agent.VariablesUsedInCode.AgentSite];
+            Site currentSite = (Site)agent[Agent.VariablesUsedInCode.AgentCurrentSite];
 
             Site[] adjacentSites = _siteList.AdjacentSites(currentSite).ToArray();
 

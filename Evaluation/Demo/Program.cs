@@ -20,7 +20,7 @@ namespace Demo
             string algorithmConfigurationFileName = "algorithm.json";
             string algorithmConfigurationFilePath = Path.Combine(Directory.GetCurrentDirectory(), algorithmConfigurationFileName);
 
-            if(File.Exists(algorithmConfigurationFilePath) == false)
+            if (File.Exists(algorithmConfigurationFilePath) == false)
             {
                 throw new FileNotFoundException($"{algorithmConfigurationFileName} not found at {Directory.GetCurrentDirectory()}");
             }
@@ -30,7 +30,7 @@ namespace Demo
             var algorithm = AlgorithmFactory.Create(jsonContent);
 
             Console.WriteLine($"{algorithm.Name} algorithm is running....");
-            
+
             Task.WaitAll(algorithm.Run());
 
             Console.WriteLine("Algorithm has completed");
@@ -40,9 +40,19 @@ namespace Demo
 
         private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Exception exception = (Exception)e.ExceptionObject;
+            Exception[] exceptions;
 
-            Console.WriteLine($"ERROR! {exception.Message}");
+            if (e.ExceptionObject is AggregateException)
+            {
+                exceptions = (e.ExceptionObject as AggregateException).InnerExceptions.ToArray();
+            }
+            else
+            {
+                exceptions = new Exception[] { e.ExceptionObject as Exception };
+            }
+
+            foreach(var ex in exceptions)
+                Console.WriteLine($"ERROR! {ex.Message}");
 
             WaitKeyPress();
 

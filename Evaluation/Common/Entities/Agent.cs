@@ -15,7 +15,7 @@ namespace Common.Entities
             //Common
             public const string AgentType = "AgentType";
             public const string AgentStatus = "AgentStatus";
-            public const string AgentSite = "AgentSite";
+            public const string AgentCurrentSite = "AgentCurrentSite";
             public const string NeighborhoodSize = "NeighborhoodSize";
             public const string NeighborhoodVacantSites = "NeighborhoodVacantSites";
             public const string AgentBetterSite = "AgentBetterSite";
@@ -36,6 +36,10 @@ namespace Common.Entities
             public const string CommonPoolSubtupeProportion = "CommonPoolSubtupeProportion";
             public const string CommonPoolC = "CommonPoolC";
             public const string AgentSiteWellbeing = "AgentSiteWellbeing";
+
+            //M3
+            public const string InitialDisturbance = "InitialDisturbance";
+            public const string DisturbanceIncrement = "DisturbanceIncrement";
         }
 
 
@@ -69,16 +73,19 @@ namespace Common.Entities
 
         protected virtual void PostSetValue(string variable, dynamic newValue)
         {
-            if (variable == VariablesUsedInCode.AgentSite)
+            if (variable == VariablesUsedInCode.AgentCurrentSite)
             {
-                Site newSite = (Site)newValue;
-                newSite.OccupiedBy = this;
+                if (newValue != null)
+                {
+                    Site newSite = (Site)newValue;
+                    newSite.OccupiedBy = this;
+                }
             }
         }
 
         protected virtual void PreSetValue(string variable, dynamic oldValue)
         {
-            if (variable == VariablesUsedInCode.AgentSite)
+            if (variable == VariablesUsedInCode.AgentCurrentSite)
             {
                 Site oldSite = (Site)oldValue;
                 oldSite.OccupiedBy = null;

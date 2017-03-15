@@ -60,7 +60,8 @@ namespace Common.Algorithm
 
             Task edgeTask = Task.Factory.StartNew(
                 () => _agentList.Agents
-                .SelectMany(a => _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentSite])
+                .Where(a=>a[Agent.VariablesUsedInCode.AgentCurrentSite] != null)
+                .SelectMany(a => _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])
                 .Where(s => s.IsOccupied)
                 .Select(s => new EdgeOutput
                 {
@@ -82,7 +83,7 @@ namespace Common.Algorithm
 
         protected void SaveProportionStatistic()
         {
-            ResultSavingHelper.Save(_subtypeProportionStatistic, $@"{_outputFolder}\subtype_A_proportion.csv");
+            ResultSavingHelper.Save(_subtypeProportionStatistic, $@"{_outputFolder}\subtype_proportion.csv");
         }
 
     }

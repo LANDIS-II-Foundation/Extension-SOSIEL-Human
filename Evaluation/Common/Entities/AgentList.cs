@@ -35,7 +35,7 @@ namespace Common.Entities
 
                 selectedSite.OccupiedBy = agent;
 
-                agent[Agent.VariablesUsedInCode.AgentSite] = selectedSite;
+                agent[Agent.VariablesUsedInCode.AgentCurrentSite] = selectedSite;
 
                 agentList.Agents.Add(agent);
                 availableSites.Remove(selectedSite);

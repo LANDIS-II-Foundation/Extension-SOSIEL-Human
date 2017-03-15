@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Factory", "Factory\Factory.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CL1_M2", "CL1_M2\CL1_M2.csproj", "{C9891968-5BF0-4BEA-9289-234E0131BAD5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CL1_M3", "CL1_M3\CL1_M3.csproj", "{D12F85D3-4C9B-48D4-8C6B-A07426DA75AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,17 +41,27 @@ Global
 		{C9891968-5BF0-4BEA-9289-234E0131BAD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9891968-5BF0-4BEA-9289-234E0131BAD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9891968-5BF0-4BEA-9289-234E0131BAD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D12F85D3-4C9B-48D4-8C6B-A07426DA75AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12F85D3-4C9B-48D4-8C6B-A07426DA75AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D12F85D3-4C9B-48D4-8C6B-A07426DA75AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D12F85D3-4C9B-48D4-8C6B-A07426DA75AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_UseGlobalSettings = False
-		BuildVersion_StartDate = 2017/3/6
-		BuildVersion_UpdateAssemblyVersion = True
-		BuildVersion_UpdateFileVersion = True
-		BuildVersion_BuildAction = Both
-		BuildVersion_ConfigurationName = 
 		BuildVersion_BuildVersioningStyle = None.None.None.None
+		BuildVersion_ConfigurationName = 
+		BuildVersion_BuildAction = Both
+		BuildVersion_UpdateFileVersion = True
+		BuildVersion_UpdateAssemblyVersion = True
+		BuildVersion_StartDate = 2017/3/6
+		BuildVersion_UseGlobalSettings = False
+	EndGlobalSection
+	GlobalSection(AutomaticVersions) = postSolution
+		UpdateAssemblyVersion = True
+		UpdateAssemblyFileVersion = False
+		UpdateAssemblyInfoVersion = False
+		AssemblyVersionSettings = None.None.IncrementOnDemand.DeltaDayStamp
 	EndGlobalSection
 EndGlobal

@@ -13,23 +13,30 @@ using Common.Helpers;
 using Common.Randoms;
 using Common.Models;
 
-namespace CL1_M2
+namespace CL1_M3
 {
-    public sealed class CL1M2Algorithm : AlgorithmBase, IAlgorithm
+    public sealed class CL1M3Algorithm : AlgorithmBase, IAlgorithm
     {
-        public string Name { get { return "Cognitive level 1 Model 2"; } }
+        public string Name { get { return "Cognitive level 1 Model 3"; } }
 
-        readonly Configuration<CL1M2Agent> _configuration;
+        readonly Configuration<CL1M3Agent> _configuration;
 
         List<CommonPoolOutput> _commonPoolStatistic;
 
         bool _isAgentMovement;
 
-        public CL1M2Algorithm(Configuration<CL1M2Agent> configuration)
+        double _disturbance;
+
+        double _disturbanceIncrement;
+
+        public CL1M3Algorithm(Configuration<CL1M3Agent> configuration)
         {
             _configuration = configuration;
 
-            _outputFolder = @"Output\CL1_M2";
+            _outputFolder = @"Output\CL1_M3";
+
+            _disturbance = _configuration.AgentConfiguration[Agent.VariablesUsedInCode.InitialDisturbance];
+            _disturbanceIncrement = _configuration.AgentConfiguration[Agent.VariablesUsedInCode.DisturbanceIncrement];
 
             _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.IterationCount);
             _commonPoolStatistic = new List<CommonPoolOutput>(_configuration.AlgorithmConfiguration.IterationCount);
@@ -60,9 +67,14 @@ namespace CL1_M2
 
                 _isAgentMovement = false;
 
+                _disturbance += _disturbanceIncrement;
+
                 List<IAgent> orderingAgents = RandomizeHelper.Randomize(_agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active"));
 
                 List<Site> vacantSites = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied == false).ToList();
+
+                if (orderingAgents.Count == 0)
+                    break;
 
                 foreach (var agent in orderingAgents)
                 {
@@ -105,15 +117,21 @@ namespace CL1_M2
                     }
                 }
 
+                
+
                 _subtypeProportionStatistic.Add(CalculateSubtypeProportion(i));
                 _commonPoolStatistic.Add(CalculateCommonPoolStatistics(i));
+
+                FindInactiveAgents();
 
                 if (_isAgentMovement == false)
                 {
                     break;
-                }
+                } 
             }
         }
+
+        
 
         protected override void SaveCustomStatistic()
         {
@@ -148,7 +166,7 @@ namespace CL1_M2
 
             agent[Agent.VariablesUsedInCode.CommonPoolC] = _siteList.AdjacentSites(currentSite, true).Where(s => s.IsOccupied).Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]);
             agent[Agent.VariablesUsedInCode.AgentSiteWellbeing] = agent[Agent.VariablesUsedInCode.E] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.M] * agent[Agent.VariablesUsedInCode.CommonPoolC] / agent[Agent.VariablesUsedInCode.CommonPoolSize];
+                + agent[Agent.VariablesUsedInCode.M] * agent[Agent.VariablesUsedInCode.CommonPoolC] / agent[Agent.VariablesUsedInCode.CommonPoolSize] - _disturbance;
 
 
         }
@@ -159,11 +177,30 @@ namespace CL1_M2
 
 
             return agent[Agent.VariablesUsedInCode.E] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.M] * commonPoolC / ((double)commonPool.Count() + 1);
+                + agent[Agent.VariablesUsedInCode.M] * commonPoolC / ((double)commonPool.Count() + 1) - _disturbance;
         }
-        
 
-        
+
+        private void FindInactiveAgents()
+        {
+            _agentList.Agents.Where(a=>a[Agent.VariablesUsedInCode.AgentStatus] == "active")
+                .Select(agent => new
+                {
+                    Agent = agent,
+                    CommonPool = _siteList.AdjacentSites((Site)agent[Agent.VariablesUsedInCode.AgentCurrentSite]).Where(s => s.IsOccupied)
+                })
+                .Select(obj=> new
+                {
+                    obj.Agent,
+                    Wellbeing = CalculateAgentWellbeing(obj.Agent, obj.CommonPool)
+                })
+                .Where(obj=>obj.Wellbeing <= 0)
+                .ForEach(obj=>
+                {
+                    obj.Agent[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
+                    obj.Agent[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
+                });
+        }
 
         private CommonPoolOutput CalculateCommonPoolStatistics(int iteration)
         {

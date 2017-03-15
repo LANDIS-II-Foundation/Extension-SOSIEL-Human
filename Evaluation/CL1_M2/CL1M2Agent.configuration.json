@@ -22,7 +22,7 @@
           }
         ],
         "Consequent": {
-          "Param": "AgentSite",
+          "Param": "AgentCurrentSite",
           "Value": 0,
           "VariableValue": "AgentBetterSite"
         },

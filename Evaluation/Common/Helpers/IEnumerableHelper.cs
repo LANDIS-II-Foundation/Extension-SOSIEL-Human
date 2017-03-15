@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Common.Helpers
 {
-    static class IEnumerableHelper
+    public static class IEnumerableHelper
     {
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {

@@ -3,8 +3,11 @@
     "Variables": {
       "AgentType": 1,
       "AgentStatus": "active",
-      "AgentPG": 0.125,
-      "AgentBetterSiteAvailable": false
+      "MaxE": 10,
+      "M": 1,
+      "AgentBetterSiteAvailable": false,
+      "InitialDisturbance": 0.2,
+      "DisturbanceIncrement": 0.2 
     },
     "Rules": [
       {
@@ -13,12 +16,6 @@
         "RulePositionNumber": 1,
         "Id": "RS1_L1_R1",
         "Antecedent": [
-          {
-            "Param": "NeighborhoodSubtypeProportion",
-            "Sign": "<",
-            "Value": 0,
-            "ReferenceVariable": "AgentPG"
-          },
           {
             "Param": "AgentBetterSiteAvailable",
             "Sign": "==",
