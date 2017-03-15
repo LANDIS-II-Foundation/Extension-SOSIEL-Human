@@ -125,9 +125,9 @@ namespace CL1_M2
         {
             int agentSubtype = LinearUniformRandom.GetInstance.Next(1, 3);
 
-            agent[Agent.VariablesUsedInCode.E] = LinearUniformRandom.GetInstance.Next(1, (int)agent[Agent.VariablesUsedInCode.MaxE] + 1);
+            agent[Agent.VariablesUsedInCode.Engage] = LinearUniformRandom.GetInstance.Next(1, (int)agent[Agent.VariablesUsedInCode.MaxEngage] + 1);
             agent[Agent.VariablesUsedInCode.AgentSubtype] = (AgentSubtype)agentSubtype;
-            agent[Agent.VariablesUsedInCode.AgentC] = agent[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.Co ? agent[Agent.VariablesUsedInCode.E] : 0;
+            agent[Agent.VariablesUsedInCode.AgentC] = agent[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.Co ? agent[Agent.VariablesUsedInCode.Engage] : 0;
         }
 
         private void CalculateParamsDependOnSite(IAgent agent)
@@ -147,19 +147,16 @@ namespace CL1_M2
                 / agent[Agent.VariablesUsedInCode.CommonPoolSize];
 
             agent[Agent.VariablesUsedInCode.CommonPoolC] = _siteList.AdjacentSites(currentSite, true).Where(s => s.IsOccupied).Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]);
-            agent[Agent.VariablesUsedInCode.AgentSiteWellbeing] = agent[Agent.VariablesUsedInCode.E] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.M] * agent[Agent.VariablesUsedInCode.CommonPoolC] / agent[Agent.VariablesUsedInCode.CommonPoolSize];
-
-
+            agent[Agent.VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentWellbeing(agent, _siteList.AdjacentSites(currentSite));
         }
 
         private double CalculateAgentWellbeing(IAgent agent, IEnumerable<Site> commonPool)
         {
-            int commonPoolC = commonPool.Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
+            int commonPoolC = commonPool.Where(s=>s.IsOccupied).Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
 
 
-            return agent[Agent.VariablesUsedInCode.E] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.M] * commonPoolC / ((double)commonPool.Count() + 1);
+            return agent[Agent.VariablesUsedInCode.Engage] - agent[Agent.VariablesUsedInCode.AgentC]
+                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)commonPool.Count() + 1);
         }
         
 
@@ -186,8 +183,8 @@ namespace CL1_M2
             return new CommonPoolProportion
             {
                 Center = new CommonPoolCenter { X = centerSite.HorizontalPosition + 1, Y = centerSite.VerticalPosition + 1 },  //zero-based numeration
-                Wellbeing = agent[Agent.VariablesUsedInCode.E] * poolSize + commonPoolC
-                    * (agent[Agent.VariablesUsedInCode.M] / (double)poolSize - 1),
+                Wellbeing = agent[Agent.VariablesUsedInCode.Engage] * poolSize + commonPoolC
+                    * (agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] / (double)poolSize - 1),
                 CoProportion = pool.Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.Co) / (double)poolSize
             };
         }

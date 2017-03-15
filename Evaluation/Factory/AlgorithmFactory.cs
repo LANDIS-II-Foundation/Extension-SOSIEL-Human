@@ -7,6 +7,7 @@ using System.IO;
 using CL1_M1;
 using CL1_M2;
 using CL1_M3;
+using CL1_M4;
 
 
 using Common.Algorithm;
@@ -71,6 +72,13 @@ namespace Factory
                                     Configuration<CL1M3Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL1M3Agent>());
 
                                     return new CL1M3Algorithm(config);
+                                }
+
+                            case Model.M4:
+                                {
+                                    Configuration<CL1M4Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL1M4Agent>());
+
+                                    return new CL1M4Algorithm(config);
                                 }
 
                             default:

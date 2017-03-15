@@ -4,8 +4,11 @@
       "AgentType": 1,
       "AgentStatus": "active",
       "MaxE": 10,
+      "MaxP": 5,
       "M": 1,
-      "AgentBetterSiteAvailable": false
+      "AgentBetterSiteAvailable": false,
+      "InitialDisturbance": 0.2,
+      "DisturbanceIncrement": 0.2 
     },
     "Rules": [
       {

@@ -4,14 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D12F85D3-4C9B-48D4-8C6B-A07426DA75AD}</ProjectGuid>
+    <ProjectGuid>{B197EF59-D8B1-4194-966E-04F3987031AE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CL1_M3</RootNamespace>
-    <AssemblyName>CL1_M3</AssemblyName>
+    <RootNamespace>CL1_M4</RootNamespace>
+    <AssemblyName>CL1_M4</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AssemblyVersion>1.0.3.6284</AssemblyVersion>
+    <AssemblyVersion>1.0.2.6284</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,20 +42,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentSubtype.cs" />
-    <Compile Include="CL1M3Agent.cs" />
-    <Compile Include="CL1M3Algorithm.cs" />
+    <Compile Include="CL1M4Agent.cs" />
+    <Compile Include="CL1M4Algorithm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CL1M4Agent.configuration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{50a0dc05-47bd-455a-b32e-ca2c9fc924fb}</Project>
       <Name>Common</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="CL1M3Agent.configuration.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

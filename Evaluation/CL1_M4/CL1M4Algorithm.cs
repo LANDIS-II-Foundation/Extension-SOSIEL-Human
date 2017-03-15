@@ -13,13 +13,13 @@ using Common.Helpers;
 using Common.Randoms;
 using Common.Models;
 
-namespace CL1_M3
+namespace CL1_M4
 {
-    public sealed class CL1M3Algorithm : AlgorithmBase, IAlgorithm
+    public sealed class CL1M4Algorithm : AlgorithmBase, IAlgorithm
     {
-        public string Name { get { return "Cognitive level 1 Model 3"; } }
+        public string Name { get { return "Cognitive level 1 Model 4"; } }
 
-        readonly Configuration<CL1M3Agent> _configuration;
+        readonly Configuration<CL1M4Agent> _configuration;
 
         List<CommonPoolOutput> _commonPoolStatistic;
 
@@ -29,11 +29,11 @@ namespace CL1_M3
 
         double _disturbanceIncrement;
 
-        public CL1M3Algorithm(Configuration<CL1M3Agent> configuration)
+        public CL1M4Algorithm(Configuration<CL1M4Agent> configuration)
         {
             _configuration = configuration;
 
-            _outputFolder = @"Output\CL1_M3";
+            _outputFolder = @"Output\CL1_M4";
 
             _disturbance = _configuration.AgentConfiguration[Agent.VariablesUsedInCode.InitialDisturbance];
             _disturbanceIncrement = _configuration.AgentConfiguration[Agent.VariablesUsedInCode.DisturbanceIncrement];
@@ -141,11 +141,28 @@ namespace CL1_M3
 
         private void SetRandomVariables(IAgent agent)
         {
-            int agentSubtype = LinearUniformRandom.GetInstance.Next(1, 3);
+            int randomType = LinearUniformRandom.GetInstance.Next(1, 4);
+
+            AgentSubtype subtype = (AgentSubtype)randomType;
+
+            agent[Agent.VariablesUsedInCode.AgentSubtype] = subtype;
 
             agent[Agent.VariablesUsedInCode.Engage] = LinearUniformRandom.GetInstance.Next(1, (int)agent[Agent.VariablesUsedInCode.MaxEngage] + 1);
-            agent[Agent.VariablesUsedInCode.AgentSubtype] = (AgentSubtype)agentSubtype;
-            agent[Agent.VariablesUsedInCode.AgentC] = agent[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.Co ? agent[Agent.VariablesUsedInCode.Engage] : 0;
+
+            if (subtype == AgentSubtype.Co || subtype == AgentSubtype.Enf)
+            {
+                agent[Agent.VariablesUsedInCode.AgentC] = agent[Agent.VariablesUsedInCode.Engage];
+
+                if(subtype == AgentSubtype.Enf)
+                {
+                    agent[Agent.VariablesUsedInCode.Punishment] = LinearUniformRandom.GetInstance.Next(1, (int)agent[Agent.VariablesUsedInCode.MaxPunishment] + 1);
+                    agent[Agent.VariablesUsedInCode.AgentP] = agent[Agent.VariablesUsedInCode.Punishment];
+                }
+            }
+            else 
+            {
+                agent[Agent.VariablesUsedInCode.AgentC] = 0;
+            }
         }
 
         private void CalculateParamsDependOnSite(IAgent agent)
@@ -165,8 +182,8 @@ namespace CL1_M3
                 / agent[Agent.VariablesUsedInCode.CommonPoolSize];
 
             agent[Agent.VariablesUsedInCode.CommonPoolC] = _siteList.AdjacentSites(currentSite, true).Where(s => s.IsOccupied).Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]);
-            agent[Agent.VariablesUsedInCode.AgentSiteWellbeing] = agent[Agent.VariablesUsedInCode.Engage] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * agent[Agent.VariablesUsedInCode.CommonPoolC] / agent[Agent.VariablesUsedInCode.CommonPoolSize] - _disturbance;
+
+            agent[Agent.VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentWellbeing(agent, _siteList.AdjacentSites(currentSite).Where(s => s.IsOccupied));
 
 
         }
