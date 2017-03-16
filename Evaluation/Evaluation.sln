@@ -65,10 +65,10 @@ Global
 		BuildVersion_BuildVersioningStyle = None.None.None.None
 	EndGlobalSection
 	GlobalSection(AutomaticVersions) = postSolution
-		PrimaryVersionType.Debug|Any CPU = AssemblyVersionAttribute
-		UpdateAssemblyVersion.Debug|Any CPU = True
-		UpdateAssemblyFileVersion.Debug|Any CPU = False
-		UpdateAssemblyInfoVersion.Debug|Any CPU = False
-		AssemblyVersionSettings.Debug|Any CPU = None.None.None.DeltaDayStamp
+		PrimaryVersionType.Release|Any CPU = AssemblyVersionAttribute
+		UpdateAssemblyVersion.Release|Any CPU = True
+		UpdateAssemblyFileVersion.Release|Any CPU = False
+		UpdateAssemblyInfoVersion.Release|Any CPU = False
+		AssemblyVersionSettings.Release|Any CPU = None.None.Increment.DeltaDayStamp
 	EndGlobalSection
 EndGlobal

@@ -22,7 +22,18 @@ namespace CL1_M3
 
         public new void GenerateCustomParams()
         {
-            
+            AgentSubtype agentSubtype = (AgentSubtype)LinearUniformRandom.GetInstance.Next(1, 3);
+
+            this[VariablesUsedInCode.AgentSubtype] = agentSubtype;
+
+            if (agentSubtype == AgentSubtype.Co)
+            {
+                this[VariablesUsedInCode.AgentC] = this[VariablesUsedInCode.Engage];
+            }
+            else
+            {
+                this[VariablesUsedInCode.AgentC] = 0;
+            }
         }
     }
 }

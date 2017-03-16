@@ -3,7 +3,7 @@
     "Variables": {
       "AgentType": 1,
       "AgentStatus": "active",
-      "MaxE": 10,
+      "E": 10,
       "M": 1,
       "AgentBetterSiteAvailable": false
     },

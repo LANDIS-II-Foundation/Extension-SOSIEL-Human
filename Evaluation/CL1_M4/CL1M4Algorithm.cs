@@ -21,7 +21,7 @@ namespace CL1_M4
 
         readonly Configuration<CL1M4Agent> _configuration;
 
-        List<CommonPoolOutput> _commonPoolStatistic;
+        List<AvgWellbeingOutput> _averageWellbeingStatistic;
 
         bool _isAgentMovement;
 
@@ -39,7 +39,7 @@ namespace CL1_M4
             _disturbanceIncrement = _configuration.AgentConfiguration[Agent.VariablesUsedInCode.DisturbanceIncrement];
 
             _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.IterationCount);
-            _commonPoolStatistic = new List<CommonPoolOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            _averageWellbeingStatistic = new List<AvgWellbeingOutput>(_configuration.AlgorithmConfiguration.IterationCount);
 
             if (Directory.Exists(_outputFolder) == false)
                 Directory.CreateDirectory(_outputFolder);
@@ -52,14 +52,11 @@ namespace CL1_M4
 
             _agentList = AgentList.Generate(_configuration.AlgorithmConfiguration.AgentCount,
                 _configuration.AgentConfiguration, _siteList);
-
-            //todo: temporary solution
-            _agentList.Agents.ForEach(agent => SetRandomVariables(agent));
         }
 
         protected override void ExecuteAlgorithm()
         {
-            _subtypeProportionStatistic.Add(CalculateSubtypeProportion(0));
+            _subtypeProportionStatistic.Add(CreateSubtypeProportionRecord(0));
 
             for (int i = 1; i <= _configuration.AlgorithmConfiguration.IterationCount; i++)
             {
@@ -78,16 +75,13 @@ namespace CL1_M4
 
                 foreach (var agent in orderingAgents)
                 {
-                    SetRandomVariables(agent);
                     CalculateParamsDependOnSite(agent);
 
                     Site[] betterSites = vacantSites
-                        //in this case we exclude the center site because it isn't occupied by agent
-                        .Select(site => new { site, CommonPool = _siteList.AdjacentSites(site).Where(s => s.IsOccupied) })
-                        .Select(obj => new
+                        .Select(site => new
                         {
-                            obj.site,
-                            Wellbeing = CalculateAgentWellbeing(agent, obj.CommonPool)
+                            site,
+                            Wellbeing = CalculateAgentWellbeing(agent, site)
                         })
                         .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing])
                         .GroupBy(obj => obj.Wellbeing).OrderByDescending(obj => obj.Key)
@@ -117,21 +111,17 @@ namespace CL1_M4
                     }
                 }
 
-                
-
-                _subtypeProportionStatistic.Add(CalculateSubtypeProportion(i));
-                _commonPoolStatistic.Add(CalculateCommonPoolStatistics(i));
+                _subtypeProportionStatistic.Add(CreateSubtypeProportionRecord(i));
+                _averageWellbeingStatistic.Add(CreateAvgWellbeingStatisticRecord(i));
 
                 FindInactiveAgents();
 
                 if (_isAgentMovement == false)
                 {
                     break;
-                } 
+                }
             }
         }
-
-        
 
         protected override void SaveCustomStatistic()
         {
@@ -139,37 +129,19 @@ namespace CL1_M4
         }
 
 
-        private void SetRandomVariables(IAgent agent)
-        {
-            int randomType = LinearUniformRandom.GetInstance.Next(1, 4);
 
-            AgentSubtype subtype = (AgentSubtype)randomType;
-
-            agent[Agent.VariablesUsedInCode.AgentSubtype] = subtype;
-
-            agent[Agent.VariablesUsedInCode.Engage] = LinearUniformRandom.GetInstance.Next(1, (int)agent[Agent.VariablesUsedInCode.MaxEngage] + 1);
-
-            if (subtype == AgentSubtype.Co || subtype == AgentSubtype.Enf)
-            {
-                agent[Agent.VariablesUsedInCode.AgentC] = agent[Agent.VariablesUsedInCode.Engage];
-
-                if(subtype == AgentSubtype.Enf)
-                {
-                    agent[Agent.VariablesUsedInCode.Punishment] = LinearUniformRandom.GetInstance.Next(1, (int)agent[Agent.VariablesUsedInCode.MaxPunishment] + 1);
-                    agent[Agent.VariablesUsedInCode.AgentP] = agent[Agent.VariablesUsedInCode.Punishment];
-                }
-            }
-            else 
-            {
-                agent[Agent.VariablesUsedInCode.AgentC] = 0;
-            }
-        }
 
         private void CalculateParamsDependOnSite(IAgent agent)
         {
             Site currentSite = (Site)agent[Agent.VariablesUsedInCode.AgentCurrentSite];
 
-            Site[] adjacentSites = _siteList.AdjacentSites(currentSite).ToArray();
+            Site[] adjacentSites = _siteList.CommonPool(currentSite).ToArray();
+
+            agent[Agent.VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentWellbeing(agent, currentSite);
+
+
+
+            //optional calculations, they may be use in rules
 
             agent[Agent.VariablesUsedInCode.NeighborhoodSize] = (double)currentSite.GroupSize;
             agent[Agent.VariablesUsedInCode.NeighborhoodVacantSites] = adjacentSites.Count(s => s.IsOccupied == false);
@@ -178,89 +150,99 @@ namespace CL1_M4
 
             agent[Agent.VariablesUsedInCode.CommonPoolSize] = (double)(agent[Agent.VariablesUsedInCode.NeighborhoodSize] + 1 - agent[Agent.VariablesUsedInCode.NeighborhoodVacantSites]);
 
-            agent[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion] = (agent[Agent.VariablesUsedInCode.CommonPoolSize] - agent[Agent.VariablesUsedInCode.NeighborhoodUnalike])
-                / agent[Agent.VariablesUsedInCode.CommonPoolSize];
+            //agent[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion] = (agent[Agent.VariablesUsedInCode.CommonPoolSize] - agent[Agent.VariablesUsedInCode.NeighborhoodUnalike])
+            //    / agent[Agent.VariablesUsedInCode.CommonPoolSize];
 
-            agent[Agent.VariablesUsedInCode.CommonPoolC] = _siteList.AdjacentSites(currentSite, true).Where(s => s.IsOccupied).Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]);
-
-            agent[Agent.VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentWellbeing(agent, _siteList.AdjacentSites(currentSite).Where(s => s.IsOccupied));
-
-
+            agent[Agent.VariablesUsedInCode.CommonPoolC] = _siteList.CommonPool(currentSite).Where(s => s.IsOccupied).Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]);
+            agent[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion] = CalculateSubtypeProportion(agent[Agent.VariablesUsedInCode.AgentSubtype], currentSite);
         }
 
-        private double CalculateAgentWellbeing(IAgent agent, IEnumerable<Site> commonPool)
+        private double CalculateAgentWellbeing(IAgent agent, Site centerSite)
         {
+            //we take only adjacement sites because in some cases center site can be empty
+            var commonPool = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied).ToArray();
+
             int commonPoolC = commonPool.Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
 
+            double wellbeing = agent[Agent.VariablesUsedInCode.Engage] - agent[Agent.VariablesUsedInCode.AgentC]
+                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)commonPool.Length + 1) - _disturbance;
 
-            return agent[Agent.VariablesUsedInCode.Engage] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)commonPool.Count() + 1) - _disturbance;
+            if(agent[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.NonCo)
+            {
+                var enforcers = commonPool.Where(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.Enf).Select(s=>s.OccupiedBy);
+
+                double penalties = enforcers.Sum(e => (double)(e[Agent.VariablesUsedInCode.AgentP] * (1 - agent[Agent.VariablesUsedInCode.AgentC] / (double)agent[Agent.VariablesUsedInCode.Engage])));
+
+                wellbeing -= penalties;
+            }
+
+            if(agent[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.Enf)
+            {
+                var nonCoNeighbors = commonPool.Where(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.NonCo).Select(s => s.OccupiedBy);
+
+                double punishment = nonCoNeighbors.Sum(n =>(double)(agent[Agent.VariablesUsedInCode.AgentP] * (1 - n[Agent.VariablesUsedInCode.AgentC] / (double)agent[Agent.VariablesUsedInCode.Engage])));
+
+                wellbeing -= punishment;
+            }
+
+            return wellbeing;
         }
-
 
         private void FindInactiveAgents()
         {
-            _agentList.Agents.Where(a=>a[Agent.VariablesUsedInCode.AgentStatus] == "active")
+            _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active")
                 .Select(agent => new
                 {
-                    Agent = agent,
-                    CommonPool = _siteList.AdjacentSites((Site)agent[Agent.VariablesUsedInCode.AgentCurrentSite]).Where(s => s.IsOccupied)
+                    agent,
+                    Wellbeing = CalculateAgentWellbeing(agent, agent[Agent.VariablesUsedInCode.AgentCurrentSite])
                 })
-                .Select(obj=> new
+                .Where(obj => obj.Wellbeing <= 0)
+                .ForEach(obj =>
                 {
-                    obj.Agent,
-                    Wellbeing = CalculateAgentWellbeing(obj.Agent, obj.CommonPool)
-                })
-                .Where(obj=>obj.Wellbeing <= 0)
-                .ForEach(obj=>
-                {
-                    obj.Agent[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
-                    obj.Agent[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
+                    obj.agent[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
+                    obj.agent[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
                 });
         }
 
-        private CommonPoolOutput CalculateCommonPoolStatistics(int iteration)
+        private AvgWellbeingOutput CreateAvgWellbeingStatisticRecord(int iteration)
         {
-            CommonPoolOutput cp = new CommonPoolOutput { Iteration = iteration };
+            AvgWellbeingOutput aw = new AvgWellbeingOutput { Iteration = iteration };
 
-            cp.CommonPools = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied)
-                .Select(site => CalculateCommonPoolStat(site)).ToArray();
+            aw.Avgs = _agentList.Agents.Where(a=>a[Agent.VariablesUsedInCode.AgentStatus] == "active")
+                .GroupBy(a=>(AgentSubtype)a[Agent.VariablesUsedInCode.AgentSubtype])
+                .Select(g=> new AvgWellbeing { Type = EnumHelper.EnumValueAsString(g.Key), AvgValue = g.Average(a => (double)CalculateAgentWellbeing(a, a[Agent.VariablesUsedInCode.AgentCurrentSite]))}).ToArray();
 
-            return cp;
+            return aw;
         }
 
-        private CommonPoolProportion CalculateCommonPoolStat(Site centerSite)
+
+        private double CalculateSubtypeProportion(AgentSubtype subtype, Site centerSite)
         {
-            IAgent agent = centerSite.OccupiedBy;
-            var pool = _siteList.AdjacentSites(centerSite, true).Where(s => s.IsOccupied);
-            int commonPoolC = pool.Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]);
-            int poolSize = pool.Count();
+            var occupiedCommonPool = _siteList.CommonPool(centerSite).Where(s => s.IsOccupied).ToArray();
 
-
-            return new CommonPoolProportion
-            {
-                Center = new CommonPoolCenter { X = centerSite.HorizontalPosition + 1, Y = centerSite.VerticalPosition + 1 },  //zero-based numeration
-                Wellbeing = agent[Agent.VariablesUsedInCode.Engage] * poolSize + commonPoolC
-                    * (agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] / (double)poolSize - 1),
-                CoProportion = pool.Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.Co) / (double)poolSize
-            };
+            return CalculateSubtypeProportion(subtype, occupiedCommonPool);
         }
 
-        private SubtypeProportionOutput CalculateSubtypeProportion(int iteration)
+        private double CalculateSubtypeProportion(AgentSubtype subtype, Site[] occupiedCommonPool)
+        {
+            return occupiedCommonPool.Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
+                / (double)occupiedCommonPool.Length;
+        }
+
+
+        private SubtypeProportionOutput CreateSubtypeProportionRecord(int iteration)
         {
             SubtypeProportionOutput sp = new SubtypeProportionOutput { Iteration = iteration };
 
-            sp.Proportion = _siteList.AsSiteEnumerable()
-                .Where(s=>s.IsOccupied)
-                .Select(site => new { site, CommonPool = _siteList.AdjacentSites(site, true).Where(s => s.IsOccupied) })
-                .Average(o => o.CommonPool.Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.Co) / (double)o.CommonPool.Count());
+            sp.Proportion = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied)
+                .Average(site => CalculateSubtypeProportion(AgentSubtype.Co, site));
 
             return sp;
         }
 
         private void SaveCommonPoolStatistic()
         {
-            ResultSavingHelper.Save(_commonPoolStatistic.Select(cps => new SimpleLineOutput(cps)), $@"{_outputFolder}\common_pool_statistics.csv");
+            ResultSavingHelper.Save(_averageWellbeingStatistic.Select(cps => new SimpleLineOutput(cps)), $@"{_outputFolder}\average_wellbeing_statistic.csv");
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Common.Entities
 
             //M2
             public const string AgentC = "AgentC";
-            public const string MaxEngage = "MaxE";
+            //public const string MaxEngage = "MaxE";
             public const string Engage = "E";
             public const string MagnitudeOfExternalities = "M";
             public const string CommonPoolSize = "CommonPoolSize";
@@ -42,7 +42,7 @@ namespace Common.Entities
             public const string DisturbanceIncrement = "DisturbanceIncrement";
 
             //M4
-            public const string MaxPunishment = "MaxP";
+            //public const string MaxPunishment = "MaxP";
             public const string Punishment = "P";
             public const string AgentP = "AgentP";
         }

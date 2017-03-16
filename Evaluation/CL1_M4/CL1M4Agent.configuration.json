@@ -3,8 +3,8 @@
     "Variables": {
       "AgentType": 1,
       "AgentStatus": "active",
-      "MaxE": 10,
-      "MaxP": 5,
+      "E": 10,
+      "P": 5,
       "M": 1,
       "AgentBetterSiteAvailable": false,
       "InitialDisturbance": 0.2,

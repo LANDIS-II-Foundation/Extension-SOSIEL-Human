@@ -54,7 +54,12 @@ namespace Common.Entities
             return Sites.SelectMany(s => s);
         }
 
-        public IEnumerable<Site> AdjacentSites(Site centerSite, bool includeCenter = false)
+        public IEnumerable<Site> AdjacentSites(Site centerSite)
+        {
+            return CommonPool(centerSite, false);
+        }
+
+        public IEnumerable<Site> CommonPool(Site centerSite, bool includeCenter = true)
         {
             List<Site> temp = new List<Site>(centerSite.GroupSize);
 
@@ -63,7 +68,7 @@ namespace Common.Entities
                 {
                     Site site = Sites[i][j];
 
-                    if (site.Equals(centerSite) == false || includeCenter)
+                    if (includeCenter || site.Equals(centerSite) == false)
                         temp.Add(site);
                 }
 

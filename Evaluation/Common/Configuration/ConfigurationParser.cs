@@ -10,37 +10,61 @@ namespace Common.Configuration
 {
     public static class ConfigurationParser
     {
-        //static JsonSerializer serializer;
+        private class IntConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return (objectType == typeof(int) || objectType == typeof(object));
+            }
 
-        //static ConfigurationParser()
-        //{
-        //    var contractResolver = new DefaultContractResolver();
-        //    contractResolver.NamingStrategy = new DefaultNamingStrategy();
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                if (reader.TokenType == JsonToken.Integer)
+                {
+                    return Convert.ToInt32(reader.Value);
+                }
 
-        //    serializer = new JsonSerializer();
+                return reader.Value;
+            }
 
-        //    serializer.ContractResolver = contractResolver;
-        //    serializer.Formatting = Formatting.None;
-        //}
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+
+        static JsonSerializer serializer;
+
+        static ConfigurationParser()
+        {
+            serializer = new JsonSerializer();
+
+            serializer.Converters.Add(new IntConverter());
+        }
 
         public static AlgorithmConfiguration ParseAlgorithmConfiguration(string jsonContent)
         {
             JToken json = JToken.Parse(jsonContent);
 
-            return json.SelectToken("AlgorithmConfiguration").ToObject<AlgorithmConfiguration>();
+            return json.SelectToken("AlgorithmConfiguration").ToObject<AlgorithmConfiguration>(serializer);
         }
 
-        public static T ParseAgentConfiguration<T>(string jsonContent) where T: class
+        public static T ParseAgentConfiguration<T>(string jsonContent) where T : class
         {
             JToken json = JToken.Parse(jsonContent);
 
-            return json.SelectToken("AgentConfiguration").ToObject<T>();
+            return json.SelectToken("AgentConfiguration").ToObject<T>(serializer);
         }
 
 
         public static Configuration<T> ParseConfiguration<T>(string jsonContent) where T : class
         {
-            return JsonConvert.DeserializeObject<Configuration<T>>(jsonContent);
+            JToken json = JToken.Parse(jsonContent);
+
+            return json.ToObject<Configuration<T>>(serializer);
         }
     }
+
+
 }

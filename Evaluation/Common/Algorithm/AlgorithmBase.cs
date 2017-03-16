@@ -61,7 +61,7 @@ namespace Common.Algorithm
             Task edgeTask = Task.Factory.StartNew(
                 () => _agentList.Agents
                 .Where(a=>a[Agent.VariablesUsedInCode.AgentCurrentSite] != null)
-                .SelectMany(a => _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])
+                .SelectMany(a => _siteList.CommonPool((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])
                 .Where(s => s.IsOccupied)
                 .Select(s => new EdgeOutput
                 {
