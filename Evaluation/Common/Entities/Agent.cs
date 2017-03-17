@@ -102,6 +102,9 @@ namespace Common.Entities
             Agent agent = CreateInstance();
 
             agent.Variables = new Dictionary<string, dynamic>(Variables);
+
+            agent.Variables.Remove(Agent.VariablesUsedInCode.AgentCurrentSite);
+
             agent.Rules = Rules;
 
             return agent;

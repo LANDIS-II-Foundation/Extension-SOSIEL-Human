@@ -22,7 +22,7 @@ namespace Common.Algorithm
 
 
 
-        public async Task Run()
+        public async Task<string> Run()
         {
             Initialize();
 
@@ -35,6 +35,8 @@ namespace Common.Algorithm
             SaveProportionStatistic();
 
             SaveCustomStatistic();
+
+            return _outputFolder;
         }
 
         protected abstract void Initialize();

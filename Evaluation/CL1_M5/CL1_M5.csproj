@@ -4,15 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{63AF9FF4-E7F0-4137-BD01-AE5792ACF2BB}</ProjectGuid>
+    <ProjectGuid>{F31E2CEF-78BB-40BE-BBFE-D47B3F20BCE4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Factory</RootNamespace>
-    <AssemblyName>Factory</AssemblyName>
+    <RootNamespace>CL1_M5</RootNamespace>
+    <AssemblyName>CL1_M5</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <AssemblyVersion>1.0.4.6285</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +20,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,7 +28,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -40,44 +36,27 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlgorithmFactory.cs" />
+    <Compile Include="AgentSubtype.cs" />
+    <Compile Include="CL1M5Agent.cs" />
+    <Compile Include="CL1M5Algorithm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CL1_M1\CL1_M1.csproj">
-      <Project>{423b1ade-7ac2-4feb-8725-e700f149c197}</Project>
-      <Name>CL1_M1</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CL1_M2\CL1_M2.csproj">
-      <Project>{c9891968-5bf0-4bea-9289-234e0131bad5}</Project>
-      <Name>CL1_M2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CL1_M3\CL1_M3.csproj">
-      <Project>{d12f85d3-4c9b-48d4-8c6b-a07426da75ad}</Project>
-      <Name>CL1_M3</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CL1_M4\CL1_M4.csproj">
-      <Project>{b197ef59-d8b1-4194-966e-04f3987031ae}</Project>
-      <Name>CL1_M4</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CL1_M5\CL1_M5.csproj">
-      <Project>{f31e2cef-78bb-40be-bbfe-d47b3f20bce4}</Project>
-      <Name>CL1_M5</Name>
-    </ProjectReference>
+    <Content Include="CL1M5Agent.configuration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{50a0dc05-47bd-455a-b32e-ca2c9fc924fb}</Project>
       <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.DayStamp" BuildVersion_ConfigurationName="Any" BuildVersion_BuildAction="Both" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_StartDate="2017/3/6" BuildVersion_UseGlobalSettings="True" />
-    </VisualStudio>
-  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -130,6 +130,8 @@ namespace CL1_M1
         }
 
 
+
+
         private SubtypeProportionOutput CreateSubtypeProportionRecord(int iteration)
         {
             SubtypeProportionOutput sp = new SubtypeProportionOutput { Iteration = iteration };

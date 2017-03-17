@@ -22,6 +22,7 @@ namespace CL1_M4
         readonly Configuration<CL1M4Agent> _configuration;
 
         List<AvgWellbeingOutput> _averageWellbeingStatistic;
+        List<AvgVariablesOutput> _averageVariablesStatistic;
 
         bool _isAgentMovement;
 
@@ -40,6 +41,7 @@ namespace CL1_M4
 
             _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.IterationCount);
             _averageWellbeingStatistic = new List<AvgWellbeingOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            _averageVariablesStatistic = new List<AvgVariablesOutput>(_configuration.AlgorithmConfiguration.IterationCount);
 
             if (Directory.Exists(_outputFolder) == false)
                 Directory.CreateDirectory(_outputFolder);
@@ -113,6 +115,7 @@ namespace CL1_M4
 
                 _subtypeProportionStatistic.Add(CreateSubtypeProportionRecord(i));
                 _averageWellbeingStatistic.Add(CreateAvgWellbeingStatisticRecord(i));
+                _averageVariablesStatistic.Add(CreateAvgVariablesStatisticRecord(i));
 
                 FindInactiveAgents();
 
@@ -126,10 +129,10 @@ namespace CL1_M4
         protected override void SaveCustomStatistic()
         {
             SaveCommonPoolStatistic();
+            SaveAvgVariablesStatistic();
         }
 
-
-
+        
 
         private void CalculateParamsDependOnSite(IAgent agent)
         {
@@ -210,9 +213,37 @@ namespace CL1_M4
 
             aw.Avgs = _agentList.Agents.Where(a=>a[Agent.VariablesUsedInCode.AgentStatus] == "active")
                 .GroupBy(a=>(AgentSubtype)a[Agent.VariablesUsedInCode.AgentSubtype])
-                .Select(g=> new AvgWellbeing { Type = EnumHelper.EnumValueAsString(g.Key), AvgValue = g.Average(a => (double)CalculateAgentWellbeing(a, a[Agent.VariablesUsedInCode.AgentCurrentSite]))}).ToArray();
+                .OrderBy(g=>g.Key)
+                .Select(g=> new AvgWellbeingItem { Type = EnumHelper.EnumValueAsString(g.Key), AvgValue = g.Average(a => (double)CalculateAgentWellbeing(a, a[Agent.VariablesUsedInCode.AgentCurrentSite]))}).ToArray();
 
             return aw;
+        }
+
+        private AvgVariablesOutput CreateAvgVariablesStatisticRecord(int iteration)
+        {
+            List<AvgVariableItem> temp = new List<AvgVariableItem>(3);
+
+            IAgent[] activeAgents = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active").ToArray();
+
+            temp.Add(new AvgVariableItem
+            {
+                Name = Agent.VariablesUsedInCode.AgentC,
+                Value = activeAgents.Average(a=> (int)a[Agent.VariablesUsedInCode.AgentC])
+            });
+
+            temp.Add(new AvgVariableItem
+            {
+                Name = Agent.VariablesUsedInCode.AgentP,
+                Value = activeAgents.Average(a => (int)a[Agent.VariablesUsedInCode.AgentP])
+            });
+
+            temp.Add(new AvgVariableItem
+            {
+                Name = Agent.VariablesUsedInCode.AgentSiteWellbeing,
+                Value = activeAgents.Average(a => (double)CalculateAgentWellbeing(a, a[Agent.VariablesUsedInCode.AgentCurrentSite]))
+            });
+
+            return new AvgVariablesOutput { Iteration = iteration, Avgs = temp.ToArray() };
         }
 
 
@@ -234,15 +265,20 @@ namespace CL1_M4
         {
             SubtypeProportionOutput sp = new SubtypeProportionOutput { Iteration = iteration };
 
-            sp.Proportion = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied)
-                .Average(site => CalculateSubtypeProportion(AgentSubtype.Co, site));
+            sp.Proportion = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied && s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == AgentSubtype.Co)
+                 .Average(site => CalculateSubtypeProportion(AgentSubtype.Co, site));
 
             return sp;
         }
 
         private void SaveCommonPoolStatistic()
         {
-            ResultSavingHelper.Save(_averageWellbeingStatistic.Select(cps => new SimpleLineOutput(cps)), $@"{_outputFolder}\average_wellbeing_statistic.csv");
+            ResultSavingHelper.Save(_averageWellbeingStatistic, $@"{_outputFolder}\average_wellbeing_statistic.csv");
+        }
+
+        private void SaveAvgVariablesStatistic()
+        {
+            ResultSavingHelper.Save(_averageVariablesStatistic, $@"{_outputFolder}\average_variables_statistic.csv");
         }
     }
 }

@@ -12,13 +12,22 @@ namespace Common.Helpers
     {
         public static T RandomizeOne<T>(this IEnumerable<T> source)
         {
-            T[] temp = source.ToArray();
-
-            int position = LinearUniformRandom.GetInstance.Next(temp.Length);
-
-            return temp[position];
+            return RandomizeOne(source.ToArray());
         }
 
+        public static T RandomizeOne<T>(this T[] source)
+        {
+            int position = LinearUniformRandom.GetInstance.Next(source.Length);
+
+            return source[position];
+        }
+
+        public static T RandomizeOne<T>(this List<T> source)
+        {
+            int position = LinearUniformRandom.GetInstance.Next(source.Count);
+
+            return source[position];
+        }
 
         public static List<T> Randomize<T>(IEnumerable<T> original)
         {

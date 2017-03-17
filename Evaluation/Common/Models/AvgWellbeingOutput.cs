@@ -4,9 +4,11 @@ using System.Linq;
 
 using System.Threading.Tasks;
 
+using FileHelpers;
+
 namespace Common.Models
 {
-    public class AvgWellbeing
+    public class AvgWellbeingItem
     {
         public string Type { get; set; }
 
@@ -18,15 +20,16 @@ namespace Common.Models
         }
     }
 
+    [DelimitedRecord(";")]
     public class AvgWellbeingOutput
     {
+        [FieldOrder(0)]
         public int Iteration { get; set; }
 
-        public AvgWellbeing[] Avgs { get; set; }
-
-        public override string ToString()
-        {
-            return $"{Iteration};{string.Join(";", Avgs.Select(aw=>aw.ToString()))}";
-        }
+        //todo: replace on property
+        [FieldOrder(1)]
+        [FieldConverter(typeof(ToStringConverter))]
+        public AvgWellbeingItem[] Avgs; 
+        
     }
 }

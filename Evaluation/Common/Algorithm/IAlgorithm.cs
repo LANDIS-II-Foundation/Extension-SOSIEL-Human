@@ -10,6 +10,6 @@ namespace Common.Algorithm
     {
         string Name { get; }
 
-        Task Run();
+        Task<string> Run();
     }
 }

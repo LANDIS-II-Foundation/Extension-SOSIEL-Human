@@ -54,17 +54,35 @@ namespace Common.Entities
             return Sites.SelectMany(s => s);
         }
 
-        public IEnumerable<Site> AdjacentSites(Site centerSite)
+        public Site[] TakeClosestEmptySites(Site centerSite)
         {
-            return CommonPool(centerSite, false);
+            Site[] closestEmptySites = null;
+
+            int circle = 1;
+
+            do
+            {
+                closestEmptySites = AdjacentSites(centerSite, circle).Where(s=>s.IsOccupied == false).ToArray();
+
+                circle++;
+
+            } while (closestEmptySites.Length < 1 && circle < 6); //Defence from looping
+
+
+            return closestEmptySites;
         }
 
-        public IEnumerable<Site> CommonPool(Site centerSite, bool includeCenter = true)
+        public IEnumerable<Site> AdjacentSites(Site centerSite, int circle = 1)
+        {
+            return CommonPool(centerSite, false, circle);
+        }
+
+        public IEnumerable<Site> CommonPool(Site centerSite, bool includeCenter = true, int circle = 1)
         {
             List<Site> temp = new List<Site>(centerSite.GroupSize);
 
-            for (int i = centerSite.VerticalPosition > 0 ? centerSite.VerticalPosition - 1 : 0; i <= centerSite.VerticalPosition + 1 && i < Sites.Length; i++)
-                for (int j = centerSite.HorizontalPosition > 0 ? centerSite.HorizontalPosition - 1 : 0; j <= centerSite.HorizontalPosition + 1 && j < Sites.Length; j++)
+            for (int i = centerSite.VerticalPosition - circle > 0 ? centerSite.VerticalPosition - circle : 0; i <= centerSite.VerticalPosition + circle && i < Sites.Length; i++)
+                for (int j = centerSite.HorizontalPosition - circle > 0 ? centerSite.HorizontalPosition - circle : 0; j <= centerSite.HorizontalPosition + circle && j < Sites.Length; j++)
                 {
                     Site site = Sites[i][j];
 

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading.Tasks;
+using System.Diagnostics;
+
 
 using Factory;
-using System.Threading.Tasks;
+
 
 namespace Demo
 {
@@ -31,11 +34,15 @@ namespace Demo
 
             Console.WriteLine($"{algorithm.Name} algorithm is running....");
 
-            Task.WaitAll(algorithm.Run());
+            string outputDirectory= string.Empty;
+
+            Task.WaitAll(algorithm.Run().ContinueWith(d=> outputDirectory = d.Result));
 
             Console.WriteLine("Algorithm has completed");
 
             WaitKeyPress();
+
+            Process.Start(Path.Combine(Directory.GetCurrentDirectory(), outputDirectory));
         }
 
         private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)

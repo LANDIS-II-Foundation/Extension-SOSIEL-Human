@@ -28,6 +28,10 @@ namespace CL1_M4
 
             this[VariablesUsedInCode.AgentSubtype] = subtype;
 
+            this[VariablesUsedInCode.AgentC] = 0;
+            this[VariablesUsedInCode.AgentP] = 0;
+
+
             if (subtype == AgentSubtype.Co || subtype == AgentSubtype.Enf)
             {
                 this[VariablesUsedInCode.AgentC] = this[VariablesUsedInCode.Engage];
@@ -36,11 +40,6 @@ namespace CL1_M4
                 {
                     this[VariablesUsedInCode.AgentP] = this[VariablesUsedInCode.Punishment];
                 }
-            }
-            else
-            {
-                this[VariablesUsedInCode.AgentC] = 0;
-                this[VariablesUsedInCode.AgentP] = 0;
             }
         }
     }
