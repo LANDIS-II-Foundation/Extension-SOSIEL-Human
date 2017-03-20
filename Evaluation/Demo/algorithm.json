@@ -1,6 +1,6 @@
 ﻿{
   "AlgorithmConfiguration": {
-    "Model": 1,
+    "Model": 2,
     "CognitiveLevel": 1,
     "ActionTaking": 1,
     "IterationCount": 1000,

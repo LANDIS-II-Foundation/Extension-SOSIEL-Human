@@ -88,5 +88,57 @@ namespace Common.Algorithm
             ResultSavingHelper.Save(_subtypeProportionStatistic, $@"{_outputFolder}\subtype_proportion.csv");
         }
 
+
+
+        //This implementation suitable for models with common pool
+        protected virtual double CalculateSubtypeProportion(int subtype, Site centerSite)
+        {
+            var occupiedCommonPool = _siteList.CommonPool(centerSite).Where(s => s.IsOccupied).ToArray();
+
+
+            return occupiedCommonPool.Count(s => (int)s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
+                / (double)occupiedCommonPool.Length;
+        }
+
+
+
+
+
+
+        protected SubtypeProportionOutput CreateNeighborhoodSubtypeProportionRecord(int iteration, int subtype)
+        {
+            SubtypeProportionOutput sp = new SubtypeProportionOutput { Iteration = iteration };
+
+            sp.Proportion = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active")
+                .Average(a => (double)CalculateSubtypeProportion(subtype, a[Agent.VariablesUsedInCode.AgentCurrentSite]));
+
+            return sp;
+        }
+
+
+        protected SubtypeProportionOutput CreateCommonPoolSubtypeProportionRecord(int iteration, int subtype)
+        {
+            SubtypeProportionOutput sp = new SubtypeProportionOutput { Iteration = iteration };
+
+            sp.Proportion = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
+                .Average(a => (double)CalculateSubtypeProportion(subtype, a[Agent.VariablesUsedInCode.AgentCurrentSite]));
+
+            return sp;
+        }
+
+
+
+        protected virtual CommonPoolSubtypeFrequencyOutput CreateCommonPoolFrequencyRecord(int iteration, double disturbance, int subtype)
+        {
+            CommonPoolSubtypeFrequencyOutput sf = new CommonPoolSubtypeFrequencyOutput { Iteration = iteration, Disturbance = disturbance };
+
+            sf.IntervalFrequency = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active")
+                .Select(a => CalculateSubtypeProportion(subtype, a[Agent.VariablesUsedInCode.AgentCurrentSite]))
+                .Select(v => new { Interval = Math.Round(v, 1, MidpointRounding.AwayFromZero), Value = v })
+                .GroupBy(s => s.Interval).OrderBy(g => g.Key)
+                .Select(g => g.Count()).ToArray();
+
+            return sf;
+        }
     }
 }

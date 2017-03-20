@@ -44,7 +44,9 @@ namespace CL1_M1
 
         protected override void ExecuteAlgorithm()
         {
-            _subtypeProportionStatistic.Add(CreateSubtypeProportionRecord(0));
+            int agentType = (int)AgentSubtype.TypeA;
+
+            _subtypeProportionStatistic.Add(CreateNeighborhoodSubtypeProportionRecord(0, agentType));
 
             for (int i = 1; i <= _configuration.AlgorithmConfiguration.IterationCount; i++)
             {
@@ -62,7 +64,7 @@ namespace CL1_M1
 
                     Site[] betterSites = vacantSites
                         .Select(site => new {
-                            Proportion = CalculateSubtypeProportion(agent[Agent.VariablesUsedInCode.AgentSubtype], site),
+                            Proportion = CalculateSubtypeProportion((int)agent[Agent.VariablesUsedInCode.AgentSubtype], site),
                             site
                         })
                         .Where(obj => obj.Proportion > agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion])
@@ -96,7 +98,7 @@ namespace CL1_M1
                     }
                 }
 
-                _subtypeProportionStatistic.Add(CreateSubtypeProportionRecord(i));
+                _subtypeProportionStatistic.Add(CreateNeighborhoodSubtypeProportionRecord(i, agentType));
 
                 if(_isAgentMovement == false)
                 {
@@ -111,7 +113,7 @@ namespace CL1_M1
 
             Site[] adjacentSites = _siteList.AdjacentSites(currentSite).ToArray();
 
-            agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion] = CalculateSubtypeProportion(agent[Agent.VariablesUsedInCode.AgentSubtype], currentSite);
+            agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion] = CalculateSubtypeProportion((int)agent[Agent.VariablesUsedInCode.AgentSubtype], currentSite);
 
             //optional calculations, they may be use in rules
 
@@ -123,25 +125,11 @@ namespace CL1_M1
                 .Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] != agent[Agent.VariablesUsedInCode.AgentSubtype]);
         }
 
-        private double CalculateSubtypeProportion(AgentSubtype subtype, Site centerSite)
+
+        protected override double CalculateSubtypeProportion(int subtype, Site centerSite)
         {
             return _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied)
-                .Count(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == subtype) / (double)centerSite.GroupSize;
+                .Count(s => (int)s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype] == subtype) / (double)centerSite.GroupSize;
         }
-
-
-
-
-        private SubtypeProportionOutput CreateSubtypeProportionRecord(int iteration)
-        {
-            SubtypeProportionOutput sp = new SubtypeProportionOutput { Iteration = iteration };
-
-            sp.Proportion = _siteList.AsSiteEnumerable().Where(s=>s.IsOccupied)
-                .Average(site => CalculateSubtypeProportion(AgentSubtype.TypeA, site));
-
-            return sp;
-        }
-
-        
     }
 }
