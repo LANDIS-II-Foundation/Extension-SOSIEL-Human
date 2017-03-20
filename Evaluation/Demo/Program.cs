@@ -36,7 +36,7 @@ namespace Demo
 
             string outputDirectory= string.Empty;
 
-            Task.WaitAll(algorithm.Run().ContinueWith(d=> outputDirectory = d.Result));
+            Task.WaitAll(algorithm.Run().ContinueWith(d => outputDirectory = d.Result));
 
             Console.WriteLine("Algorithm has completed");
 

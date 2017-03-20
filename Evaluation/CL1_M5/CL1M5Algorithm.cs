@@ -89,13 +89,13 @@ namespace CL1_M5
                 {
                     CalculateParamsDependOnSite(agent);
 
-                    Site[] betterSites = vacantSites
+                    Site[] betterSites = vacantSites.AsParallel()
                         .Select(site => new
                         {
                             site,
                             Wellbeing = CalculateAgentWellbeing(agent, site)
                         })
-                        .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing])
+                        .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing]).AsSequential()
                         .GroupBy(obj => obj.Wellbeing).OrderByDescending(obj => obj.Key)
                         .Take(1).SelectMany(g => g.Select(o => o.site)).ToArray();
 
@@ -130,7 +130,7 @@ namespace CL1_M5
 
                 FindInactiveAgents();
 
-                //Reproduction();
+                Reproduction();
 
                 if (_isAgentMovement == false)
                 {
@@ -323,7 +323,7 @@ namespace CL1_M5
 
         private void SaveCommonPoolFrequncyStatistic()
         {
-            ResultSavingHelper.Save(_commonPoolFrequency.Select(cps => new SimpleLineOutput(cps)), $@"{_outputFolder}\common_pool_frequncy_statistic.csv");
+            ResultSavingHelper.Save(_commonPoolFrequency, $@"{_outputFolder}\common_pool_frequncy_statistic.csv");
         }
     }
 }

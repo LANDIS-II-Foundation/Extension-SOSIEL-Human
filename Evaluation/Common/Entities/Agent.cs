@@ -45,6 +45,10 @@ namespace Common.Entities
             //public const string MaxPunishment = "MaxP";
             public const string Punishment = "P";
             public const string AgentP = "AgentP";
+
+
+            //M6
+            public const string ResourceMax = "ResourceMax";
         }
 
 

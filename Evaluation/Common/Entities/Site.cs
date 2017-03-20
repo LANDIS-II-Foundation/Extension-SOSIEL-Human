@@ -17,6 +17,7 @@ namespace Common.Entities
 
         public int GroupSize { get; set; }
 
+        public double ResourceCoefficient { get; set; }
 
         public IAgent OccupiedBy { get; set; }
 

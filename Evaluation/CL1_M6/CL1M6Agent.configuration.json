@@ -1,0 +1,38 @@
+﻿{
+  "AgentConfiguration": {
+    "Variables": {
+      "AgentType": 1,
+      "AgentStatus": "active",
+      "E": 10,
+      "M": 1,
+      "ResourceMax": 20,
+      "AgentBetterSiteAvailable": false,
+      "InitialDisturbance": 0.2,
+      "DisturbanceIncrement": 0.2 
+    },
+    "Rules": [
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentBetterSiteAvailable",
+            "Sign": "==",
+            "Value": true,
+            "ReferenceVariable": ""
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentCurrentSite",
+          "Value": 0,
+          "VariableValue": "AgentBetterSite"
+        },
+        "FreshnessStatus": 1,
+        "RequiredParticipants": 1,
+        "IsAction": true
+      }
+    ]
+  }
+}

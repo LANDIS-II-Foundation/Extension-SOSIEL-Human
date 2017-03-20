@@ -109,7 +109,7 @@ namespace Common.Algorithm
         {
             SubtypeProportionOutput sp = new SubtypeProportionOutput { Iteration = iteration };
 
-            sp.Proportion = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active")
+            sp.Proportion = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active").AsParallel()
                 .Average(a => (double)CalculateSubtypeProportion(subtype, a[Agent.VariablesUsedInCode.AgentCurrentSite]));
 
             return sp;
@@ -120,7 +120,9 @@ namespace Common.Algorithm
         {
             SubtypeProportionOutput sp = new SubtypeProportionOutput { Iteration = iteration };
 
-            sp.Proportion = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
+            int temp = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).Count();
+
+            sp.Proportion = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).AsParallel()
                 .Average(a => (double)CalculateSubtypeProportion(subtype, a[Agent.VariablesUsedInCode.AgentCurrentSite]));
 
             return sp;
@@ -132,11 +134,17 @@ namespace Common.Algorithm
         {
             CommonPoolSubtypeFrequencyOutput sf = new CommonPoolSubtypeFrequencyOutput { Iteration = iteration, Disturbance = disturbance };
 
-            sf.IntervalFrequency = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active")
+            sf.IntervalFrequency = new int[10];
+
+            _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active").AsParallel()
                 .Select(a => CalculateSubtypeProportion(subtype, a[Agent.VariablesUsedInCode.AgentCurrentSite]))
-                .Select(v => new { Interval = Math.Round(v, 1, MidpointRounding.AwayFromZero), Value = v })
-                .GroupBy(s => s.Interval).OrderBy(g => g.Key)
-                .Select(g => g.Count()).ToArray();
+                .Select(v => new { Interval = Math.Round(v, 1, MidpointRounding.AwayFromZero), Value = v }).AsSequential()
+                .ForEach(o =>
+                {
+                    int i = Convert.ToInt32((o.Interval == 0 ? 0.1 : o.Interval) / 0.1) - 1;
+
+                    sf.IntervalFrequency[i]++;
+                });
 
             return sf;
         }

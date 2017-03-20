@@ -40,7 +40,7 @@ namespace Common.Models
         public override string ToString()
         {
             string line1 = $"{nameof(CommonPoolStat.Center)};{string.Join(";", CommonPools.Select(cp => cp.Center.ToString()))}";
-            string line2 = $"{nameof(CommonPoolStat.CommonPoolWellbeing)};{string.Join(";", CommonPools.Select(cp => cp.CommonPoolWellbeing))}";
+            string line2 = $"{nameof(CommonPoolStat.CommonPoolWellbeing)};{string.Join(";", CommonPools.Select(cp => cp.CommonPoolWellbeing.ToString("0.000")))}";
             //string line3 = $"{nameof(CommonPoolProportion.CoProportion)};{string.Join(";", CommonPools.Select(cp => cp.CoProportion))}";
 
             //string line4 = string.Empty;

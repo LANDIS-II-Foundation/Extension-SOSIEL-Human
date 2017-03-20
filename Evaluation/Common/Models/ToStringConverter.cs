@@ -17,6 +17,11 @@ namespace Common.Models
 
         public override string FieldToString(object fieldValue)
         {
+            if(fieldValue is double)
+            {
+                return string.Format("{0:0.000}", fieldValue);
+            }
+
             return fieldValue.ToString();
         }
     }

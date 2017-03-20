@@ -62,12 +62,12 @@ namespace CL1_M1
                 {
                     CalculateParamsDependOnSite(agent);
 
-                    Site[] betterSites = vacantSites
+                    Site[] betterSites = vacantSites.AsParallel()
                         .Select(site => new {
                             Proportion = CalculateSubtypeProportion((int)agent[Agent.VariablesUsedInCode.AgentSubtype], site),
                             site
                         })
-                        .Where(obj => obj.Proportion > agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion])
+                        .Where(obj => obj.Proportion > agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion]).AsSequential()
                         .GroupBy(obj => obj.Proportion).OrderByDescending(obj => obj.Key)
                         .Take(1).SelectMany(g => g.Select(o=>o.site)).ToArray();
 

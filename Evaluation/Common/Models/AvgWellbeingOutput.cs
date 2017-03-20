@@ -16,7 +16,7 @@ namespace Common.Models
 
         public override string ToString()
         {
-            return $"{Type}: {AvgValue}";
+            return string.Format("{0}: {1:0.000}", Type, AvgValue);
         }
     }
 

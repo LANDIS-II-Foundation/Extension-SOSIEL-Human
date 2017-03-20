@@ -11,8 +11,11 @@ namespace Common.Models
     [DelimitedRecord(";")]
     public class SubtypeProportionOutput
     {
+        [FieldOrder(0)]
         public int Iteration { get; set; }
 
-        public double Proportion { get; set; }
+        [FieldOrder(1)]
+        [FieldConverter(typeof(ToStringConverter))]
+        public double Proportion;
     }
 }

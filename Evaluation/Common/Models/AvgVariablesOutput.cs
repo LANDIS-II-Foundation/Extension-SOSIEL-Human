@@ -17,7 +17,7 @@ namespace Common.Models
 
         public override string ToString()
         {
-            return $"{Name}: {Value}";
+            return string.Format("{0}: {1:0.000}", Name, Value);
         }
     }
 

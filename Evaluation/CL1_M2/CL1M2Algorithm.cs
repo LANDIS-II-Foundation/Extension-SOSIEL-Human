@@ -68,13 +68,13 @@ namespace CL1_M2
                 {
                     CalculateParamsDependOnSite(agent);
 
-                    Site[] betterSites = vacantSites
+                    Site[] betterSites = vacantSites.AsParallel()
                         .Select(site => new
                         {
                             site,
                             Wellbeing = CalculateAgentWellbeing(agent, site)
                         })
-                        .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing])
+                        .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing]).AsSequential()
                         .GroupBy(obj => obj.Wellbeing).OrderByDescending(obj => obj.Key)
                         .Take(1).SelectMany(g => g.Select(o => o.site)).ToArray();
 
@@ -156,7 +156,7 @@ namespace CL1_M2
         {
             CommonPoolOutput cp = new CommonPoolOutput { Iteration = iteration };
 
-            cp.CommonPools = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied)
+            cp.CommonPools = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied).AsParallel().AsOrdered()
                 .Select(site => CalculateCommonPoolStat(site)).ToArray();
 
             return cp;

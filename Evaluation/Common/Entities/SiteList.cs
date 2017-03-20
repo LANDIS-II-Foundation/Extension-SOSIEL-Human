@@ -6,6 +6,7 @@ using System.Linq;
 namespace Common.Entities
 {
     using Enums;
+    using Helpers;
 
     public class SiteList
     {
@@ -46,6 +47,15 @@ namespace Common.Entities
             site.Type = SiteType.Center;
             site.GroupSize = 8;
 
+            int fq = Convert.ToInt32(Math.Round(0.25 * size, MidpointRounding.AwayFromZero));
+            int tq = Convert.ToInt32(Math.Round(0.75 * size, MidpointRounding.AwayFromZero));
+
+
+            if ((horizontalPosition == fq || horizontalPosition == tq) && (verticalPosition == fq || verticalPosition == tq))
+            {
+                site.ResourceCoefficient = 1;
+            }
+
             return site;
         }
 
@@ -62,7 +72,7 @@ namespace Common.Entities
 
             do
             {
-                closestEmptySites = AdjacentSites(centerSite, circle).Where(s=>s.IsOccupied == false).ToArray();
+                closestEmptySites = AdjacentSites(centerSite, circle).Where(s => s.IsOccupied == false).ToArray();
 
                 circle++;
 
@@ -95,6 +105,8 @@ namespace Common.Entities
 
         public static SiteList Generate(int agentCount, double vacantProportion)
         {
+            List<Site> resourceCenters = new List<Site>(4);
+
             SiteList siteList = new SiteList();
 
             int size = CalculateMatrixSize(agentCount, vacantProportion);
@@ -108,9 +120,30 @@ namespace Common.Entities
 
                 for (int j = startIndex; j < size; j++)
                 {
-                    siteList.Sites[i][j] = CreateSite(j, i, startIndex, size - 1);
+                    Site newSite = CreateSite(j, i, startIndex, size - 1);
+
+                    siteList.Sites[i][j] = newSite;
+
+
+                    if (newSite.ResourceCoefficient == 1)
+                    {
+                        resourceCenters.Add(newSite);
+                    }
                 }
             }
+
+            siteList.AsSiteEnumerable().AsParallel().Where(s => resourceCenters.Any(c => c.Equals(s)) == false).ForAll(s =>
+              {
+                  int proximity = resourceCenters.Select(c => Math.Max(Math.Abs(c.HorizontalPosition - s.HorizontalPosition), Math.Abs(c.VerticalPosition - s.VerticalPosition)))
+                    .Min();
+
+                  s.ResourceCoefficient = (Math.Round(0.25 * (size - 1), MidpointRounding.AwayFromZero) - proximity) / Math.Round(0.25 * (size - 1), MidpointRounding.AwayFromZero);
+
+
+                  if (s.ResourceCoefficient < 0)
+                      throw new Exception("Resource coeff less than 0");
+              });
+
             return siteList;
         }
 
