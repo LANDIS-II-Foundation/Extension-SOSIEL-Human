@@ -21,7 +21,8 @@ namespace CL1_M2
 
         readonly Configuration<CL1M2Agent> _configuration;
 
-        List<CommonPoolOutput> _commonPoolStatistic;
+        List<AvgWellbeingOutput> _avgWellbeing;
+        //List<CommonPoolOutput> _commonPoolStatistic;
 
         bool _isAgentMovement;
 
@@ -32,7 +33,8 @@ namespace CL1_M2
             _outputFolder = @"Output\CL1_M2";
 
             _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.IterationCount);
-            _commonPoolStatistic = new List<CommonPoolOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            _avgWellbeing = new List<AvgWellbeingOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            //_commonPoolStatistic = new List<CommonPoolOutput>(_configuration.AlgorithmConfiguration.IterationCount);
 
             if (Directory.Exists(_outputFolder) == false)
                 Directory.CreateDirectory(_outputFolder);
@@ -53,6 +55,7 @@ namespace CL1_M2
 
 
             _subtypeProportionStatistic.Add(CreateCommonPoolSubtypeProportionRecord(0, agentType));
+            _avgWellbeing.Add(CreateAvgSubtypeWellbeingStatisticRecord(0));
 
             for (int i = 1; i <= _configuration.AlgorithmConfiguration.IterationCount; i++)
             {
@@ -103,7 +106,8 @@ namespace CL1_M2
                 }
 
                 _subtypeProportionStatistic.Add(CreateCommonPoolSubtypeProportionRecord(i, agentType));
-                _commonPoolStatistic.Add(CreateCommonPoolStatisticRecord(i));
+                _avgWellbeing.Add(CreateAvgSubtypeWellbeingStatisticRecord(i));
+                //_commonPoolStatistic.Add(CreateCommonPoolStatisticRecord(i));
 
                 if (_isAgentMovement == false)
                 {
@@ -114,7 +118,8 @@ namespace CL1_M2
 
         protected override void SaveCustomStatistic()
         {
-            SaveCommonPoolStatistic();
+            //SaveCommonPoolStatistic();
+            SaveAvgWellbeingStatistic();
         }
 
         private void CalculateParamsDependOnSite(IAgent agent)
@@ -141,7 +146,7 @@ namespace CL1_M2
             agent[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion] = CalculateSubtypeProportion((int)agent[Agent.VariablesUsedInCode.AgentSubtype], currentSite);
         }
 
-        private double CalculateAgentWellbeing(IAgent agent, Site centerSite)
+        protected override double CalculateAgentWellbeing(IAgent agent, Site centerSite)
         {
             //we take only adjacement sites because in some cases center site can be empty
             var commonPool = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied).ToArray();
@@ -152,32 +157,32 @@ namespace CL1_M2
                 + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)commonPool.Length + 1);
         }
 
-        private CommonPoolOutput CreateCommonPoolStatisticRecord(int iteration)
-        {
-            CommonPoolOutput cp = new CommonPoolOutput { Iteration = iteration };
+        //private CommonPoolOutput CreateCommonPoolStatisticRecord(int iteration)
+        //{
+        //    CommonPoolOutput cp = new CommonPoolOutput { Iteration = iteration };
 
-            cp.CommonPools = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied).AsParallel().AsOrdered()
-                .Select(site => CalculateCommonPoolStat(site)).ToArray();
+        //    cp.CommonPools = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied).AsParallel().AsOrdered()
+        //        .Select(site => CalculateCommonPoolStat(site)).ToArray();
 
-            return cp;
-        }
+        //    return cp;
+        //}
 
-        private CommonPoolStat CalculateCommonPoolStat(Site centerSite)
-        {
-            IAgent agent = centerSite.OccupiedBy;
-            var occupiedCommonPool = _siteList.CommonPool(centerSite).Where(s => s.IsOccupied).ToArray();
-            int commonPoolC = occupiedCommonPool.Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]);
-            double poolSize = occupiedCommonPool.Length;
+        //private CommonPoolStat CalculateCommonPoolStat(Site centerSite)
+        //{
+        //    IAgent agent = centerSite.OccupiedBy;
+        //    var occupiedCommonPool = _siteList.CommonPool(centerSite).Where(s => s.IsOccupied).ToArray();
+        //    int commonPoolC = occupiedCommonPool.Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]);
+        //    double poolSize = occupiedCommonPool.Length;
 
 
-            return new CommonPoolStat
-            {
-                Center = new CommonPoolCenter { X = centerSite.HorizontalPosition + 1, Y = centerSite.VerticalPosition + 1 },  //zero-based numeration
-                CommonPoolWellbeing = agent[Agent.VariablesUsedInCode.Engage] * poolSize + commonPoolC
-                    * (agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] / poolSize - 1)//,
-                //CoProportion = CalculateSubtypeProportion(AgentSubtype.Co, occupiedCommonPool)
-            };
-        }
+        //    return new CommonPoolStat
+        //    {
+        //        Center = new CommonPoolCenter { X = centerSite.HorizontalPosition + 1, Y = centerSite.VerticalPosition + 1 },  //zero-based numeration
+        //        CommonPoolWellbeing = agent[Agent.VariablesUsedInCode.Engage] * poolSize + commonPoolC
+        //            * (agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] / poolSize - 1)//,
+        //        //CoProportion = CalculateSubtypeProportion(AgentSubtype.Co, occupiedCommonPool)
+        //    };
+        //}
 
         
 
@@ -190,7 +195,7 @@ namespace CL1_M2
 
         
 
-        private AvgWellbeingOutput CreateAvgSubtypeWellbeingStatisticRecord(int iteration, AgentList agentList)
+        private AvgWellbeingOutput CreateAvgSubtypeWellbeingStatisticRecord(int iteration)
         {
             AvgWellbeingOutput aw = new AvgWellbeingOutput { Iteration = iteration };
 
@@ -202,9 +207,14 @@ namespace CL1_M2
             return aw;
         }
 
-        private void SaveCommonPoolStatistic()
+        //private void SaveCommonPoolStatistic()
+        //{
+        //    ResultSavingHelper.Save(_commonPoolStatistic.Select(cps => new SimpleLineOutput(cps)), $@"{_outputFolder}\common_pool_statistic.csv");
+        //}
+
+        private void SaveAvgWellbeingStatistic()
         {
-            ResultSavingHelper.Save(_commonPoolStatistic.Select(cps => new SimpleLineOutput(cps)), $@"{_outputFolder}\common_pool_statistic.csv");
+            ResultSavingHelper.Save(_avgWellbeing, $@"{_outputFolder}\subtype_wellbeing_statistic.csv");
         }
     }
 }

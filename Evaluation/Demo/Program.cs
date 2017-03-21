@@ -34,7 +34,7 @@ namespace Demo
 
             Console.WriteLine($"{algorithm.Name} algorithm is running....");
 
-            string outputDirectory= string.Empty;
+            string outputDirectory = string.Empty;
 
             Task.WaitAll(algorithm.Run().ContinueWith(d => outputDirectory = d.Result));
 
@@ -47,19 +47,19 @@ namespace Demo
 
         private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Exception[] exceptions;
+            Exception exception;
 
             if (e.ExceptionObject is AggregateException)
             {
-                exceptions = (e.ExceptionObject as AggregateException).InnerExceptions.ToArray();
+                exception = (e.ExceptionObject as AggregateException).InnerException;
             }
             else
             {
-                exceptions = new Exception[] { e.ExceptionObject as Exception };
+                exception = e.ExceptionObject as Exception;
             }
 
-            foreach(var ex in exceptions)
-                Console.WriteLine($"ERROR! {ex.Message}");
+
+            Console.WriteLine($"ERROR! {exception.Message}");
 
             WaitKeyPress();
 

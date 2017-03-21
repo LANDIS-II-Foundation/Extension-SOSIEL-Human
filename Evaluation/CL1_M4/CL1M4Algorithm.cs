@@ -171,7 +171,7 @@ namespace CL1_M4
             agent[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion] = CalculateSubtypeProportion((int)agent[Agent.VariablesUsedInCode.AgentSubtype], currentSite);
         }
 
-        private double CalculateAgentWellbeing(IAgent agent, Site centerSite)
+        protected override double CalculateAgentWellbeing(IAgent agent, Site centerSite)
         {
             //we take only adjacement sites because in some cases center site can be empty
             var commonPool = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied).ToArray();
@@ -190,22 +190,6 @@ namespace CL1_M4
             wellbeing -= punishment;
 
             return wellbeing;
-        }
-
-        private void FindInactiveAgents()
-        {
-            _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active")
-                .Select(agent => new
-                {
-                    agent,
-                    Wellbeing = CalculateAgentWellbeing(agent, agent[Agent.VariablesUsedInCode.AgentCurrentSite])
-                })
-                .Where(obj => obj.Wellbeing <= 0)
-                .ForEach(obj =>
-                {
-                    obj.agent[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
-                    obj.agent[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
-                });
         }
 
         //private AvgWellbeingOutput CreateAvgWellbeingStatisticRecord(int iteration)

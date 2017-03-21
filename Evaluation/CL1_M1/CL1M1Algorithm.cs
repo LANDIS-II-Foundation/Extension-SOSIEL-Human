@@ -77,7 +77,7 @@ namespace CL1_M1
                     {
                         Site currentSite = agent[Agent.VariablesUsedInCode.AgentCurrentSite];
 
-                        Site bestSite = betterSites.Select(site => new { Distance = site.DistanceToAnother(currentSite), site }).GroupBy(o => o.Distance)
+                        Site bestSite = betterSites.Select(site => new { Distance = site.DistanceToAnotherSite(currentSite), site }).GroupBy(o => o.Distance)
                             .OrderBy(g => g.Key).Take(1).SelectMany(g => g.Select(o=>o.site)).RandomizeOne();
 
                         agent[Agent.VariablesUsedInCode.AgentBetterSite] = bestSite;

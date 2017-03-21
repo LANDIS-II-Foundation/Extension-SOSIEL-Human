@@ -89,13 +89,13 @@ namespace CL1_M6
                 {
                     CalculateParamsDependOnSite(agent);
 
-                    Site[] betterSites = vacantSites
+                    Site[] betterSites = vacantSites.AsParallel()
                         .Select(site => new
                         {
                             site,
                             Wellbeing = CalculateAgentWellbeing(agent, site)
                         })
-                        .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing])
+                        .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing]).AsSequential()
                         .GroupBy(obj => obj.Wellbeing).OrderByDescending(obj => obj.Key)
                         .Take(1).SelectMany(g => g.Select(o => o.site)).ToArray();
 
@@ -130,49 +130,12 @@ namespace CL1_M6
 
                 FindInactiveAgents();
 
-                Reproduction();
+                Reproduction<CL1M6Agent>(_configuration.AlgorithmConfiguration.AgentCount, (int)AgentSubtype.NonCo);
 
                 if (_isAgentMovement == false)
                 {
                     break;
                 }
-            }
-        }
-
-        private void Reproduction()
-        {
-            IAgent[] activeAgents = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active").ToArray();
-
-            int newAgentCount = activeAgents.Length - _configuration.AlgorithmConfiguration.AgentCount;
-
-            while (newAgentCount > 0)
-            {
-                IAgent targetAgent = activeAgents.RandomizeOne();
-
-                IAgent[] poolParticipants = _siteList.CommonPool((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite])
-                    .Where(s => s.IsOccupied).Select(s => s.OccupiedBy).ToArray();
-
-                int contributionsAmount = poolParticipants.Sum(a => a[Agent.VariablesUsedInCode.AgentC]);
-
-                List<IAgent> vector = new List<IAgent>(100);
-
-                poolParticipants.ForEach(a =>
-                {
-                    int count = Convert.ToInt32(Math.Round(a[Agent.VariablesUsedInCode.AgentC] / (contributionsAmount) * 100));
-
-                    for (int i = 0; i < count; i++) { vector.Add(a); }
-
-                });
-
-                CL1M6Agent prototype = vector.RandomizeOne() as CL1M6Agent;
-
-                CL1M6Agent replica = prototype.Clone();
-
-                Site targetSite = _siteList.TakeClosestEmptySites((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite]).RandomizeOne();
-
-                replica[Agent.VariablesUsedInCode.AgentCurrentSite] = targetSite;
-
-                newAgentCount--;
             }
         }
 
@@ -211,7 +174,7 @@ namespace CL1_M6
             agent[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion] = CalculateSubtypeProportion((int)agent[Agent.VariablesUsedInCode.AgentSubtype], currentSite);
         }
 
-        private double CalculateAgentWellbeing(IAgent agent, Site centerSite)
+        protected override double CalculateAgentWellbeing(IAgent agent, Site centerSite)
         {
             //we take only adjacement sites because in some cases center site can be empty
             var commonPool = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied).ToArray();
@@ -229,23 +192,10 @@ namespace CL1_M6
 
             wellbeing -= punishment;
 
-            return wellbeing;
-        }
 
-        private void FindInactiveAgents()
-        {
-            _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active")
-                .Select(agent => new
-                {
-                    agent,
-                    Wellbeing = CalculateAgentWellbeing(agent, agent[Agent.VariablesUsedInCode.AgentCurrentSite])
-                })
-                .Where(obj => obj.Wellbeing <= 0)
-                .ForEach(obj =>
-                {
-                    obj.agent[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
-                    obj.agent[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
-                });
+            wellbeing += centerSite.CalculateSiteResource(agent[Agent.VariablesUsedInCode.ResourceMax]);
+
+            return wellbeing;
         }
 
         //private AvgWellbeingOutput CreateAvgWellbeingStatisticRecord(int iteration)

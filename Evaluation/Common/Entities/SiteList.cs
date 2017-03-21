@@ -12,6 +12,8 @@ namespace Common.Entities
     {
         public Site[][] Sites { get; private set; }
 
+        public int MatrixSize { get; set; }
+
         private SiteList() { }
 
         private static int CalculateMatrixSize(int agentsCount, double vacantProportion)
@@ -76,7 +78,7 @@ namespace Common.Entities
 
                 circle++;
 
-            } while (closestEmptySites.Length < 1 && circle < 6); //Defence from looping
+            } while (closestEmptySites.Length < 1 && circle < MatrixSize); //Defence from looping
 
 
             return closestEmptySites;
@@ -107,9 +109,11 @@ namespace Common.Entities
         {
             List<Site> resourceCenters = new List<Site>(4);
 
-            SiteList siteList = new SiteList();
-
             int size = CalculateMatrixSize(agentCount, vacantProportion);
+
+            SiteList siteList = new SiteList() { MatrixSize = size };
+
+
             int startIndex = 0;
 
             siteList.Sites = new Site[size][];
@@ -134,14 +138,13 @@ namespace Common.Entities
 
             siteList.AsSiteEnumerable().AsParallel().Where(s => resourceCenters.Any(c => c.Equals(s)) == false).ForAll(s =>
               {
-                  int proximity = resourceCenters.Select(c => Math.Max(Math.Abs(c.HorizontalPosition - s.HorizontalPosition), Math.Abs(c.VerticalPosition - s.VerticalPosition)))
+                  int proximity = resourceCenters.Select(c => c.DistanceToAnotherSite(s))
                     .Min();
 
                   s.ResourceCoefficient = (Math.Round(0.25 * (size - 1), MidpointRounding.AwayFromZero) - proximity) / Math.Round(0.25 * (size - 1), MidpointRounding.AwayFromZero);
 
-
                   if (s.ResourceCoefficient < 0)
-                      throw new Exception("Resource coeff less than 0");
+                      throw new Exception("Resource coeff is less than 0");
               });
 
             return siteList;

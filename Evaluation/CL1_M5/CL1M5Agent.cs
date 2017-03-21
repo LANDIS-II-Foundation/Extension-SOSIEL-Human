@@ -22,10 +22,8 @@ namespace CL1_M5
 
         public new void GenerateCustomParams()
         {
-            int randC = LinearUniformRandom.GetInstance.Next(2);
-
-            this[VariablesUsedInCode.AgentC] = LinearUniformRandom.GetInstance.Next(this[VariablesUsedInCode.Engage] + 1) * randC;
-            this[VariablesUsedInCode.AgentP] = this[VariablesUsedInCode.Engage] - this[VariablesUsedInCode.AgentC];
+            this[VariablesUsedInCode.AgentC] = LinearUniformRandom.GetInstance.Next(this[VariablesUsedInCode.Engage] + 1);
+            this[VariablesUsedInCode.AgentP] = LinearUniformRandom.GetInstance.Next(this[VariablesUsedInCode.Engage] + 1);
 
             if (this[VariablesUsedInCode.AgentC] + this[VariablesUsedInCode.AgentP] == 0)
                 this[VariablesUsedInCode.AgentSubtype] = AgentSubtype.NonCo;

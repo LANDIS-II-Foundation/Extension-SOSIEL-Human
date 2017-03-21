@@ -8,7 +8,7 @@ namespace Common.Entities
 {
     using Exceptions;
 
-    public class Agent : ICloneableAgent<Agent>
+    public class Agent : IAgent, ICloneableAgent<Agent>
     {
         public static class VariablesUsedInCode
         {

@@ -62,7 +62,7 @@ namespace Common.Algorithm
 
             Task edgeTask = Task.Factory.StartNew(
                 () => _agentList.Agents
-                .Where(a=>a[Agent.VariablesUsedInCode.AgentCurrentSite] != null)
+                .Where(a => a[Agent.VariablesUsedInCode.AgentCurrentSite] != null)
                 .SelectMany(a => _siteList.CommonPool((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])
                 .Where(s => s.IsOccupied)
                 .Select(s => new EdgeOutput
@@ -120,15 +120,13 @@ namespace Common.Algorithm
         {
             SubtypeProportionOutput sp = new SubtypeProportionOutput { Iteration = iteration };
 
-            int temp = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).Count();
+            //int temp = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).Count();
 
-            sp.Proportion = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).AsParallel()
+            sp.Proportion = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
                 .Average(a => (double)CalculateSubtypeProportion(subtype, a[Agent.VariablesUsedInCode.AgentCurrentSite]));
 
             return sp;
         }
-
-
 
         protected virtual CommonPoolSubtypeFrequencyOutput CreateCommonPoolFrequencyRecord(int iteration, double disturbance, int subtype)
         {
@@ -147,6 +145,64 @@ namespace Common.Algorithm
                 });
 
             return sf;
+        }
+
+        protected virtual double CalculateAgentWellbeing(IAgent agent, Site centerSite)
+        {
+            throw new NotImplementedException($"Method CalculateAgentWellbeing not implemented for agent {agent.GetType().Name}");
+        }
+
+        protected virtual void FindInactiveAgents()
+        {
+            _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active").AsParallel()
+                .Select(agent => new
+                {
+                    agent,
+                    Wellbeing = CalculateAgentWellbeing(agent, agent[Agent.VariablesUsedInCode.AgentCurrentSite])
+                })
+                .Where(obj => obj.Wellbeing <= 0).AsSequential()
+                .ForEach(obj =>
+                {
+                    obj.agent[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
+                    obj.agent[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
+                });
+        }
+
+        protected virtual void Reproduction<T>(int minAgentNumber, int noncoType) where T : class, IAgent, ICloneableAgent<T>
+        {
+            IAgent[] activeAgents = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] != noncoType
+                && _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite]).Count(s => s.IsOccupied) > 0).ToArray();
+
+            int newAgentCount = minAgentNumber - activeAgents.Length;
+
+            while (newAgentCount > 0)
+            {
+                IAgent targetAgent = activeAgents.RandomizeOne();
+
+                IAgent[] poolOfParticipants = _siteList.CommonPool((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite])
+                    .Where(s => s.IsOccupied).Select(s => s.OccupiedBy).ToArray();
+
+                int contributionsAmount = poolOfParticipants.Sum(a => (int)a[Agent.VariablesUsedInCode.AgentC]);
+
+                List<IAgent> vector = new List<IAgent>(100);
+
+                poolOfParticipants.ForEach(a =>
+                {
+                    int count = Convert.ToInt32(Math.Round(a[Agent.VariablesUsedInCode.AgentC] / (double)contributionsAmount * 100, MidpointRounding.AwayFromZero));
+
+                    for (int i = 0; i < count; i++) { vector.Add(a); }
+                });
+
+                T prototype = vector.RandomizeOne() as T;
+
+                T replica = prototype.Clone();
+
+                Site targetSite = _siteList.TakeClosestEmptySites((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite]).RandomizeOne();
+
+                replica[Agent.VariablesUsedInCode.AgentCurrentSite] = targetSite;
+
+                newAgentCount--;
+            }
         }
     }
 }

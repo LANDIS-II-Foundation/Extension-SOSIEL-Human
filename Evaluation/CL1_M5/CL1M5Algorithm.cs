@@ -130,7 +130,7 @@ namespace CL1_M5
 
                 FindInactiveAgents();
 
-                Reproduction();
+                Reproduction<CL1M5Agent>(_configuration.AlgorithmConfiguration.AgentCount, (int)AgentSubtype.NonCo);
 
                 if (_isAgentMovement == false)
                 {
@@ -139,42 +139,7 @@ namespace CL1_M5
             }
         }
 
-        private void Reproduction()
-        {
-            IAgent[] activeAgents = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active").ToArray();
-
-            int newAgentCount = activeAgents.Length - _configuration.AlgorithmConfiguration.AgentCount;
-
-            while (newAgentCount > 0)
-            {
-                IAgent targetAgent = activeAgents.RandomizeOne();
-
-                IAgent[] poolParticipants = _siteList.CommonPool((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite])
-                    .Where(s => s.IsOccupied).Select(s => s.OccupiedBy).ToArray();
-
-                int contributionsAmount = poolParticipants.Sum(a => a[Agent.VariablesUsedInCode.AgentC]);
-
-                List<IAgent> vector = new List<IAgent>(100);
-
-                poolParticipants.ForEach(a =>
-                {
-                    int count = Convert.ToInt32(Math.Round(a[Agent.VariablesUsedInCode.AgentC] / (contributionsAmount) * 100));
-
-                    for (int i = 0; i < count; i++) { vector.Add(a); }
-
-                });
-
-                CL1M5Agent prototype = vector.RandomizeOne() as CL1M5Agent;
-
-                CL1M5Agent replica = prototype.Clone();
-
-                Site targetSite = _siteList.TakeClosestEmptySites((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite]).RandomizeOne();
-
-                replica[Agent.VariablesUsedInCode.AgentCurrentSite] = targetSite;
-
-                newAgentCount--;
-            }
-        }
+        
 
         protected override void SaveCustomStatistic()
         {
@@ -211,7 +176,7 @@ namespace CL1_M5
             agent[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion] = CalculateSubtypeProportion((int)agent[Agent.VariablesUsedInCode.AgentSubtype], currentSite);
         }
 
-        private double CalculateAgentWellbeing(IAgent agent, Site centerSite)
+        protected override double CalculateAgentWellbeing(IAgent agent, Site centerSite)
         {
             //we take only adjacement sites because in some cases center site can be empty
             var commonPool = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied).ToArray();
@@ -232,21 +197,7 @@ namespace CL1_M5
             return wellbeing;
         }
 
-        private void FindInactiveAgents()
-        {
-            _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active")
-                .Select(agent => new
-                {
-                    agent,
-                    Wellbeing = CalculateAgentWellbeing(agent, agent[Agent.VariablesUsedInCode.AgentCurrentSite])
-                })
-                .Where(obj => obj.Wellbeing <= 0)
-                .ForEach(obj =>
-                {
-                    obj.agent[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
-                    obj.agent[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
-                });
-        }
+        
 
         //private AvgWellbeingOutput CreateAvgWellbeingStatisticRecord(int iteration)
         //{

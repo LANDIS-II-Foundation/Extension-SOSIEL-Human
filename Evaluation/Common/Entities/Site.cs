@@ -36,7 +36,7 @@ namespace Common.Entities
         //        && (target.VerticalPosition - 1 <= VerticalPosition && VerticalPosition <= target.VerticalPosition + 1);
         //}
 
-        public int DistanceToAnother(Site site)
+        public int DistanceToAnotherSite(Site site)
         {
             return Math.Max(Math.Abs(HorizontalPosition - site.HorizontalPosition), Math.Abs(VerticalPosition - site.VerticalPosition));
         }
@@ -44,6 +44,11 @@ namespace Common.Entities
         public bool Equals(Site other)
         {
             return HorizontalPosition == other.HorizontalPosition && VerticalPosition == other.VerticalPosition;
+        }
+
+        public double CalculateSiteResource(int resourceMax)
+        {
+            return ResourceCoefficient * resourceMax;
         }
     }
 }
