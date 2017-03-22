@@ -9,6 +9,8 @@ namespace Common.Entities
         #region Public fields
         //public HeuristicLayer Layer { get; set; }
 
+        public string Id { get; set; }
+
         public int RulePositionNumber { get; set; }
 
         public RuleAntecedentPart[] Antecedent { get; set; }

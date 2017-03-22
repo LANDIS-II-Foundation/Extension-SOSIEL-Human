@@ -63,7 +63,7 @@ namespace Common.Algorithm
             Task edgeTask = Task.Factory.StartNew(
                 () => _agentList.Agents
                 .Where(a => a[Agent.VariablesUsedInCode.AgentCurrentSite] != null)
-                .SelectMany(a => _siteList.CommonPool((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])
+                .SelectMany(a => _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])
                 .Where(s => s.IsOccupied)
                 .Select(s => new EdgeOutput
                 {
@@ -122,8 +122,10 @@ namespace Common.Algorithm
 
             //int temp = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).Count();
 
-            sp.Proportion = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
-                .Average(a => (double)CalculateSubtypeProportion(subtype, a[Agent.VariablesUsedInCode.AgentCurrentSite]));
+            IAgent[] agents = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).ToArray();
+            
+            sp.Proportion = agents.Length > 0 ? agents.Average(a => (double)CalculateSubtypeProportion(subtype, a[Agent.VariablesUsedInCode.AgentCurrentSite]))
+                : 0;
 
             return sp;
         }
@@ -160,7 +162,7 @@ namespace Common.Algorithm
                     agent,
                     Wellbeing = CalculateAgentWellbeing(agent, agent[Agent.VariablesUsedInCode.AgentCurrentSite])
                 })
-                .Where(obj => obj.Wellbeing <= 0).AsSequential()
+                .Where(obj => obj.Wellbeing <= 0).ToArray()
                 .ForEach(obj =>
                 {
                     obj.agent[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
@@ -170,10 +172,16 @@ namespace Common.Algorithm
 
         protected virtual void Reproduction<T>(int minAgentNumber, int noncoType) where T : class, IAgent, ICloneableAgent<T>
         {
-            IAgent[] activeAgents = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && (int)a[Agent.VariablesUsedInCode.AgentSubtype] != noncoType
-                && _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite]).Count(s => s.IsOccupied) > 0).ToArray();
+            List<IAgent> activeAgents = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" 
+                && _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])
+                    .Where(s => s.IsOccupied).Sum(s=>s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]) > 0).ToList();
 
-            int newAgentCount = minAgentNumber - activeAgents.Length;
+            if (activeAgents.Count < 1)
+                return;
+
+            int newAgentCount = minAgentNumber - activeAgents.Count;
+
+            int lastAgentId = _agentList.Agents.Count + 1;
 
             while (newAgentCount > 0)
             {
@@ -197,11 +205,18 @@ namespace Common.Algorithm
 
                 T replica = prototype.Clone();
 
+                replica.Id = lastAgentId;
+
+                lastAgentId++;
+
                 Site targetSite = _siteList.TakeClosestEmptySites((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite]).RandomizeOne();
 
                 replica[Agent.VariablesUsedInCode.AgentCurrentSite] = targetSite;
 
                 newAgentCount--;
+
+                _agentList.Agents.Add(replica);
+                activeAgents.Add(replica);
             }
         }
     }

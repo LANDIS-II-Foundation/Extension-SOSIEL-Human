@@ -49,6 +49,12 @@ namespace Common.Entities
 
             //M6
             public const string ResourceMax = "ResourceMax";
+
+
+            //M7
+            public const string Iteration = "Iteration";
+            public const string AgentWellbeing = "AgentWellbeing";
+
         }
 
 
@@ -56,6 +62,8 @@ namespace Common.Entities
 
         [JsonProperty("Variables")]
         protected Dictionary<string, dynamic> Variables { get; set; }
+
+        public List<Goal> Goals { get; set; }
 
         public List<Rule> Rules { get; set; }
 
@@ -107,7 +115,7 @@ namespace Common.Entities
 
             agent.Variables = new Dictionary<string, dynamic>(Variables);
 
-            agent.Variables.Remove(Agent.VariablesUsedInCode.AgentCurrentSite);
+            agent.Variables.Remove(VariablesUsedInCode.AgentCurrentSite);
 
             agent.Rules = Rules;
 

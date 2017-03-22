@@ -10,7 +10,7 @@ namespace Common.Models
     {
         public bool Equals(EdgeOutput x, EdgeOutput y)
         {
-            return x.AgentId == y.AdjacentAgentId && x.AdjacentAgentId == y.AgentId;
+            return  x.AgentId == y.AdjacentAgentId && x.AdjacentAgentId == y.AgentId;
         }
 
         public int GetHashCode(EdgeOutput obj)

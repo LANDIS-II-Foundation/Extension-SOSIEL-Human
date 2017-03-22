@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <AssemblyVersion>1.0.4.6285</AssemblyVersion>
+    <AssemblyVersion>1.0.5.6291</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,6 +50,7 @@
     <ProjectReference Include="..\CL1_M1\CL1_M1.csproj">
       <Project>{423b1ade-7ac2-4feb-8725-e700f149c197}</Project>
       <Name>CL1_M1</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
     <ProjectReference Include="..\CL1_M2\CL1_M2.csproj">
       <Project>{c9891968-5bf0-4bea-9289-234e0131bad5}</Project>

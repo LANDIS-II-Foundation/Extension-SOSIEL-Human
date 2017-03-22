@@ -11,5 +11,7 @@ namespace Common.Configuration
 
         public T AgentConfiguration { get; set; }
 
+        public InitialStateConfiguration InitialState { get; set; }
+
     }
 }

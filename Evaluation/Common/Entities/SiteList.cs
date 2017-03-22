@@ -93,8 +93,8 @@ namespace Common.Entities
         {
             List<Site> temp = new List<Site>(centerSite.GroupSize);
 
-            for (int i = centerSite.VerticalPosition - circle > 0 ? centerSite.VerticalPosition - circle : 0; i <= centerSite.VerticalPosition + circle && i < Sites.Length; i++)
-                for (int j = centerSite.HorizontalPosition - circle > 0 ? centerSite.HorizontalPosition - circle : 0; j <= centerSite.HorizontalPosition + circle && j < Sites.Length; j++)
+            for (int i = centerSite.VerticalPosition - circle > 0 ? centerSite.VerticalPosition - circle : 0; i <= centerSite.VerticalPosition + circle && i < MatrixSize; i++)
+                for (int j = centerSite.HorizontalPosition - circle > 0 ? centerSite.HorizontalPosition - circle : 0; j <= centerSite.HorizontalPosition + circle && j < MatrixSize; j++)
                 {
                     Site site = Sites[i][j];
 
@@ -136,16 +136,19 @@ namespace Common.Entities
                 }
             }
 
-            siteList.AsSiteEnumerable().AsParallel().Where(s => resourceCenters.Any(c => c.Equals(s)) == false).ForAll(s =>
-              {
-                  int proximity = resourceCenters.Select(c => c.DistanceToAnotherSite(s))
-                    .Min();
+            if (size >= 4)
+            {
+                siteList.AsSiteEnumerable().AsParallel().Where(s => resourceCenters.Any(c => c.Equals(s)) == false).ForAll(s =>
+                  {
+                      int proximity = resourceCenters.Select(c => c.DistanceToAnotherSite(s))
+                        .Min();
 
-                  s.ResourceCoefficient = (Math.Round(0.25 * (size - 1), MidpointRounding.AwayFromZero) - proximity) / Math.Round(0.25 * (size - 1), MidpointRounding.AwayFromZero);
+                      s.ResourceCoefficient = (Math.Round(0.25 * (size - 1), MidpointRounding.AwayFromZero) - proximity) / Math.Round(0.25 * (size - 1), MidpointRounding.AwayFromZero);
 
-                  if (s.ResourceCoefficient < 0)
-                      throw new Exception("Resource coeff is less than 0");
-              });
+                      if (s.ResourceCoefficient < 0)
+                          throw new Exception("Resource coeff is less than 0");
+                  });
+            }
 
             return siteList;
         }

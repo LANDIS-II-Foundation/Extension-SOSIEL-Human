@@ -13,7 +13,7 @@ namespace Common.Configuration
     {
         public Model Model { get;  set; }
 
-        public CognitiveLevel CognitiveLevel { get;  set; }
+        //public CognitiveLevel CognitiveLevel { get;  set; }
 
         public ActionTaking ActionTaking { get;  set; }
 

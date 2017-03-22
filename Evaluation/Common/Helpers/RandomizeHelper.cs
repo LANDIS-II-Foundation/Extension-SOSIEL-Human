@@ -17,9 +17,18 @@ namespace Common.Helpers
 
         public static T RandomizeOne<T>(this T[] source)
         {
-            int position = LinearUniformRandom.GetInstance.Next(source.Length);
+            try
+            {
+                int position = LinearUniformRandom.GetInstance.Next(source.Length);
 
-            return source[position];
+                return source[position];
+            }
+            catch(Exception ex)
+            {
+
+            }
+
+            return source[0];
         }
 
         public static T RandomizeOne<T>(this List<T> source)

@@ -190,6 +190,7 @@ namespace CL1_M5
 
             wellbeing -= penalties;
 
+
             double punishment = commonPool.Select(s => s.OccupiedBy).Sum(n => (double)(agent[Agent.VariablesUsedInCode.AgentP] * (1 - n[Agent.VariablesUsedInCode.AgentC] / (double)agent[Agent.VariablesUsedInCode.Engage])));
 
             wellbeing -= punishment;

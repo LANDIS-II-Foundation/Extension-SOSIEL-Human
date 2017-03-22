@@ -12,6 +12,7 @@ namespace Common.Enums
         M3,
         M4,
         M5,
-        M6
+        M6,
+        M7
     }
 }
