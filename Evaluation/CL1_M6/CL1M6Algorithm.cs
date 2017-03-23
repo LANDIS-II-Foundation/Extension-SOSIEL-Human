@@ -59,13 +59,13 @@ namespace CL1_M6
 
             _agentList = AgentList.Generate(_configuration.AlgorithmConfiguration.AgentCount,
                 _configuration.AgentConfiguration, _siteList);
+
+            _agentList.Agents.ForEach(a => CalculateParamsDependOnSite(a));
         }
 
         protected override void ExecuteAlgorithm()
         {
             int agentType = (int)AgentSubtype.StrCo;
-
-            _agentList.Agents.ForEach(a => CalculateParamsDependOnSite(a));
 
             _subtypeProportionStatistic.Add(CreateCommonPoolSubtypeProportionRecord(0, agentType));
             _commonPoolFrequency.Add(CreateCommonPoolFrequencyRecord(0, _disturbance, agentType));
