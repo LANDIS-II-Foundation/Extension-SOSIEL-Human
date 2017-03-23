@@ -10,7 +10,7 @@ using CL1_M3;
 using CL1_M4;
 using CL1_M5;
 using CL1_M6;
-
+using CL2_M7;
 
 using Common.Algorithm;
 using Common.Configuration;
@@ -113,12 +113,12 @@ namespace Factory
                         return new CL1M6Algorithm(config);
                     }
 
-                //case Model.M7:
-                //    {
-                //        Configuration<CL2M7Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M7Agent>(), ReadInitialConfig(typeof(CL2M7Agent)));
+                case Model.M7:
+                    {
+                        Configuration<CL2M7Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M7Agent>(), ReadInitialConfig(typeof(CL2M7Agent)));
 
-                //        return new CL2M7Algorithm(config);
-                //    }
+                        return new CL2M7Algorithm(config);
+                    }
 
                 default:
                     throw new NotImplementedException($"Model {algorithmConfig.Model} hasn't implemented  yet");

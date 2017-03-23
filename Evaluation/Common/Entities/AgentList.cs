@@ -17,17 +17,10 @@ namespace Common.Entities
         private AgentList() { }
 
 
-
-
-
-
-
         public int CalculateCommonC()
         {
             return Agents.Sum(a => a[Agent.VariablesUsedInCode.AgentC]);
         }
-
-
 
         public static AgentList Generate<T>(int agentNumber, T prototype, SiteList siteList) where T : class, ICloneableAgent<T>
         {
@@ -59,29 +52,24 @@ namespace Common.Entities
         }
 
 
-        public static AgentList Generate2<T>(int agentNumber, T prototype, InitialStateConfiguration initialState) where T: class, IAgent, IAnticipatedInfluenceState
+        public static AgentList Generate2<T>(int agentNumber, T prototype, InitialStateConfiguration initialState) where T: class, IAgent, ICloneableAgent<T>, IConfigurableAgent
         {
             AgentList agentList = new AgentList();
 
             agentList.Agents = new List<IAgent>(agentNumber);
 
-            //for (int i = 1; i <= agentNumber; i++)
-            //{
-            //    T agent = prototype.Clone();
+            for (int i = 1; i <= agentNumber; i++)
+            {
+                T agent = prototype.Clone();
 
-            //    agent.GenerateCustomParams();
+                agent.GenerateCustomParams();
 
-            //    agent.Id = i;
+                agent.Id = i;
 
-            //    Site selectedSite = availableSites[LinearUniformRandom.GetInstance.Next(availableSites.Count)];
+                agent.SyncState(initialState.AgentsState[i.ToString()].AssignedRules);
 
-            //    selectedSite.OccupiedBy = agent;
-
-            //    agent[Agent.VariablesUsedInCode.AgentCurrentSite] = selectedSite;
-
-            //    agentList.Agents.Add(agent);
-            //    availableSites.Remove(selectedSite);
-            //}
+                agentList.Agents.Add(agent);
+            }
 
             return agentList;
         }

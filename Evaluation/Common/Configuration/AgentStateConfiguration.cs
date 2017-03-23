@@ -9,5 +9,9 @@ namespace Common.Configuration
     public class AgentStateConfiguration
     {
         public string[] AssignedRules { get; set; }
+
+        public string[] MatchedRules { get; set; }
+
+        public string[] ActivatedRules { get; set; }
     }
 }

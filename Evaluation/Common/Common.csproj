@@ -52,12 +52,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithm\AlgorithmBase.cs" />
+    <Compile Include="Entities\GoalState.cs" />
+    <Compile Include="Entities\ProcessConfig.cs" />
+    <Compile Include="Entities\RuleLayerParameters.cs" />
+    <Compile Include="Entities\RuleLayer.cs" />
+    <Compile Include="Entities\RuleSet.cs" />
     <Compile Include="Entities\IterationState.cs" />
     <Compile Include="Configuration\AgentStateConfiguration.cs" />
     <Compile Include="Entities\Goal.cs" />
-    <Compile Include="Entities\IAnticipatedInfluenceState.cs" />
+    <Compile Include="Entities\IConfigurableAgent.cs" />
     <Compile Include="Configuration\InitialStateConfiguration.cs" />
-    <Compile Include="Entities\SiteState.cs" />
+    <Compile Include="Entities\AgentState.cs" />
     <Compile Include="Enums\AnticipatedDirection.cs" />
     <Compile Include="Entities\Agent.cs" />
     <Compile Include="Entities\AgentList.cs" />
@@ -70,6 +75,7 @@
     <Compile Include="Enums\CognitiveLevel.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationParser.cs" />
+    <Compile Include="Enums\ConsequentRelationship.cs" />
     <Compile Include="Enums\Model.cs" />
     <Compile Include="Enums\ActionTaking.cs" />
     <Compile Include="Algorithm\IAlgorithm.cs" />
@@ -81,6 +87,7 @@
     <Compile Include="Helpers\AntecedentBuilder.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\IEnumerableHelper.cs" />
+    <Compile Include="Helpers\IterationHelper.cs" />
     <Compile Include="Helpers\ResultSavingHelper.cs" />
     <Compile Include="Models\AvgVariablesOutput.cs" />
     <Compile Include="Models\AvgWellbeingOutput.cs" />
@@ -92,6 +99,8 @@
     <Compile Include="Models\SimpleLineOutput.cs" />
     <Compile Include="Models\SubtypeProportionOutput.cs" />
     <Compile Include="Models\ToStringConverter.cs" />
+    <Compile Include="Processes\AnticipationLearning.cs" />
+    <Compile Include="Processes\VolatileProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Randoms\LinearUniformRandom.cs" />
     <Compile Include="Helpers\RandomizeHelper.cs" />
@@ -99,9 +108,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Processes\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>

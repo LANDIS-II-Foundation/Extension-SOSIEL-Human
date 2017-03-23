@@ -6,10 +6,12 @@ namespace Common.Entities
 {
     public sealed class Rule
     {
-        #region Public fields
-        //public HeuristicLayer Layer { get; set; }
+        
+        public RuleLayer Layer { get; set; }
 
-        public string Id { get; set; }
+        public int RuleSet { get; set; }
+
+        public int RuleLayer { get; set; }
 
         public int RulePositionNumber { get; set; }
 
@@ -32,25 +34,16 @@ namespace Common.Entities
         }
 
 
-        //public string Id
-        //{
-        //    get
-        //    {
-        //        return $"HS{Layer.Set.PositionNumber}_L{Layer.PositionNumber}_H{PositionNumber}";
-        //    }
-        //}
-        #endregion
-
-        #region Private fields
+        public string Id
+        {
+            get
+            {
+                return $"RS{Layer.Set.PositionNumber}_L{Layer.PositionNumber}_R{RulePositionNumber}";
+            }
+        }
         
-        #endregion
-
-        #region Constructors
         private Rule() { }
-        #endregion
-
-
-        #region Public methods
+        
         public bool IsMatch(IAgent agent)
         {
             return Antecedent.All(a=>a.IsMatch(agent));
@@ -72,9 +65,7 @@ namespace Common.Entities
                 agent[Consequent.Param] = Consequent.Value;
             }
         }
-        #endregion
-
-        #region Factory methods
+        
         internal static Rule Create(RuleAntecedentPart[] antecedent, RuleConsequent consequent)
         {
             Rule newHeuristic = new Rule();
@@ -86,6 +77,6 @@ namespace Common.Entities
 
             return newHeuristic;
         }
-        #endregion
+        
     }
 }

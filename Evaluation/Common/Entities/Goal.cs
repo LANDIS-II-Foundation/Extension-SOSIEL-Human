@@ -10,6 +10,10 @@ namespace Common.Entities
     {
         public string Name { get; set; }
 
+        public string Tendency { get; set; }
+
         public string ReferenceVariable { get; set; }
+
+        public double FocalValue { get; set; }
     }
 }

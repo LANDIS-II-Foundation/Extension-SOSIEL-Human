@@ -5,7 +5,7 @@ using System.Linq;
 namespace Common.Processes
 {
     using Enums;
-    using Models;
+    using Entities;
 
     public class AnticipationLearning : VolatileProcess
     {
@@ -73,14 +73,14 @@ namespace Common.Processes
         }
 
 
-        public GoalState[] Execute(Actor actor, LinkedListNode<Period> periodModel)
+        public GoalState[] Execute(IConfigurableAgent agent, LinkedListNode<AgentState> lastIteration)
         {
-            Period currentPeriod = periodModel.Value;
-            Period priorPeriod = periodModel.Previous.Value;
+            AgentState currentPeriod = lastIteration.Value;
+            AgentState priorPeriod = lastIteration.Previous.Value;
 
-            foreach (GoalState goalState in actor.AssignedGoals)
+            foreach (GoalState goalState in agent.AssignedGoals)
             {
-                double value = actor[goalState.Goal.Comment];
+                double value = agent[goalState.Goal.ReferenceVariable];
 
                 if (goalState.Goal.Increased)
                     value += goalState.Goal.LimitValue;
@@ -94,9 +94,9 @@ namespace Common.Processes
                 goalState.Value = value;
 
                 //2.Update the anticipated influence of heuristics activated in prior period
-                IEnumerable<Heuristic> activatedInPriorPeriod = priorPeriod.GetStateForActor(actor).SelectMany(pd => pd.Activated);
+                IEnumerable<Heuristic> activatedInPriorPeriod = priorPeriod.GetStateForActor(agent).SelectMany(pd => pd.Activated);
 
-                foreach (AnticipatedInfluence ai in actor.AnticipatedInfluences.Where(ai => activatedInPriorPeriod.Contains(ai.AssociatedHeuristic) && ai.AssociatedGoal == goalState.Goal))
+                foreach (AnticipatedInfluence ai in agent.AnticipatedInfluences.Where(ai => activatedInPriorPeriod.Contains(ai.AssociatedHeuristic) && ai.AssociatedGoal == goalState.Goal))
                 {
                     ai.Value = goalState.AnticipatedInfluenceValue;
                 }
@@ -111,7 +111,7 @@ namespace Common.Processes
                 }
             }
 
-            return SelectCriticalGoal(actor.AssignedGoals);
+            return SelectCriticalGoal(agent.AssignedGoals);
         }
     }
 }

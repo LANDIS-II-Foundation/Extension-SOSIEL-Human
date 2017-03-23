@@ -54,20 +54,31 @@ namespace Common.Entities
             //M7
             public const string Iteration = "Iteration";
             public const string AgentWellbeing = "AgentWellbeing";
+            public const string AgentPrevC = "AgentPrevC";
 
         }
-
-
+        
         public int Id { get; set; }
+        
+        [JsonProperty()]
+        protected Dictionary<string, dynamic> Variables { get; set; } = new Dictionary<string, dynamic>();
 
-        [JsonProperty("Variables")]
-        protected Dictionary<string, dynamic> Variables { get; set; }
-
-        public List<Goal> Goals { get; set; }
-
+        //todo
         public List<Rule> Rules { get; set; }
 
-        public dynamic this[string key]
+        private List<RuleSet> _mentalProto;
+
+
+        protected List<RuleSet> TransformRulesToRuleSets()
+        {
+            if(_mentalProto != null)
+                return _mentalProto;
+
+            return _mentalProto = Rules.GroupBy(r=> r.RuleSet).OrderBy(g=>g.Key).Select(g=> 
+                new RuleSet(g.Key, g.GroupBy(r=>r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2=> new RuleLayer(new RuleLayerParameters(), g2)))).ToList();
+        }
+
+        public virtual dynamic this[string key]
         {
             get
             {
@@ -115,7 +126,8 @@ namespace Common.Entities
 
             agent.Variables = new Dictionary<string, dynamic>(Variables);
 
-            agent.Variables.Remove(VariablesUsedInCode.AgentCurrentSite);
+            if(agent.Variables.ContainsKey(VariablesUsedInCode.AgentCurrentSite))
+                agent.Variables.Remove(VariablesUsedInCode.AgentCurrentSite);
 
             agent.Rules = Rules;
 
