@@ -4,11 +4,13 @@ using System.Linq;
 
 namespace Common.Entities
 {
-    using Environments;
+    using Helpers;
 
-    public sealed class AgentState: ICloneable<AgentState>
+    public sealed class AgentState
     {
         public Dictionary<Rule, Dictionary<Goal, double>> AnticipationInfluence { get; set; } 
+
+        public Dictionary<Goal, GoalState> GoalsState { get; set; }
 
         public List<Rule> Matched { get; private set; }
         public List<Rule> Activated { get; private set; }
@@ -36,16 +38,22 @@ namespace Common.Entities
                 //Site = site,
                 Matched = new List<Rule>(),
                 Activated = new List<Rule>(),
-                AnticipationInfluence = new Dictionary<Rule, Dictionary<Goal, double>>()
+                AnticipationInfluence = new Dictionary<Rule, Dictionary<Goal, double>>(),
+                GoalsState = new Dictionary<Goal, GoalState>()
                 //TakeActions = new List<TakeActionState>()
             };
         }
 
-        public AgentState Clone()
+        public AgentState CreateForNextIteration()
         {
             AgentState agentState = Create(false);
 
             agentState.AnticipationInfluence = new Dictionary<Rule, Dictionary<Goal, double>>(AnticipationInfluence);
+
+            GoalsState.ForEach(kvp =>
+            {
+                agentState.GoalsState.Add(kvp.Key, kvp.Value.CreateForNextIteration());
+            });
 
             return agentState;
         }

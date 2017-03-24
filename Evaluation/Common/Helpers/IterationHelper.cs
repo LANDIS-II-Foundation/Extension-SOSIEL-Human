@@ -11,7 +11,7 @@ namespace Common.Helpers
 
     public static class IterationHelper
     {
-        
+
 
         public static Dictionary<IConfigurableAgent, AgentState> InitilizeBeginningState(InitialStateConfiguration conf, IEnumerable<IConfigurableAgent> agents)
         {
@@ -32,13 +32,22 @@ namespace Common.Helpers
                 {
                     var source = conf.AnticipatedInfluenceState;
 
-                    var inner = a.Goals.Join(source[r.Id], g => g.Name, kvp => kvp.Key, (g, kvp) => new { Key = g, kvp.Value }).ToDictionary(o => o.Key, o => o.Value);
+                    var inner = a.AllGoals.Join(source[r.Id], g => g.Name, kvp => kvp.Key, (g, kvp) => new { Key = g, kvp.Value }).ToDictionary(o => o.Key, o => o.Value);
 
                     ai.Add(r, inner);
                 });
 
                 agentState.AnticipationInfluence = ai;
 
+
+                agentStateConfiguration.GoalState.ForEach(gs =>
+               {
+                   Goal goal = a.AllGoals.First(g => g.Name == gs.Key);
+
+                   GoalState goalState = new GoalState(gs.Value.Value, goal.FocalValue, gs.Value.Coef);
+
+                   agentState.GoalsState.Add(goal, goalState);
+               });
 
                 temp.Add(a, agentState);
             });

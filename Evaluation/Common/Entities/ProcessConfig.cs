@@ -8,6 +8,8 @@ namespace Common.Entities
 {
     public class ProcessConfig
     {
+        public bool AgentRandomizationEnabled { get; set; }
+
         public bool AnticipatoryLearningEnabled { get; set; }
 
         public bool CounterfactualThinkingEnabled { get; set; }

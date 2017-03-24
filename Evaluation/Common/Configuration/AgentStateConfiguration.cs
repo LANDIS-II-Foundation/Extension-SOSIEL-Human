@@ -10,6 +10,8 @@ namespace Common.Configuration
     {
         public string[] AssignedRules { get; set; }
 
+        public Dictionary<string, GoalStateConfiguration> GoalState { get; set; }
+
         public string[] MatchedRules { get; set; }
 
         public string[] ActivatedRules { get; set; }

@@ -6,8 +6,9 @@ namespace Common.Processes
 {
     using Enums;
     using Entities;
+    using Helpers;
 
-    public class AnticipationLearning : VolatileProcess
+    public class AnticipatoryLearning : VolatileProcess
     {
 
         GoalState currentGoalState;
@@ -73,42 +74,55 @@ namespace Common.Processes
         }
 
 
-        public GoalState[] Execute(IConfigurableAgent agent, LinkedListNode<AgentState> lastIteration)
+        public GoalState[] Execute(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> lastIteration)
         {
-            AgentState currentPeriod = lastIteration.Value;
-            AgentState priorPeriod = lastIteration.Previous.Value;
+            AgentState currentIterationAgentState = lastIteration.Value[agent];
+            AgentState previousIterationAgentState = lastIteration.Previous.Value[agent];
 
-            foreach (GoalState goalState in agent.AssignedGoals)
+            foreach (var kvp in previousIterationAgentState.GoalsState)
             {
-                double value = agent[goalState.Goal.ReferenceVariable];
+                Goal goal = kvp.Key;
+                GoalState prevGoalState = kvp.Value;
 
-                if (goalState.Goal.Increased)
-                    value += goalState.Goal.LimitValue;
+                currentGoalState = currentIterationAgentState.GoalsState[goal];
 
-                goalState.DiffCurrentAndMin = value - goalState.Goal.LimitValue;
-                goalState.DiffPriorAndMin = value - goalState.Goal.LimitValue;
+                currentGoalState.Value = agent[goal.ReferenceVariable];
 
-                //goalState.Value contains prior period value
-                goalState.AnticipatedInfluenceValue = value - goalState.Value;
+                //todo
+                //if (goalState.Goal.Increased)
+                //    value += goalState.Goal.LimitValue;
 
-                goalState.Value = value;
+                currentGoalState.DiffCurrentAndMin = currentGoalState.Value - currentGoalState.FocalValue;
 
-                //2.Update the anticipated influence of heuristics activated in prior period
-                IEnumerable<Heuristic> activatedInPriorPeriod = priorPeriod.GetStateForActor(agent).SelectMany(pd => pd.Activated);
+                //todo: check
+                currentGoalState.DiffPriorAndMin = prevGoalState.Value - currentGoalState.FocalValue;
 
-                foreach (AnticipatedInfluence ai in agent.AnticipatedInfluences.Where(ai => activatedInPriorPeriod.Contains(ai.AssociatedHeuristic) && ai.AssociatedGoal == goalState.Goal))
+                //goalState.Value contains prior Iteration value
+                currentGoalState.AnticipatedInfluenceValue = currentGoalState.Value - prevGoalState.Value;
+
+
+                //todo
+                //currentGS.FocalValue = value;
+
+                //2.Update the anticipated influence of heuristics activated in prior Iteration
+                IEnumerable<Rule> activatedInPriorIteration = previousIterationAgentState.Activated;
+
+                //todo
+                activatedInPriorIteration.ForEach(r =>
                 {
-                    ai.Value = goalState.AnticipatedInfluenceValue;
-                }
+                    currentIterationAgentState.AnticipationInfluence[r][goal] = currentGoalState.AnticipatedInfluenceValue;
+                });
+                              
+                currentGoalState = prevGoalState;
 
-                currentGoalState = goalState;
+                SpecificLogic(goal.Tendency);
 
-                SpecificLogic(goalState.Goal.Tendency);
 
-                if (goalState.Goal.Increased)
-                {
-                    goalState.Goal.LimitValue = goalState.Value;
-                }
+                //todo
+                //if (prevGoalState.Goal.Increased)
+                //{
+                //    prevGoalState.Goal.LimitValue = prevGoalState.FocalValue;
+                //}
             }
 
             return SelectCriticalGoal(agent.AssignedGoals);

@@ -22,7 +22,7 @@ namespace Common.Entities
             return Agents.Sum(a => a[Agent.VariablesUsedInCode.AgentC]);
         }
 
-        public static AgentList Generate<T>(int agentNumber, T prototype, SiteList siteList) where T : class, ICloneableAgent<T>
+        public static AgentList Generate<T>(int agentNumber, T prototype, SiteList siteList) where T : class, IAgent, ICloneableAgent<T>
         {
             List<Site> availableSites = siteList.AsSiteEnumerable().ToList();
 

@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithm\AlgorithmBase.cs" />
+    <Compile Include="Configuration\GoalStateConfiguration.cs" />
     <Compile Include="Entities\GoalState.cs" />
     <Compile Include="Entities\ProcessConfig.cs" />
     <Compile Include="Entities\RuleLayerParameters.cs" />
@@ -99,7 +100,7 @@
     <Compile Include="Models\SimpleLineOutput.cs" />
     <Compile Include="Models\SubtypeProportionOutput.cs" />
     <Compile Include="Models\ToStringConverter.cs" />
-    <Compile Include="Processes\AnticipationLearning.cs" />
+    <Compile Include="Processes\AnticipatoryLearning.cs" />
     <Compile Include="Processes\VolatileProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Randoms\LinearUniformRandom.cs" />
@@ -112,7 +113,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2017/3/6" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildAction="Both" BuildVersion_ConfigurationName="Any" BuildVersion_BuildVersioningStyle="None.None.Increment.DayStamp" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.DayStamp" BuildVersion_ConfigurationName="Any" BuildVersion_BuildAction="Both" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_StartDate="2017/3/6" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

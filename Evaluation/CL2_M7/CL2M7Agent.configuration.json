@@ -12,7 +12,7 @@
         "Tendency": "AboveMin",
         "ReferenceVariable": "AgentWellbeing",
         "FocalValue": 15,
-        "Immutable":  true
+        "Immutable": true
       }
     ],
     "Rules": [
@@ -166,6 +166,12 @@
           "RS1_L1_R2",
           "RS1_L1_R3"
         ],
+        "GoalState": {
+          "PG1": {
+            "Coef": 1,
+            "Value": 15
+          }
+        },
         "MatchedRules": [
           "RS1_L1_R2"
         ],
@@ -178,6 +184,12 @@
           "RS1_L1_R4",
           "RS1_L1_R5"
         ],
+        "GoalState": {
+          "PG1": {
+            "Coef": 1,
+            "Value": 15
+          }
+        },
         "MatchedRules": [
           "RS1_L1_R4"
         ],

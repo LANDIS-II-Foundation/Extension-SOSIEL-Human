@@ -17,18 +17,9 @@ namespace Common.Helpers
 
         public static T RandomizeOne<T>(this T[] source)
         {
-            try
-            {
-                int position = LinearUniformRandom.GetInstance.Next(source.Length);
+            int position = LinearUniformRandom.GetInstance.Next(source.Length);
 
-                return source[position];
-            }
-            catch(Exception ex)
-            {
-
-            }
-
-            return source[0];
+            return source[position];
         }
 
         public static T RandomizeOne<T>(this List<T> source)
@@ -38,24 +29,31 @@ namespace Common.Helpers
             return source[position];
         }
 
-        public static List<T> Randomize<T>(IEnumerable<T> original)
+        public static IEnumerable<T> RandomizeEnumeration<T>(this IEnumerable<T> original)
         {
-            List<T> temp = new List<T>();
-            List<T> result = new List<T>();
+            List<T> temp = new List<T>(original);
 
-
-            temp.AddRange(original);
-
-            while(temp.Count > 0)
+            while (temp.Count > 0)
             {
                 T item = temp[LinearUniformRandom.GetInstance.Next(temp.Count)];
 
-                result.Add(item);
                 temp.Remove(item);
+
+                yield return item;
             }
+        }
 
 
-            return result;
+        public static IEnumerable<T> Randomize<T>(this IEnumerable<T> original, bool randomize)
+        {
+            if (randomize)
+            {
+                return RandomizeEnumeration(original);
+            }
+            else
+            {
+                return original;
+            }
         }
     }
 }
