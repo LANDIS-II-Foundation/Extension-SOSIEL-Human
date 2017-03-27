@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Common.Entities
 {
-    public sealed class RuleConsequent: ICloneable
+    public sealed class RuleConsequent : ICloneable
     {
 
         //internal static RuleConsequent Renew(RuleConsequent old, double newValue)
@@ -23,6 +23,10 @@ namespace Common.Entities
         public double Value { get; set; }
 
         public string VariableValue { get; set; }
+
+        public bool CopyToCommon { get; set; }
+
+        public bool SavePrevious { get; set; }
 
         public object Clone()
         {

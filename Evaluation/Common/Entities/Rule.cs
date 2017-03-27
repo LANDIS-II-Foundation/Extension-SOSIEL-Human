@@ -56,14 +56,33 @@ namespace Common.Entities
 
         public void Apply(IAgent agent)
         {
+            dynamic value;
+
             if(string.IsNullOrEmpty(Consequent.VariableValue) == false)
             {
-                agent[Consequent.Param] = agent[Consequent.VariableValue];
+                value = agent[Consequent.VariableValue];
             }
             else
             {
-                agent[Consequent.Param] = Consequent.Value;
+                value = Consequent.Value;
             }
+
+            
+            if(Consequent.SavePrevious)
+            {
+                string key = $"{Agent.VariablesUsedInCode.PreviousPrefix}_{Consequent.Param}";
+
+                agent[key] = agent[Consequent.Param];
+            }
+
+            if(Consequent.CopyToCommon)
+            {
+                string key = $"{Agent.VariablesUsedInCode.AgentPrefix}_{agent.Id}_{Consequent.Param}";
+
+                agent[key] = value;
+            }
+
+            agent[Consequent.Param] = value;
         }
         
         internal static Rule Create(RuleAntecedentPart[] antecedent, RuleConsequent consequent)

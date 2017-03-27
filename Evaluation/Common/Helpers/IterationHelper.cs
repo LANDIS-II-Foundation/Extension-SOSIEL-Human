@@ -32,7 +32,7 @@ namespace Common.Helpers
                 {
                     var source = conf.AnticipatedInfluenceState;
 
-                    var inner = a.AllGoals.Join(source[r.Id], g => g.Name, kvp => kvp.Key, (g, kvp) => new { Key = g, kvp.Value }).ToDictionary(o => o.Key, o => o.Value);
+                    var inner = a.Goals.Join(source[r.Id], g => g.Name, kvp => kvp.Key, (g, kvp) => new { Key = g, kvp.Value }).ToDictionary(o => o.Key, o => o.Value);
 
                     ai.Add(r, inner);
                 });
@@ -42,9 +42,9 @@ namespace Common.Helpers
 
                 agentStateConfiguration.GoalState.ForEach(gs =>
                {
-                   Goal goal = a.AllGoals.First(g => g.Name == gs.Key);
+                   Goal goal = a.Goals.First(g => g.Name == gs.Key);
 
-                   GoalState goalState = new GoalState(gs.Value.Value, goal.FocalValue, gs.Value.Coef);
+                   GoalState goalState = new GoalState(gs.Value.Value, goal.FocalValue, gs.Value.Proportion);
 
                    agentState.GoalsState.Add(goal, goalState);
                });

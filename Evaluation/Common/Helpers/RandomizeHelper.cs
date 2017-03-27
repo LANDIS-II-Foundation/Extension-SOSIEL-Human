@@ -44,7 +44,7 @@ namespace Common.Helpers
         }
 
 
-        public static IEnumerable<T> Randomize<T>(this IEnumerable<T> original, bool randomize)
+        public static IEnumerable<T> Randomize<T>(this IEnumerable<T> original, bool randomize = true)
         {
             if (randomize)
             {

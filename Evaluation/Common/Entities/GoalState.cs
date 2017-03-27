@@ -17,28 +17,28 @@ namespace Common.Entities
 
         public double DiffPriorAndMin { get; set; }
 
+        public double DiffPriorAndCurrent { get; set; }
+
         public double AnticipatedInfluenceValue { get; set; }
 
-        public double Coef { get; set; }
+        public double Proportion { get; set; }
 
         public bool Confidence { get; set; }
 
         public AnticipatedDirection AnticipatedDirection { get; set; }
 
-        //public bool IsSelected { get; set; }
 
-        public GoalState(double value, double focalValue, double coef)
+        public GoalState(double value, double focalValue, double proportion)
         {
             Value = value;
             FocalValue = focalValue;
-            Coef = coef;
-            //IsSelected = false;
+            Proportion = proportion;
             Confidence = true;
         }
 
         public GoalState CreateForNextIteration()
         {
-            return new GoalState(Value, FocalValue, Coef);
+            return new GoalState(Value, FocalValue, Proportion);
         }
 
     }

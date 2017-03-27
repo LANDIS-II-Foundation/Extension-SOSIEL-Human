@@ -15,6 +15,20 @@
         "Immutable": true
       }
     ],
+
+    "RuleSettings": {
+      "1": {
+        "AssociatedWith": [ "PG1" ],
+        "Layer": {
+          "1": {
+            "Modifiable": false,
+            "MaxRuleNumber": 10,
+            "ConsequentValueInterval": [ 0, 100 ],
+            "ConsequentRelationshipSign": "-"
+          }
+        }
+      }
+    },
     "Rules": [
       {
         "RuleSet": 1,
@@ -32,7 +46,9 @@
         "Consequent": {
           "Param": "AgentC",
           "Value": 0,
-          "VariableValue": "AgentPrevC"
+          "CopyToCommon": true,
+          "SavePrevious": true,
+          "VariableValue": "Previous_AgentC"
         },
         "FreshnessStatus": 1,
         "RequiredParticipants": 1,
@@ -51,7 +67,7 @@
             "ReferenceVariable": ""
           },
           {
-            "Param": "AgentPrevC",
+            "Param": "Previous_AgentC",
             "Sign": "==",
             "Value": 0,
             "ReferenceVariable": ""
@@ -60,6 +76,8 @@
         "Consequent": {
           "Param": "AgentC",
           "Value": 0,
+          "CopyToCommon": true,
+          "SavePrevious": true,
           "VariableValue": "E"
         },
         "FreshnessStatus": 1,
@@ -79,7 +97,7 @@
             "ReferenceVariable": ""
           },
           {
-            "Param": "AgentPrevC",
+            "Param": "Previous_AgentC",
             "Sign": "==",
             "Value": 0,
             "ReferenceVariable": "E"
@@ -88,6 +106,8 @@
         "Consequent": {
           "Param": "AgentC",
           "Value": 0,
+          "CopyToCommon": true,
+          "SavePrevious": true,
           "VariableValue": ""
         },
         "FreshnessStatus": 1,
@@ -168,7 +188,7 @@
         ],
         "GoalState": {
           "PG1": {
-            "Coef": 1,
+            "Proportion": 1,
             "Value": 15
           }
         },
@@ -186,7 +206,7 @@
         ],
         "GoalState": {
           "PG1": {
-            "Coef": 1,
+            "Proportion": 1,
             "Value": 15
           }
         },

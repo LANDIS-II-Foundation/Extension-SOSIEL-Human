@@ -13,11 +13,9 @@ namespace CL2_M7
     {
         public List<Rule> AssignedRules { get; set; } = new List<Rule>();
 
-        public List<Goal> AllGoals { get; set; }
-
-        public Dictionary<Goal, GoalState> GoalsState { get; set; } = new Dictionary<Goal, GoalState>();
-
         public List<RuleSet> MentalProto { get; set; }
+
+        
 
         private Dictionary<string, dynamic> PrivateVariables { get; set; } = new Dictionary<string, dynamic>();
 
@@ -56,7 +54,6 @@ namespace CL2_M7
             agent.AssignedRules = new List<Rule>(AssignedRules);
             agent.MentalProto = TransformRulesToRuleSets();        
             agent.PrivateVariables = new Dictionary<string, dynamic>(PrivateVariables);
-            agent.AllGoals = AllGoals;
 
             return agent;
         }
@@ -75,6 +72,11 @@ namespace CL2_M7
             AssignedRules.AddRange(rules);
         }
 
+
+        public void SetToCommon(string key, dynamic value)
+        {
+            Variables[key] = value;
+        }
 
         public new void GenerateCustomParams()
         {

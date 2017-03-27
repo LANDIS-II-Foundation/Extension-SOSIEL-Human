@@ -6,24 +6,24 @@ namespace Common.Entities
 {
     using Enums;
 
-    public sealed class RuleLayerParameters
+    public sealed class RuleLayerSettings
     {
-        public bool Modifiable { get; private set; } = false;
+        public bool Modifiable { get; set; } = false;
 
         //todo
-        public int MaxRuleCount { get; private set; } = 10;
+        public int MaxRuleNumber { get; set; } = 10;
 
         //todo
-        public int[] ConsequentValueInterval { get; private set; }
+        public int[] ConsequentValueInterval { get; set; }
 
         //todo
-        public string ConsequentRelationshipStr { get; private set; }
+        public string ConsequentRelationshipSign { get; set; }
 
         public ConsequentRelationship ConsequentRelationship
         {
             get
             {
-                switch (ConsequentRelationshipStr)
+                switch (ConsequentRelationshipSign)
                 {
                     case "+":
                         return ConsequentRelationship.Positive;

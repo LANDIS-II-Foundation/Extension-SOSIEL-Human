@@ -12,8 +12,10 @@ namespace Common.Entities
 
         public Dictionary<Goal, GoalState> GoalsState { get; set; }
 
-        public List<Rule> Matched { get; private set; }
-        public List<Rule> Activated { get; private set; }
+        public List<Rule> Matched { get;  set; }
+        public List<Rule> Activated { get; set; }
+
+        public List<Rule> BlockedRules { get; set; }
 
         private AgentState() { }
 
@@ -38,6 +40,7 @@ namespace Common.Entities
                 //Site = site,
                 Matched = new List<Rule>(),
                 Activated = new List<Rule>(),
+                BlockedRules = new List<Rule>(),
                 AnticipationInfluence = new Dictionary<Rule, Dictionary<Goal, double>>(),
                 GoalsState = new Dictionary<Goal, GoalState>()
                 //TakeActions = new List<TakeActionState>()

@@ -13,24 +13,24 @@ namespace Common.Entities
 
         public RuleSet Set { get; set; }
 
-        public RuleLayerParameters LayerParameters { get; private set; }
+        public RuleLayerSettings LayerParameters { get; private set; }
 
         public List<Rule> Rules { get; private set; }
 
-        public RuleLayer(RuleLayerParameters parameters)
+        public RuleLayer(RuleLayerSettings parameters)
         {
-            Rules = new List<Rule>(parameters.MaxRuleCount);
+            Rules = new List<Rule>(parameters.MaxRuleNumber);
             LayerParameters = parameters;
         }
 
-        public RuleLayer(RuleLayerParameters parameters, IEnumerable<Rule> rules) : this(parameters)
+        public RuleLayer(RuleLayerSettings parameters, IEnumerable<Rule> rules) : this(parameters)
         {
             rules.ForEach(r => Add(r));
         }
 
         void CheckAndRemove()
         {
-            if (Rules.Count == LayerParameters.MaxRuleCount)
+            if (Rules.Count == LayerParameters.MaxRuleNumber)
             {
                 Rule oldestRules = Rules.OrderByDescending(h => h.FreshnessStatus).First(h => h.IsAction == true);
 

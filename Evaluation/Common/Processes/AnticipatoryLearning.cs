@@ -14,18 +14,42 @@ namespace Common.Processes
         GoalState currentGoalState;
 
 
-        GoalState[] SelectCriticalGoal(IEnumerable<GoalState> goals)
+        IEnumerable<Goal> SortByProportion(Dictionary<Goal, GoalState> goals)
         {
-            List<GoalState> tempList = new List<GoalState>();
+            int numberOfGoal = goals.Count;
 
-            IEnumerable<GoalState> noConfidence = goals.Where(gs => gs.Confidence == false).OrderByDescending(gs => Math.Abs(gs.AnticipatedInfluenceValue));
+            var noConfidenceGoals = goals.Where(kvp => kvp.Value.Confidence == false).ToArray();
 
-            IEnumerable<GoalState> yesConfidence = goals.Where(gs => gs.Confidence).OrderBy(gs => gs.Goal.Name);
+            var noConfidenceProportions = noConfidenceGoals.Select(kvp =>
+                new { Proportion = kvp.Value.Proportion * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / kvp.Value.FocalValue), Goal = kvp.Key }).ToArray();
 
-            tempList.AddRange(noConfidence);
-            tempList.AddRange(yesConfidence);
+            double totalNoConfidenceAdjustedProportions = noConfidenceProportions.Sum(p => p.Proportion);
 
-            return tempList.ToArray();
+            var confidenceGoals = goals.Where(kvp => kvp.Value.Confidence == true).ToArray();
+
+            double totalConfidenceUnadjustedProportion = confidenceGoals.Sum(kvp => kvp.Value.Proportion);
+
+            var confidenceProportions = confidenceGoals.Select(kvp =>
+                new { Proportion = kvp.Value.Proportion * (1 - totalNoConfidenceAdjustedProportions) / totalConfidenceUnadjustedProportion, Goal = kvp.Key }).ToArray();
+
+            List<Goal> vector = new List<Goal>(100);
+
+            Enumerable.Concat(noConfidenceProportions, confidenceProportions).ForEach(p =>
+            {
+                int numberOfInsertions = Convert.ToInt32(Math.Round(p.Proportion * 100));
+
+                for (int i = 0; i < numberOfInsertions; i++) { vector.Add(p.Goal); }
+            });
+
+            for(int i = 0; i<numberOfGoal; i++)
+            {
+                Goal nextGoal = vector.RandomizeOne();
+
+                vector.RemoveAll(o => o == nextGoal);
+
+
+                yield return nextGoal;
+            }
         }
 
 
@@ -74,7 +98,7 @@ namespace Common.Processes
         }
 
 
-        public GoalState[] Execute(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> lastIteration)
+        public Goal[] Execute(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> lastIteration)
         {
             AgentState currentIterationAgentState = lastIteration.Value[agent];
             AgentState previousIterationAgentState = lastIteration.Previous.Value[agent];
@@ -97,6 +121,9 @@ namespace Common.Processes
                 //todo: check
                 currentGoalState.DiffPriorAndMin = prevGoalState.Value - currentGoalState.FocalValue;
 
+                currentGoalState.DiffPriorAndCurrent = prevGoalState.Value - currentGoalState.Value;
+
+
                 //goalState.Value contains prior Iteration value
                 currentGoalState.AnticipatedInfluenceValue = currentGoalState.Value - prevGoalState.Value;
 
@@ -112,7 +139,7 @@ namespace Common.Processes
                 {
                     currentIterationAgentState.AnticipationInfluence[r][goal] = currentGoalState.AnticipatedInfluenceValue;
                 });
-                              
+
                 currentGoalState = prevGoalState;
 
                 SpecificLogic(goal.Tendency);
@@ -125,7 +152,7 @@ namespace Common.Processes
                 //}
             }
 
-            return SelectCriticalGoal(agent.AssignedGoals);
+            return SortByProportion(currentIterationAgentState.GoalsState).ToArray();
         }
     }
 }

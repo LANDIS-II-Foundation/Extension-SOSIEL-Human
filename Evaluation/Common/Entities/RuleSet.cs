@@ -15,16 +15,16 @@ namespace Common.Entities
         public int PositionNumber { get; set; }
         public List<RuleLayer> Layers { get; set; } 
 
-        //public Goal[] AssociatedWith { get; private set; }
+        public Goal[] AssociatedWith { get; set; }
 
-        private RuleSet(int number/*, Goal[] goals*/)
+        private RuleSet(int number, Goal[] associatedGoals)
         {
             PositionNumber = number;
             Layers = new List<RuleLayer>();
-            //AssociatedWith = goals;
+            AssociatedWith = associatedGoals;
         }
 
-        public RuleSet(int number, IEnumerable<RuleLayer> layers):this(number)
+        public RuleSet(int number, Goal[] associatedGoals, IEnumerable<RuleLayer> layers):this(number, associatedGoals)
         {
             layers.ForEach(l => Add(l));
         }

@@ -31,6 +31,8 @@ namespace CL2_M7
         LinkedList<Dictionary<IConfigurableAgent, AgentState>> _iterations = new LinkedList<Dictionary<IConfigurableAgent, AgentState>>();
 
         AnticipatoryLearning al = new AnticipatoryLearning();
+        ActionSelection acts = new ActionSelection();
+        ActionTaking at = new ActionTaking();
 
         public CL2M7Algorithm(Configuration<CL2M7Agent> configuration)
         {
@@ -54,11 +56,13 @@ namespace CL2_M7
             _iterations.AddLast(IterationHelper.InitilizeBeginningState(_configuration.InitialState, _agentList.Agents.Cast<IConfigurableAgent>()));
 
 
-            
+
             _agentList.Agents.ForEach((a, i) =>
             {
                 a[Agent.VariablesUsedInCode.AgentC] = (i == 0) ? 0 : a[Agent.VariablesUsedInCode.Engage];
             });
+
+            _agentList.Agents.ForEach(a => a[Agent.VariablesUsedInCode.AgentWellbeing] = CalculateAgentWellbeing(a as IConfigurableAgent));
 
 
         }
@@ -83,60 +87,69 @@ namespace CL2_M7
 
             for (int i = 0; i < _configuration.AlgorithmConfiguration.IterationCount; i++)
             {
-                Dictionary<IConfigurableAgent, AgentState> currentPeriod = _iterations.AddLast(new Dictionary<IConfigurableAgent, AgentState>()).Value;
-                Dictionary<IConfigurableAgent, AgentState> priorPeriod = _iterations.Last.Previous.Value;
+                Dictionary<IConfigurableAgent, AgentState> currentIteration = _iterations.AddLast(new Dictionary<IConfigurableAgent, AgentState>()).Value;
+                Dictionary<IConfigurableAgent, AgentState> priorIteration = _iterations.Last.Previous.Value;
 
-                var agentGroups = _agentList.Agents.Cast<IConfigurableAgent>().GroupBy(a=>a[Agent.VariablesUsedInCode.AgentType]);
+                var agentGroups = _agentList.Agents.Cast<IConfigurableAgent>().GroupBy(a => a[Agent.VariablesUsedInCode.AgentType]);
 
                 //rankedGoals is sorted list
-                Dictionary<IConfigurableAgent, GoalState[]> rankedGoals = new Dictionary<IConfigurableAgent, GoalState[]>(_agentList.Agents.Count);
+                Dictionary<IConfigurableAgent, Goal[]> rankedGoals = new Dictionary<IConfigurableAgent, Goal[]>(_agentList.Agents.Count);
 
                 //1st round: AL, CT, IR
                 foreach (var agentGroup in agentGroups)
                 {
-                    foreach (IAgent agent in agentGroup.Randomize(_processConfig.AgentRandomizationEnabled))
+                    foreach (IConfigurableAgent agent in agentGroup.Randomize(_processConfig.AgentRandomizationEnabled))
                     {
                         //Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
 
                         //currentPeriod.SiteStates.Add(actor, new List<SiteState>(assignedSites.Length));
 
-                        rankedGoals.Add(agent, al.Execute(agent, periods.Last));
+                        currentIteration.Add(agent, priorIteration[agent].CreateForNextIteration());
 
-                        //optimization
-                        if (rankedGoals[agent].Any(gs => gs.Confidence == false))
-                        {
-                            foreach (Site site in assignedSites.Randomize())
-                            {
-                                foreach (var set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
-                                {
-                                    //optimization
-                                    GoalState criticalGoalState = rankedGoals[actor].First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
+                        rankedGoals.Add(agent, al.Execute(agent, _iterations.Last));
 
-                                    if (criticalGoalState.Confidence == false)
-                                    {
-                                        foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
-                                        {
-                                            //optimization
-                                            if (layer.Key.LayerParameters.Modifiable)
-                                            {
-                                                Heuristic[] matchedPriorPeriodHeuristics = priorPeriod.GetStateForSite(actor, site)
-                                                        .Matched.Where(h => h.Layer == layer.Key).ToArray();
+                        //if (_processConfig.CounterfactualThinkingEnabled == true)
+                        //{
+                        //    optimization
+                        //    if (rankedGoals[agent].Any(gs => gs.Confidence == false))
+                        //    {
+                        //        foreach (Site site in assignedSites.Randomize())
+                        //        {
+                        //            foreach (var set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                        //            {
+                        //                //optimization
+                        //                GoalState criticalGoalState = rankedGoals[actor].First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
 
-                                                bool? CTResult = null;
+                        //                if (criticalGoalState.Confidence == false)
+                        //                {
+                        //                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                        //                    {
+                        //                        //optimization
+                        //                        if (layer.Key.LayerParameters.Modifiable)
+                        //                        {
+                        //                            Heuristic[] matchedPriorPeriodHeuristics = priorPeriod.GetStateForSite(actor, site)
+                        //                                    .Matched.Where(h => h.Layer == layer.Key).ToArray();
 
-                                                if (matchedPriorPeriodHeuristics.Length >= 2)
-                                                    counterfactualThinking.Execute(actor, periods.Last, criticalGoalState,
-                                                    matchedPriorPeriodHeuristics, site, layer.Key);
+                        //                            bool? CTResult = null;
 
-                                                if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
-                                                    inductiveReasoning.Execute(actor, periods.Last, criticalGoalState, site, layer.Key);
+                        //                            if (matchedPriorPeriodHeuristics.Length >= 2)
+                        //                                counterfactualThinking.Execute(actor, periods.Last, criticalGoalState,
+                        //                                matchedPriorPeriodHeuristics, site, layer.Key);
 
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+
+                        //                            if (_processConfig.InnovationEnabled == true)
+                        //                            {
+
+                        //                                if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
+                        //                                    inductiveReasoning.Execute(actor, periods.Last, criticalGoalState, site, layer.Key);
+                        //                            }
+                        //                        }
+                        //                    }
+                        //                }
+                        //            }
+                        //        }
+                        //    }
+                        //}
                     }
                 }
 
@@ -177,27 +190,26 @@ namespace CL2_M7
 
                         //List<SiteState> siteStates = new List<SiteState>(assignedSites.Length);
 
-                        foreach (Site site in assignedSites.Randomize())
+                        //foreach (Site site in assignedSites.Randomize())
+                        //{
+                        //    currentPeriod.SiteStates[actor].Add(SiteState.Create(actor.IsSiteSpecific, site));
+
+                        foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                         {
-                            currentPeriod.SiteStates[actor].Add(SiteState.Create(actor.IsSiteSpecific, site));
+                            Goal selectedGoal = rankedGoals[agent].First(g => set.Key.AssociatedWith.Contains(g));
 
-                            foreach (var set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                            foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                             {
-                                //optimization
-                                GoalState criticalGoalState = rankedGoals[actor].First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
-
-                                foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
-                                {
-                                    heuristicSelection.ExecutePartI(actor, actorGroup.ToArray(), periods.Last, criticalGoalState, layer, site);
-                                }
+                                acts.ExecutePartI(agent, agentGroup.ToArray(), _iterations.Last, selectedGoal, layer);
                             }
                         }
+                        //}
                     }
 
-                    if (actorGroup.Key.Type == 1)
-                    {
-                        SetJobAvailableValue(periods.Last.Value);
-                    }
+                    //if (actorGroup.Key.Type == 1)
+                    //{
+                    //    SetJobAvailableValue(periods.Last.Value);
+                    //}
                 }
 
 
@@ -238,24 +250,24 @@ namespace CL2_M7
 
                 if (_processConfig.ActionTakingEnabled)
                 {
-                    ////5th round: TA
-                    //foreach (var actorGroup in actorGroups)
-                    //{
-                    //    foreach (Actor actor in actorGroup)
-                    //    {
-                    //        takeAction.Execute(actor, periods.Last, sites);
+                    //5th round: TA
+                    foreach (var agentGroup in agentGroups)
+                    {
+                        foreach (IConfigurableAgent agent in agentGroup)
+                        {
+                            at.Execute(agent, currentIteration[agent]);
 
-                    //        if (periods.Last.Value.IsOverconsumption)
-                    //            return periods;
-                    //    }
-                    //}
+                            //if (periods.Last.Value.IsOverconsumption)
+                            //    return periods;
+                        }
+                    }
                 }
 
 
-                _agentList.Agents.ForEach(a=>
-                {
-                    a[Agent.VariablesUsedInCode]
-                })
+                //_agentList.Agents.ForEach(a=>
+                //{
+                //    a[Agent.VariablesUsedInCode]
+                //})
 
                 //Maintenance();
             }

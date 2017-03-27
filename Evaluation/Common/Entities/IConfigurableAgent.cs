@@ -10,8 +10,6 @@ namespace Common.Entities
     {
         List<Rule> AssignedRules { get; set; }
 
-        List<Goal> AllGoals { get; set; }
-
         void SyncState(IEnumerable<string> assignedRules);
     }
 }

@@ -63,7 +63,7 @@ namespace CL1_M2
 
                 _isAgentMovement = false;
 
-                List<IAgent> orderingAgents = RandomizeHelper.Randomize(_agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active"));
+                List<IAgent> orderingAgents = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active").Randomize().ToList();
 
                 List<Site> vacantSites = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied == false).ToList();
 
