@@ -14,7 +14,6 @@ namespace Common.Processes
             state.Activated.OrderBy(r => r.Layer.Set).ThenBy(r => r.Layer).ForEach(r =>
                {
                    r.Apply(agent);
-
                });
         }
     }

@@ -20,7 +20,7 @@ namespace Common.Entities
 
         public string Param { get; set; }
 
-        public double Value { get; set; }
+        public dynamic Value { get; set; }
 
         public string VariableValue { get; set; }
 

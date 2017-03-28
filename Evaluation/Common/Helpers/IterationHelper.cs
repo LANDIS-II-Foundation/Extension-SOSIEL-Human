@@ -20,19 +20,24 @@ namespace Common.Helpers
 
             agents.ForEach(a =>
             {
+                AgentState agentState = AgentState.Create();
+                
                 AgentStateConfiguration agentStateConfiguration = conf.AgentsState[a.Id.ToString()];
-
-                AgentState agentState = AgentState.Create(
-                    a.AssignedRules.Where(r => agentStateConfiguration.MatchedRules.Contains(r.Id)),
-                    a.AssignedRules.Where(r => agentStateConfiguration.ActivatedRules.Contains(r.Id)));
 
                 Dictionary<Rule, Dictionary<Goal, double>> ai = new Dictionary<Rule, Dictionary<Goal, double>>();
 
                 a.AssignedRules.ForEach(r =>
                 {
-                    var source = conf.AnticipatedInfluenceState;
+                    Dictionary<string, double> source;
 
-                    var inner = a.Goals.Join(source[r.Id], g => g.Name, kvp => kvp.Key, (g, kvp) => new { Key = g, kvp.Value }).ToDictionary(o => o.Key, o => o.Value);
+                    agentStateConfiguration.AnticipatedInfluenceState.TryGetValue(r.Id, out source);
+
+                    Dictionary<Goal, double> inner = new Dictionary<Goal, double>();
+
+                    a.Goals.ForEach(g =>
+                    {
+                        inner.Add(g, source.ContainsKey(g.Name) ? source[g.Name] : 0);
+                    });
 
                     ai.Add(r, inner);
                 });

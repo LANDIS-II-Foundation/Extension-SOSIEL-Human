@@ -89,6 +89,31 @@ namespace Common.Processes
             }
         }
 
+        IEnumerable<Goal> RankGoal(AgentState state)
+        {
+            int numberOfGoal = state.GoalsState.Count;
+
+            List<Goal> vector = new List<Goal>(100);
+
+            state.GoalsState.ForEach(kvp =>
+            {
+                int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.Proportion * 100));
+
+                for (int i = 0; i < numberOfInsertions; i++) { vector.Add(kvp.Key); }
+            });
+
+            for (int i = 0; i < numberOfGoal; i++)
+            {
+                Goal nextGoal = vector.RandomizeOne();
+
+                vector.RemoveAll(o => o == nextGoal);
+
+                yield return nextGoal;
+            }
+        } 
+
+
+
         //void ShareCollectiveAction(ICollection<Actor> sameTypeActors, Actor currentActor, Heuristic heuristic)
         //{
         //    string socialNetwork = ((string[])currentActor[VariableNames.SocialNetworks])[0];
@@ -100,15 +125,22 @@ namespace Common.Processes
         //}
 
         public void ExecutePartI(IConfigurableAgent agent, ICollection<IConfigurableAgent> sameTypeActors,
-            LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> periodState, Goal goal,
-            IEnumerable<Rule> processedRules)
+            LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> periodState, Goal[] rankedGoals,
+            Rule[] processedRules)
         {
             ruleForActivating = null;
 
             agentState = periodState.Value[agent];
             AgentState priorPeriod = periodState.Previous.Value[agent];
 
-            processedGoal = goal;
+            if(rankedGoals == null)
+            {
+                rankedGoals = RankGoal(agentState).ToArray();
+            }
+
+
+
+            processedGoal = rankedGoals.First(g=> processedRules.First().Layer.Set.AssociatedWith.Contains(g));
             goalState = agentState.GoalsState[processedGoal];
 
             matchedRules = processedRules.Except(agentState.BlockedRules).Where(h => h.IsMatch(agent)).ToArray();

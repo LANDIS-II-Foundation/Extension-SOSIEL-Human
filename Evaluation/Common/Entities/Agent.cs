@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 namespace Common.Entities
 {
     using Exceptions;
+    using Helpers;
 
     public class Agent : IAgent, ICloneableAgent<Agent>
     {
@@ -22,9 +23,9 @@ namespace Common.Entities
             public const string AgentBetterSiteAvailable = "AgentBetterSiteAvailable";
             public const string AgentSubtype = "AgentSubtype";
             public const string NeighborhoodUnalike = "NeighborhoodUnalike";
-            
+
             //M1
-            
+
             public const string NeighborhoodSubtypeProportion = "NeighborhoodSubtypeProportion";
 
             //M2
@@ -58,9 +59,9 @@ namespace Common.Entities
             public const string PreviousPrefix = "Previous";
 
         }
-        
+
         public int Id { get; set; }
-        
+
         [JsonProperty()]
         protected Dictionary<string, dynamic> Variables { get; set; } = new Dictionary<string, dynamic>();
 
@@ -75,14 +76,35 @@ namespace Common.Entities
         private List<RuleSet> _mentalProto;
 
 
+        private void AddDoNothingRules()
+        {
+            _mentalProto.ForEach(s =>
+            {
+                s.Layers.ForEach(l =>
+                {
+                    if (l.Rules.Any(r => r.IsAction == false))
+                    {
+                        l.Add(
+                            Rule.Create(new RuleAntecedentPart[] { new RuleAntecedentPart { Param = VariablesUsedInCode.AgentStatus, Sign = "==", Value = "active" } },
+                            new RuleConsequent { Param = VariablesUsedInCode.AgentStatus, Value = "active" })
+                            );
+                    }
+                });
+            });
+        }
+
         protected List<RuleSet> TransformRulesToRuleSets()
         {
-            if(_mentalProto != null)
+            if (_mentalProto != null)
                 return _mentalProto;
 
-            return _mentalProto = Rules.GroupBy(r=> r.RuleSet).OrderBy(g=>g.Key).Select(g=> 
-                new RuleSet(g.Key, Goals.Where(goal=> RuleSettings[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray() ,
-                    g.GroupBy(r=>r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2=> new RuleLayer(RuleSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
+            _mentalProto = Rules.GroupBy(r => r.RuleSet).OrderBy(g => g.Key).Select(g =>
+                   new RuleSet(g.Key, Goals.Where(goal => RuleSettings[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray(),
+                       g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2 => new RuleLayer(RuleSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
+
+            AddDoNothingRules();
+
+            return _mentalProto;
         }
 
         public virtual dynamic this[string key]
@@ -133,7 +155,7 @@ namespace Common.Entities
 
             agent.Variables = Variables;
 
-            if(agent.Variables.ContainsKey(VariablesUsedInCode.AgentCurrentSite))
+            if (agent.Variables.ContainsKey(VariablesUsedInCode.AgentCurrentSite))
                 agent.Variables.Remove(VariablesUsedInCode.AgentCurrentSite);
 
             agent.Rules = Rules;

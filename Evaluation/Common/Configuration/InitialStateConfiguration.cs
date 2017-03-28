@@ -8,7 +8,7 @@ namespace Common.Configuration
 {
     public class InitialStateConfiguration
     {
-        public Dictionary<string, Dictionary<string, double>> AnticipatedInfluenceState { get; set; }
+       
 
         public Dictionary<string, AgentStateConfiguration> AgentsState { get; set; }
     }

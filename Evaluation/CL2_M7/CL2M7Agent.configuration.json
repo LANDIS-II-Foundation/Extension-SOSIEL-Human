@@ -29,6 +29,7 @@
         }
       }
     },
+
     "Rules": [
       {
         "RuleSet": 1,
@@ -39,18 +40,20 @@
           {
             "Param": "AgentWellbeing",
             "Sign": ">=",
-            "Value": 15,
-            "ReferenceVariable": ""
+            "Value": 15
+          },
+          {
+            "Param": "Iteration",
+            "Sign": ">",
+            "Value": 1
           }
         ],
         "Consequent": {
           "Param": "AgentC",
-          "Value": 0,
           "CopyToCommon": true,
           "SavePrevious": true,
-          "VariableValue": "Previous_AgentC"
+          "VariableValue": "AgentC"
         },
-        "FreshnessStatus": 1,
         "RequiredParticipants": 1,
         "IsAction": true
       },
@@ -63,24 +66,25 @@
           {
             "Param": "AgentWellbeing",
             "Sign": "<",
-            "Value": 15,
-            "ReferenceVariable": ""
+            "Value": 15
           },
           {
-            "Param": "Previous_AgentC",
+            "Param": "AgentC",
             "Sign": "==",
-            "Value": 0,
-            "ReferenceVariable": ""
+            "Value": 0
+          },
+          {
+            "Param": "Iteration",
+            "Sign": ">",
+            "Value": 1
           }
         ],
         "Consequent": {
           "Param": "AgentC",
-          "Value": 0,
           "CopyToCommon": true,
           "SavePrevious": true,
           "VariableValue": "E"
         },
-        "FreshnessStatus": 1,
         "RequiredParticipants": 1,
         "IsAction": true
       },
@@ -93,28 +97,28 @@
           {
             "Param": "AgentWellbeing",
             "Sign": "<",
-            "Value": 15,
-            "ReferenceVariable": ""
+            "Value": 15
           },
           {
-            "Param": "Previous_AgentC",
+            "Param": "AgentC",
             "Sign": "==",
-            "Value": 0,
             "ReferenceVariable": "E"
+          },
+          {
+            "Param": "Iteration",
+            "Sign": ">",
+            "Value": 1
           }
         ],
         "Consequent": {
           "Param": "AgentC",
           "Value": 0,
           "CopyToCommon": true,
-          "SavePrevious": true,
-          "VariableValue": ""
+          "SavePrevious": true
         },
-        "FreshnessStatus": 1,
         "RequiredParticipants": 1,
         "IsAction": true
       },
-
       {
         "RuleSet": 1,
         "RuleLayer": 1,
@@ -124,13 +128,34 @@
           {
             "Param": "Iteration",
             "Sign": "==",
-            "Value": 1,
-            "ReferenceVariable": ""
+            "Value": 1
           }
         ],
         "Consequent": {
           "Param": "AgentC",
           "Value": 0,
+          "CopyToCommon": true,
+          "SavePrevious": true
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+
+
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 5,
+        "Id": "RS1_L1_R5",
+        "Antecedent": [
+          {
+            "Param": "Iteration",
+            "Sign": "==",
+            "Value": 1
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
           "VariableValue": "E"
         },
         "FreshnessStatus": 1,
@@ -140,20 +165,18 @@
       {
         "RuleSet": 1,
         "RuleLayer": 1,
-        "RulePositionNumber": 5,
-        "Id": "RS1_L1_R5",
+        "RulePositionNumber": 6,
+        "Id": "RS1_L1_R6",
         "Antecedent": [
           {
             "Param": "Iteration",
             "Sign": ">",
-            "Value": 1,
-            "ReferenceVariable": ""
+            "Value": 1
           }
         ],
         "Consequent": {
           "Param": "AgentC",
-          "Value": 0,
-          "VariableValue": "OtherAgentC"
+          "VariableValue": "Agent_1_Previous_AgentC"
         },
         "FreshnessStatus": 1,
         "RequiredParticipants": 1,
@@ -162,60 +185,54 @@
     ]
   },
   "InitialState": {
-    "AnticipatedInfluenceState": {
-      "RS1_L1_R1": {
-        "PG1": 15
-      },
-      "RS1_L1_R2": {
-        "PG1": 15
-      },
-      "RS1_L1_R3": {
-        "PG1": 15
-      },
-      "RS1_L1_R4": {
-        "PG1": 10
-      },
-      "RS1_L1_R5": {
-        "PG1": 10
-      }
-    },
     "AgentsState": {
       "1": {
+        "AnticipatedInfluenceState": {
+          "RS1_L1_R1": {
+            "PG1": 15
+          },
+          "RS1_L1_R2": {
+            "PG1": 15
+          },
+          "RS1_L1_R3": {
+            "PG1": 15
+          },
+          "RS1_L1_R4": {
+            "PG1": 15
+          }
+        },
         "AssignedRules": [
           "RS1_L1_R1",
           "RS1_L1_R2",
-          "RS1_L1_R3"
+          "RS1_L1_R3",
+          "RS1_L1_R4"
         ],
         "GoalState": {
           "PG1": {
             "Proportion": 1,
             "Value": 15
           }
-        },
-        "MatchedRules": [
-          "RS1_L1_R2"
-        ],
-        "ActivatedRules": [
-          "RS1_L1_R2"
-        ]
+        }
       },
       "2": {
+        "AnticipatedInfluenceState": {
+          "RS1_L1_R5": {
+            "PG1": 10
+          },
+          "RS1_L1_R6": {
+            "PG1": 10
+          }
+        },
         "AssignedRules": [
-          "RS1_L1_R4",
-          "RS1_L1_R5"
+          "RS1_L1_R5",
+          "RS1_L1_R6"
         ],
         "GoalState": {
           "PG1": {
             "Proportion": 1,
-            "Value": 15
+            "Value": 10
           }
-        },
-        "MatchedRules": [
-          "RS1_L1_R4"
-        ],
-        "ActivatedRules": [
-          "RS1_L1_R4"
-        ]
+        }
       }
     }
   }

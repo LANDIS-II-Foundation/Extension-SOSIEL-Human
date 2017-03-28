@@ -11,11 +11,5 @@ namespace Common.Entities
         public int Iteration { get; set; }
 
         public Dictionary<IAgent, AgentState> AgentsState { get; set; }
-
-
-
-
-
-
     }
 }

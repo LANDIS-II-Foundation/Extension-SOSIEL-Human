@@ -10,6 +10,8 @@ namespace Common.Entities
     {
         List<Rule> AssignedRules { get; set; }
 
+        void SetToCommon(string key, dynamic value);
+
         void SyncState(IEnumerable<string> assignedRules);
     }
 }

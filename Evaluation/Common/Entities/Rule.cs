@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Common.Entities
 {
-    public sealed class Rule
+    public class Rule
     {
         
         public RuleLayer Layer { get; set; }
@@ -73,13 +73,18 @@ namespace Common.Entities
                 string key = $"{Agent.VariablesUsedInCode.PreviousPrefix}_{Consequent.Param}";
 
                 agent[key] = agent[Consequent.Param];
+
+                if(Consequent.CopyToCommon)
+                {
+                    (agent as IConfigurableAgent).SetToCommon($"{Agent.VariablesUsedInCode.AgentPrefix}_{agent.Id}_{key}", agent[Consequent.Param]);
+                }
             }
 
             if(Consequent.CopyToCommon)
             {
                 string key = $"{Agent.VariablesUsedInCode.AgentPrefix}_{agent.Id}_{Consequent.Param}";
 
-                agent[key] = value;
+                (agent as IConfigurableAgent).SetToCommon(key, value);
             }
 
             agent[Consequent.Param] = value;

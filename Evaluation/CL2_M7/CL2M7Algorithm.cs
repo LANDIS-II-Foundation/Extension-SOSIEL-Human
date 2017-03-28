@@ -30,6 +30,9 @@ namespace CL2_M7
 
         LinkedList<Dictionary<IConfigurableAgent, AgentState>> _iterations = new LinkedList<Dictionary<IConfigurableAgent, AgentState>>();
 
+        List<AgentWellbeingOutput> _agentWellbeingStatistic;
+
+
         AnticipatoryLearning al = new AnticipatoryLearning();
         ActionSelection acts = new ActionSelection();
         ActionTaking at = new ActionTaking();
@@ -40,6 +43,7 @@ namespace CL2_M7
 
             _processConfig = new ProcessConfig { ActionTakingEnabled = true, AnticipatoryLearningEnabled = true, RuleSelectionEnabled = true };
 
+            _agentWellbeingStatistic = new List<AgentWellbeingOutput>(_configuration.AlgorithmConfiguration.IterationCount);
 
             _outputFolder = @"Output\CL2_M7";
 
@@ -57,14 +61,12 @@ namespace CL2_M7
 
 
 
-            _agentList.Agents.ForEach((a, i) =>
-            {
-                a[Agent.VariablesUsedInCode.AgentC] = (i == 0) ? 0 : a[Agent.VariablesUsedInCode.Engage];
-            });
-
-            _agentList.Agents.ForEach(a => a[Agent.VariablesUsedInCode.AgentWellbeing] = CalculateAgentWellbeing(a as IConfigurableAgent));
 
 
+            //_agentList.Agents.ForEach((a, i) =>
+            //{
+            //    a[Agent.VariablesUsedInCode.AgentC] = (i == 0) ? 0 : a[Agent.VariablesUsedInCode.Engage];
+            //});
         }
 
         private void ExecuteAlgorithm()
@@ -73,7 +75,7 @@ namespace CL2_M7
         }
 
 
-        private double CalculateAgentWellbeing(IConfigurableAgent agent)
+        private double CalculateAgentWellbeing(IAgent agent)
         {
             return agent[Agent.VariablesUsedInCode.Engage] - agent[Agent.VariablesUsedInCode.AgentC]
                 + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * _agentList.CalculateCommonC() / _agentList.Agents.Count;
@@ -82,7 +84,6 @@ namespace CL2_M7
         public async Task<string> Run()
         {
             Initialize();
-
 
 
             for (int i = 0; i < _configuration.AlgorithmConfiguration.IterationCount; i++)
@@ -95,61 +96,72 @@ namespace CL2_M7
                 //rankedGoals is sorted list
                 Dictionary<IConfigurableAgent, Goal[]> rankedGoals = new Dictionary<IConfigurableAgent, Goal[]>(_agentList.Agents.Count);
 
-                //1st round: AL, CT, IR
-                foreach (var agentGroup in agentGroups)
+                _agentList.Agents.Cast<IConfigurableAgent>().ForEach(a =>
                 {
-                    foreach (IConfigurableAgent agent in agentGroup.Randomize(_processConfig.AgentRandomizationEnabled))
+                    a[Agent.VariablesUsedInCode.Iteration] = i + 1;
+
+                    rankedGoals.Add(a, null);
+                    currentIteration.Add(a, priorIteration[a].CreateForNextIteration());
+                });
+
+                if (_processConfig.AnticipatoryLearningEnabled && i > 0)
+                {
+                    //1st round: AL, CT, IR
+                    foreach (var agentGroup in agentGroups)
                     {
-                        //Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
+                        foreach (IConfigurableAgent agent in agentGroup.Randomize(_processConfig.AgentRandomizationEnabled))
+                        {
+                            //Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
 
-                        //currentPeriod.SiteStates.Add(actor, new List<SiteState>(assignedSites.Length));
-
-                        currentIteration.Add(agent, priorIteration[agent].CreateForNextIteration());
-
-                        rankedGoals.Add(agent, al.Execute(agent, _iterations.Last));
-
-                        //if (_processConfig.CounterfactualThinkingEnabled == true)
-                        //{
-                        //    optimization
-                        //    if (rankedGoals[agent].Any(gs => gs.Confidence == false))
-                        //    {
-                        //        foreach (Site site in assignedSites.Randomize())
-                        //        {
-                        //            foreach (var set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
-                        //            {
-                        //                //optimization
-                        //                GoalState criticalGoalState = rankedGoals[actor].First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
-
-                        //                if (criticalGoalState.Confidence == false)
-                        //                {
-                        //                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
-                        //                    {
-                        //                        //optimization
-                        //                        if (layer.Key.LayerParameters.Modifiable)
-                        //                        {
-                        //                            Heuristic[] matchedPriorPeriodHeuristics = priorPeriod.GetStateForSite(actor, site)
-                        //                                    .Matched.Where(h => h.Layer == layer.Key).ToArray();
-
-                        //                            bool? CTResult = null;
-
-                        //                            if (matchedPriorPeriodHeuristics.Length >= 2)
-                        //                                counterfactualThinking.Execute(actor, periods.Last, criticalGoalState,
-                        //                                matchedPriorPeriodHeuristics, site, layer.Key);
+                            //currentPeriod.SiteStates.Add(actor, new List<SiteState>(assignedSites.Length));
 
 
-                        //                            if (_processConfig.InnovationEnabled == true)
-                        //                            {
 
-                        //                                if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
-                        //                                    inductiveReasoning.Execute(actor, periods.Last, criticalGoalState, site, layer.Key);
-                        //                            }
-                        //                        }
-                        //                    }
-                        //                }
-                        //            }
-                        //        }
-                        //    }
-                        //}
+                            rankedGoals[agent] = al.Execute(agent, _iterations.Last);
+
+                            //if (_processConfig.CounterfactualThinkingEnabled == true)
+                            //{
+                            //    optimization
+                            //    if (rankedGoals[agent].Any(gs => gs.Confidence == false))
+                            //    {
+                            //        foreach (Site site in assignedSites.Randomize())
+                            //        {
+                            //            foreach (var set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                            //            {
+                            //                //optimization
+                            //                GoalState criticalGoalState = rankedGoals[actor].First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
+
+                            //                if (criticalGoalState.Confidence == false)
+                            //                {
+                            //                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                            //                    {
+                            //                        //optimization
+                            //                        if (layer.Key.LayerParameters.Modifiable)
+                            //                        {
+                            //                            Heuristic[] matchedPriorPeriodHeuristics = priorPeriod.GetStateForSite(actor, site)
+                            //                                    .Matched.Where(h => h.Layer == layer.Key).ToArray();
+
+                            //                            bool? CTResult = null;
+
+                            //                            if (matchedPriorPeriodHeuristics.Length >= 2)
+                            //                                counterfactualThinking.Execute(actor, periods.Last, criticalGoalState,
+                            //                                matchedPriorPeriodHeuristics, site, layer.Key);
+
+
+                            //                            if (_processConfig.InnovationEnabled == true)
+                            //                            {
+
+                            //                                if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
+                            //                                    inductiveReasoning.Execute(actor, periods.Last, criticalGoalState, site, layer.Key);
+                            //                            }
+                            //                        }
+                            //                    }
+                            //                }
+                            //            }
+                            //        }
+                            //    }
+                            //}
+                        }
                     }
                 }
 
@@ -181,11 +193,13 @@ namespace CL2_M7
                 //}
 
 
-                //HS part I
+                //AS part I
                 foreach (var agentGroup in agentGroups)
                 {
                     foreach (IConfigurableAgent agent in agentGroup.Randomize(_processConfig.AgentRandomizationEnabled))
                     {
+                        //range priority of goals by proportion only
+
                         //Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
 
                         //List<SiteState> siteStates = new List<SiteState>(assignedSites.Length);
@@ -196,11 +210,9 @@ namespace CL2_M7
 
                         foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                         {
-                            Goal selectedGoal = rankedGoals[agent].First(g => set.Key.AssociatedWith.Contains(g));
-
                             foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                             {
-                                acts.ExecutePartI(agent, agentGroup.ToArray(), _iterations.Last, selectedGoal, layer);
+                                acts.ExecutePartI(agent, agentGroup.ToArray(), _iterations.Last, rankedGoals[agent], layer.ToArray());
                             }
                         }
                         //}
@@ -216,7 +228,7 @@ namespace CL2_M7
                 if (_processConfig.RuleSelectionPart2Enabled)
                 {
 
-                    ////4th round: HS part II
+                    ////4th round: AS part II
                     //foreach (var actorGroup in actorGroups)
                     //{
                     //    foreach (Actor actor in actorGroup.Randomize())
@@ -264,18 +276,29 @@ namespace CL2_M7
                 }
 
 
-                //_agentList.Agents.ForEach(a=>
-                //{
-                //    a[Agent.VariablesUsedInCode]
-                //})
+                _agentList.Agents.ForEach(a =>
+                {
+                    a[Agent.VariablesUsedInCode.AgentWellbeing] = CalculateAgentWellbeing(a);
+                });
+
+
+                _agentWellbeingStatistic.Add(new AgentWellbeingOutput { Iteration = i+1, AgentWellbeings = _agentList.Agents.Select(a => (double)a[Agent.VariablesUsedInCode.AgentWellbeing]).ToArray() });
 
                 //Maintenance();
             }
 
 
+            SaveAgentWellbeingStatistic();
 
 
             return _outputFolder;
         }
+
+
+        void SaveAgentWellbeingStatistic()
+        {
+            ResultSavingHelper.Save(_agentWellbeingStatistic, $@"{_outputFolder}\agent_wellbeing_statistic.csv");
+        }
+
     }
 }

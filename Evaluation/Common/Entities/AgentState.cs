@@ -29,7 +29,7 @@ namespace Common.Entities
             return agentState;
         }
 
-        public static AgentState Create(bool isSiteSpecific, Site site = null)
+        public static AgentState Create(bool isSiteSpecific = false, Site site = null)
         {
             if (isSiteSpecific && site == null)
                 throw new Exception("site can't be null");

@@ -36,6 +36,10 @@ namespace Common.Processes
 
             Enumerable.Concat(noConfidenceProportions, confidenceProportions).ForEach(p =>
             {
+                //save new proportion for each goal to the goal state
+                goals[p.Goal].Proportion = p.Proportion;
+
+
                 int numberOfInsertions = Convert.ToInt32(Math.Round(p.Proportion * 100));
 
                 for (int i = 0; i < numberOfInsertions; i++) { vector.Add(p.Goal); }

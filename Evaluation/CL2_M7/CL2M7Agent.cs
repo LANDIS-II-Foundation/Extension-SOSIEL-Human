@@ -67,9 +67,16 @@ namespace CL2_M7
         {
             AssignedRules.Clear();
 
-            Rule[] rules = MentalProto.SelectMany(rs=>rs.AsRuleEnumerable()).Where(r => assignedRules.Contains(r.Id)).ToArray();
+            Rule[] allRules = MentalProto.SelectMany(rs => rs.AsRuleEnumerable()).ToArray();
 
-            AssignedRules.AddRange(rules);
+            Rule[] initialRules = allRules.Where(r => assignedRules.Contains(r.Id)).ToArray();
+
+            RuleLayer[] layers = initialRules.Select(r => r.Layer).Distinct().ToArray();
+
+            Rule[] additionalDoNothingRules = allRules.Where(r => r.IsAction == false && layers.Any(l => r.Layer == l)).ToArray();
+
+            AssignedRules.AddRange(initialRules);
+            AssignedRules.AddRange(additionalDoNothingRules);
         }
 
 
@@ -80,7 +87,9 @@ namespace CL2_M7
 
         public new void GenerateCustomParams()
         {
-
+            this[VariablesUsedInCode.AgentC] = 0;
+            this[VariablesUsedInCode.AgentWellbeing] = 0;
+            this[$"{VariablesUsedInCode.PreviousPrefix}_{VariablesUsedInCode.AgentC}"] = 0;
         }
     }
 }

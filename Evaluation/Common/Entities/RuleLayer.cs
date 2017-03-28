@@ -32,11 +32,11 @@ namespace Common.Entities
         {
             if (Rules.Count == LayerParameters.MaxRuleNumber)
             {
-                Rule oldestRules = Rules.OrderByDescending(h => h.FreshnessStatus).First(h => h.IsAction == true);
-
+                Rule oldestRule = Rules.OrderByDescending(h => h.FreshnessStatus).First(h => h.IsAction == true);
+                oldestRule.Layer = null;
                 //Set.UnassignRule(oldestRules);
 
-                Rules.Remove(oldestRules);
+                Rules.Remove(oldestRule);
             }
         }
 
