@@ -36,7 +36,7 @@ namespace Common.Helpers
 
                     a.Goals.ForEach(g =>
                     {
-                        inner.Add(g, source.ContainsKey(g.Name) ? source[g.Name] : 0);
+                        inner.Add(g, source != null && source.ContainsKey(g.Name) ? source[g.Name] : 0);
                     });
 
                     ai.Add(r, inner);

@@ -1,0 +1,342 @@
+﻿{
+  "AgentConfiguration": {
+    "Variables": {
+      "AgentType": 1,
+      "AgentStatus": "active",
+      "E": 10,
+      "M": 1.5
+    },
+    "Goals": [
+      {
+        "Name": "PG1",
+        "Tendency": "AboveMin",
+        "ReferenceVariable": "AgentsCommonPool",
+        "FocalValue": 0,
+        "Immutable": false
+      },
+      {
+        "Name": "PG2",
+        "Tendency": "AboveMin",
+        "ReferenceVariable": "AgentWellbeing",
+        "FocalValue": 0,
+        "Immutable": false
+      }
+    ],
+
+    "SetSettings": {
+      "1": {
+        "AssociatedWith": [ "PG1", "PG2" ],
+        "Layer": {
+          "1": {
+            "Modifiable": false,
+            "MaxRuleNumber": 15,
+            "ConsequentValueInterval": [ 0, 100 ],
+            "ConsequentRelationshipSign": "-"
+          }
+        }
+      }
+    },
+
+    "Rules": [
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 0
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 2,
+        "Id": "RS1_L1_R2",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 1
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 3,
+        "Id": "RS1_L1_R3",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 2
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 4,
+        "Id": "RS1_L1_R4",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 3
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 0
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 0
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 0
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 0
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 0
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 0
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 0
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 0
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      },
+      {
+        "RuleSet": 1,
+        "RuleLayer": 1,
+        "RulePositionNumber": 1,
+        "Id": "RS1_L1_R1",
+        "Antecedent": [
+          {
+            "Param": "AgentStatus",
+            "Sign": "==",
+            "Value": true
+          }
+        ],
+        "Consequent": {
+          "Param": "AgentC",
+          "Value": 0
+        },
+        "RequiredParticipants": 1,
+        "IsAction": true
+      }
+    ]
+  },
+  "InitialState": {
+    "AgentsState": {
+      "1": {
+        "AnticipatedInfluenceState": {
+          "RS1_L1_R1": {
+            "PG1": 15
+          },
+          "RS1_L1_R2": {
+            "PG1": 15
+          },
+          "RS1_L1_R3": {
+            "PG1": 15
+          },
+          "RS1_L1_R4": {
+            "PG1": 15
+          }
+        },
+        "AssignedRules": [
+          "RS1_L1_R1",
+          "RS1_L1_R2",
+          "RS1_L1_R3",
+          "RS1_L1_R4"
+        ],
+        "GoalState": {
+          "PG1": {
+            "Proportion": 1,
+            "Value": 15
+          }
+        }
+      },
+      "2": {
+        "AnticipatedInfluenceState": {
+          "RS1_L1_R5": {
+            "PG1": 10
+          },
+          "RS1_L1_R6": {
+            "PG1": 10
+          }
+        },
+        "AssignedRules": [
+          "RS1_L1_R5",
+          "RS1_L1_R6"
+        ],
+        "GoalState": {
+          "PG1": {
+            "Proportion": 1,
+            "Value": 10
+          }
+        }
+      }
+    }
+  }
+}

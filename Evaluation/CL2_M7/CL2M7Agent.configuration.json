@@ -16,7 +16,7 @@
       }
     ],
 
-    "RuleSettings": {
+    "SetSettings": {
       "1": {
         "AssociatedWith": [ "PG1" ],
         "Layer": {

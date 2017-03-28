@@ -58,9 +58,13 @@ namespace Common.Entities
             public const string AgentPrefix = "Agent";
             public const string PreviousPrefix = "Previous";
 
+
+            //M8
+            public const string AgentsCommonPool = "AgentsCommonPool";
         }
 
         public int Id { get; set; }
+
 
         [JsonProperty()]
         protected Dictionary<string, dynamic> Variables { get; set; } = new Dictionary<string, dynamic>();
@@ -68,7 +72,7 @@ namespace Common.Entities
         //todo
         public List<Rule> Rules { get; set; }
 
-        public Dictionary<string, RuleSetSettings> RuleSettings { get; set; }
+        public Dictionary<string, RuleSetSettings> SetSettings { get; set; }
 
         [JsonProperty()]
         public List<Goal> Goals { get; set; }
@@ -82,12 +86,16 @@ namespace Common.Entities
             {
                 s.Layers.ForEach(l =>
                 {
-                    if (l.Rules.Any(r => r.IsAction == false))
+                    if (!l.Rules.Any(r => r.IsAction == false))
                     {
-                        l.Add(
-                            Rule.Create(new RuleAntecedentPart[] { new RuleAntecedentPart { Param = VariablesUsedInCode.AgentStatus, Sign = "==", Value = "active" } },
-                            new RuleConsequent { Param = VariablesUsedInCode.AgentStatus, Value = "active" })
-                            );
+                        Rule doNothing = new Rule
+                        {
+                            Antecedent = new RuleAntecedentPart[] { new RuleAntecedentPart { Param = VariablesUsedInCode.AgentStatus, Sign = "==", Value = "active" } },
+                            Consequent = new RuleConsequent { Param = VariablesUsedInCode.AgentStatus, Value = "active" },
+                            IsAction = false
+                        };
+
+                        l.Add(doNothing);
                     }
                 });
             });
@@ -99,8 +107,8 @@ namespace Common.Entities
                 return _mentalProto;
 
             _mentalProto = Rules.GroupBy(r => r.RuleSet).OrderBy(g => g.Key).Select(g =>
-                   new RuleSet(g.Key, Goals.Where(goal => RuleSettings[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray(),
-                       g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2 => new RuleLayer(RuleSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
+                   new RuleSet(g.Key, Goals.Where(goal => SetSettings[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray(),
+                       g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2 => new RuleLayer(SetSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
 
             AddDoNothingRules();
 

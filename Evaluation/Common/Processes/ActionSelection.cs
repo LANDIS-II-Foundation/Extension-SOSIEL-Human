@@ -147,7 +147,7 @@ namespace Common.Processes
 
             if (matchedRules.Length > 1)
             {
-                priorPeriodActivatedRule = priorPeriod.Activated.First(r => r.Layer == processedRules.First().Layer);
+                priorPeriodActivatedRule = priorPeriod.Activated.FirstOrDefault(r => r.Layer == processedRules.First().Layer);
 
                 SpecificLogic(processedGoal.Tendency);
 

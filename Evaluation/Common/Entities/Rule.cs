@@ -42,8 +42,7 @@ namespace Common.Entities
             }
         }
         
-        private Rule() { }
-        
+                
         public bool IsMatch(IAgent agent)
         {
             return Antecedent.All(a=>a.IsMatch(agent));
