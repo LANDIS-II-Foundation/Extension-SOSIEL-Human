@@ -116,9 +116,8 @@ namespace Common.Processes
 
                 currentGoalState.Value = agent[goal.ReferenceVariable];
 
-                //todo
-                //if (goalState.Goal.Increased)
-                //    value += goalState.Goal.LimitValue;
+                if (goal.ChangeFocalValueOnPrevious)
+                    currentGoalState.FocalValue = previousIterationAgentState.GoalsState[goal].Value;
 
                 currentGoalState.DiffCurrentAndMin = currentGoalState.Value - currentGoalState.FocalValue;
 

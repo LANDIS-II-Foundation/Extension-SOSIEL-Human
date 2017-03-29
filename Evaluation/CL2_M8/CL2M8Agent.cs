@@ -6,6 +6,8 @@ using Common.Entities;
 using Common.Helpers;
 using Common.Exceptions;
 using Common.Randoms;
+using Common.Configuration;
+
 
 namespace CL2_M8
 {
@@ -19,7 +21,9 @@ namespace CL2_M8
 
         private Dictionary<string, dynamic> PrivateVariables { get; set; } = new Dictionary<string, dynamic>();
 
+        public AgentStateConfiguration InitialState { get; set; }
 
+        public GoalsSettings GoalsSettings { get; set; }
 
         public override dynamic this[string key]
         {
@@ -54,6 +58,8 @@ namespace CL2_M8
             agent.AssignedRules = new List<Rule>(AssignedRules);
             agent.MentalProto = TransformRulesToRuleSets();        
             agent.PrivateVariables = new Dictionary<string, dynamic>(PrivateVariables);
+            agent.InitialState = InitialState;
+            agent.GoalsSettings = GoalsSettings;
 
             return agent;
         }
@@ -63,7 +69,7 @@ namespace CL2_M8
             return new CL2M8Agent();
         }
 
-        public void SyncState(IEnumerable<string> assignedRules)
+        public void AssignRules(IEnumerable<string> assignedRules)
         {
             AssignedRules.Clear();
 

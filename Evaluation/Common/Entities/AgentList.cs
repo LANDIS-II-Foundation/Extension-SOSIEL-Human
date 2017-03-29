@@ -7,7 +7,7 @@ namespace Common.Entities
 {
     using Configuration;
     using Randoms;
-    using Environments;
+    using Helpers;
 
     public class AgentList
     {
@@ -52,24 +52,34 @@ namespace Common.Entities
         }
 
 
-        public static AgentList Generate2<T>(int agentNumber, T prototype, InitialStateConfiguration initialState) where T: class, IAgent, ICloneableAgent<T>, IConfigurableAgent
+        public static AgentList Generate2<T>(int agentNumber, Dictionary<string,T> prototypes, InitialStateConfiguration initialState) where T: class, IAgent, ICloneableAgent<T>, IConfigurableAgent
         {
             AgentList agentList = new AgentList();
 
             agentList.Agents = new List<IAgent>(agentNumber);
 
-            for (int i = 1; i <= agentNumber; i++)
+            if (agentNumber != initialState.AgentsState.Sum(astate => astate.NumberOfAgents))
+                throw new Exception($"Number of agents which described in algorithm.json and sum of agets in {typeof(T).Name}.configuration.json are different");
+
+            int ind = 1;
+
+            initialState.AgentsState.ForEach(astate =>
             {
-                T agent = prototype.Clone();
+                for (int i = 0; i < astate.NumberOfAgents; i++)
+                {
+                    T agent = prototypes[astate.PrototypeOfAgent].Clone();
 
-                agent.GenerateCustomParams();
+                    agent.GenerateCustomParams();
 
-                agent.Id = i;
+                    agent.Id = ind++;
 
-                agent.SyncState(initialState.AgentsState[i.ToString()].AssignedRules);
+                    agent.AssignRules(astate.AssignedRules);
 
-                agentList.Agents.Add(agent);
-            }
+                    agent.InitialState = astate;
+
+                    agentList.Agents.Add(agent);
+                }
+            });
 
             return agentList;
         }

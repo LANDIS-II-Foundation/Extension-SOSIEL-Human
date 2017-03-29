@@ -18,7 +18,7 @@ namespace CL2_M8
 {
     public sealed class CL2M8Algorithm : IAlgorithm
     {
-        public string Name { get { return "Cognitive level 2 Model 7"; } }
+        public string Name { get { return "Cognitive level 2 Model 8"; } }
 
         string _outputFolder;
 
@@ -45,7 +45,7 @@ namespace CL2_M8
 
             _agentWellbeingStatistic = new List<AgentWellbeingOutput>(_configuration.AlgorithmConfiguration.IterationCount);
 
-            _outputFolder = @"Output\CL2_M7";
+            _outputFolder = @"Output\CL2_M8";
 
             if (Directory.Exists(_outputFolder) == false)
                 Directory.CreateDirectory(_outputFolder);
@@ -58,15 +58,6 @@ namespace CL2_M8
             _agentList = AgentList.Generate2(_configuration.AlgorithmConfiguration.AgentCount, _configuration.AgentConfiguration, _configuration.InitialState);
 
             _iterations.AddLast(IterationHelper.InitilizeBeginningState(_configuration.InitialState, _agentList.Agents.Cast<IConfigurableAgent>()));
-
-
-
-
-
-            //_agentList.Agents.ForEach((a, i) =>
-            //{
-            //    a[Agent.VariablesUsedInCode.AgentC] = (i == 0) ? 0 : a[Agent.VariablesUsedInCode.Engage];
-            //});
         }
 
         private void ExecuteAlgorithm()
@@ -79,6 +70,11 @@ namespace CL2_M8
         {
             return agent[Agent.VariablesUsedInCode.Engage] - agent[Agent.VariablesUsedInCode.AgentC]
                 + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * _agentList.CalculateCommonC() / _agentList.Agents.Count;
+        }
+
+        private double CalculateCommonPoolWellbeing(IAgent agent)
+        {
+            return agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * _agentList.CalculateCommonC() / _agentList.Agents.Count;
         }
 
         public async Task<string> Run()

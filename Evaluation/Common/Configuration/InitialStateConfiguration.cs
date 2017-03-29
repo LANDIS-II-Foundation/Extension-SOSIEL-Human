@@ -8,8 +8,6 @@ namespace Common.Configuration
 {
     public class InitialStateConfiguration
     {
-       
-
-        public Dictionary<string, AgentStateConfiguration> AgentsState { get; set; }
+       public AgentStateConfiguration[] AgentsState { get; set; }
     }
 }

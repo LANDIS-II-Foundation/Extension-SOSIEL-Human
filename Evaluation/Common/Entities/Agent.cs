@@ -60,12 +60,11 @@ namespace Common.Entities
 
 
             //M8
-            public const string AgentsCommonPool = "AgentsCommonPool";
+            public const string AgentsCommonPool = "PoolWellbeing";
         }
 
         public int Id { get; set; }
-
-
+        
         [JsonProperty()]
         protected Dictionary<string, dynamic> Variables { get; set; } = new Dictionary<string, dynamic>();
 
@@ -74,7 +73,6 @@ namespace Common.Entities
 
         public Dictionary<string, RuleSetSettings> SetSettings { get; set; }
 
-        [JsonProperty()]
         public List<Goal> Goals { get; set; }
 
         private List<RuleSet> _mentalProto;
@@ -91,7 +89,7 @@ namespace Common.Entities
                         Rule doNothing = new Rule
                         {
                             Antecedent = new RuleAntecedentPart[] { new RuleAntecedentPart { Param = VariablesUsedInCode.AgentStatus, Sign = "==", Value = "active" } },
-                            Consequent = new RuleConsequent { Param = VariablesUsedInCode.AgentStatus, Value = "active" },
+                            Consequent = new RuleConsequent { Param = VariablesUsedInCode.AgentC, Value = 0, CopyToCommon = true, SavePrevious = true },
                             IsAction = false
                         };
 
@@ -110,7 +108,7 @@ namespace Common.Entities
                    new RuleSet(g.Key, Goals.Where(goal => SetSettings[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray(),
                        g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2 => new RuleLayer(SetSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
 
-            AddDoNothingRules();
+            //AddDoNothingRules();
 
             return _mentalProto;
         }
@@ -168,6 +166,7 @@ namespace Common.Entities
 
             agent.Rules = Rules;
             agent.Goals = Goals;
+            agent.SetSettings = SetSettings;
             agent._mentalProto = _mentalProto;
 
             return agent;

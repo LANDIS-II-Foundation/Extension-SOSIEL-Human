@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 
 namespace Common.Entities
 {
+    using Configuration;
+
     public interface IConfigurableAgent: IAgent
     {
         List<Rule> AssignedRules { get; set; }
 
+        AgentStateConfiguration InitialState { get; set; }
+
+        GoalsSettings GoalsSettings { get; set; }
+
         void SetToCommon(string key, dynamic value);
 
-        void SyncState(IEnumerable<string> assignedRules);
+        void AssignRules(IEnumerable<string> assignedRules);
     }
 }

@@ -15,5 +15,7 @@ namespace Common.Entities
         public string ReferenceVariable { get; set; }
 
         public double FocalValue { get; set; }
+
+        public bool ChangeFocalValueOnPrevious { get; set; } 
     }
 }

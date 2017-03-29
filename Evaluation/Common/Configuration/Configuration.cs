@@ -9,7 +9,7 @@ namespace Common.Configuration
     {
         public AlgorithmConfiguration AlgorithmConfiguration { get; set; }
 
-        public T AgentConfiguration { get; set; }
+        public Dictionary<string,T> AgentConfiguration { get; set; }
 
         public InitialStateConfiguration InitialState { get; set; }
 
