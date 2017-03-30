@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Common.Configuration
 {
+    using Enums;
+
     public class AgentStateConfiguration
     {
         public string PrototypeOfAgent { get; set; }
@@ -19,13 +21,10 @@ namespace Common.Configuration
 
         public string[] AssignedRules { get; set; }
 
-
-
         public string[] AssignedGoals { get; set; }
 
         public string[] ActivatedRulesOnFirstIteration { get; set; }
 
         public Dictionary<string, GoalStateConfiguration> GoalState { get; set; }
-
     }
 }

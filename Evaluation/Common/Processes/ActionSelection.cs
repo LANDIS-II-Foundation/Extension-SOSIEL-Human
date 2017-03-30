@@ -122,37 +122,41 @@ namespace Common.Processes
 
                 yield return nextGoal;
             }
-        } 
+        }
 
 
 
-        //void ShareCollectiveAction(ICollection<Actor> sameTypeActors, Actor currentActor, Heuristic heuristic)
-        //{
-        //    string socialNetwork = ((string[])currentActor[VariableNames.SocialNetworks])[0];
+        void ShareCollectiveAction(IConfigurableAgent currentAgent, Rule rule, Dictionary<IConfigurableAgent, AgentState> agentStates)
+        {
+            foreach (IConfigurableAgent agent in currentAgent.ConnectedAgents)
+            {
+                if (agent.AssignedRules.Contains(rule) == false)
+                {
+                    agent.AssignedRules.Add(rule);
 
-        //    foreach (Actor actor in sameTypeActors.Where(a => ((string[])a[VariableNames.SocialNetworks]).Any(sn => sn == socialNetwork) && a != currentActor))
-        //    {
-        //        actor.AssignHeuristic(currentActor, heuristic);
-        //    }
-        //}
+                    //check goals will be equal
+                    agentStates[agent].AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(agentStates[currentAgent].AnticipationInfluence[rule]));
 
-        public void ExecutePartI(IConfigurableAgent agent, ICollection<IConfigurableAgent> sameTypeActors,
-            LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> periodState, Goal[] rankedGoals,
-            Rule[] processedRules)
+                }
+            }
+        }
+
+        public void ExecutePartI(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> iterationState,
+            Goal[] rankedGoals, Rule[] processedRules)
         {
             ruleForActivating = null;
 
-            agentState = periodState.Value[agent];
-            AgentState priorPeriod = periodState.Previous.Value[agent];
+            agentState = iterationState.Value[agent];
+            AgentState priorPeriod = iterationState.Previous.Value[agent];
 
-            if(rankedGoals == null)
+            if (rankedGoals == null)
             {
                 rankedGoals = RankGoal(agentState).ToArray();
             }
 
 
 
-            processedGoal = rankedGoals.First(g=> processedRules.First().Layer.Set.AssociatedWith.Contains(g));
+            processedGoal = rankedGoals.First(g => processedRules.First().Layer.Set.AssociatedWith.Contains(g));
             goalState = agentState.GoalsState[processedGoal];
 
             matchedRules = processedRules.Except(agentState.BlockedRules).Where(h => h.IsMatch(agent)).ToArray();
@@ -180,10 +184,10 @@ namespace Common.Processes
             //todo     wrong implementation. 
             //ruleForActivating.Apply(agent);
 
-            //if (heuristicForActivating.IsCollectiveAction)
-            //{
-            //    ShareCollectiveAction(sameTypeActors, actor, heuristicForActivating);
-            //}
+            if (ruleForActivating.IsCollectiveAction)
+            {
+                ShareCollectiveAction(agent, ruleForActivating, iterationState.Value);
+            }
 
 
             //SiteState siteState = currentPeriod.GetStateForSite(actor, site);
@@ -192,30 +196,40 @@ namespace Common.Processes
             agentState.Matched.AddRange(matchedRules);
         }
 
-        //public void ExecutePartII(Actor actor, ICollection<Actor> sameTypeActors, LinkedListNode<Period> periodModel, GoalState goalState, IEnumerable<Heuristic> layer, Site site = null)
-        //{
-        //    Period currentPeriod = periodModel.Value;
+        public void ExecutePartII(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> iterationState,
+            Goal[] rankedGoals, Rule[] processedRules, int numberOfAgents)
+        {
+            AgentState agentState = iterationState.Value[agent];
 
-        //    HeuristicLayer heuristicLayer = layer.First().Layer;
+            RuleLayer layer = processedRules.First().Layer;
 
-        //    Heuristic selectedHeuristic = currentPeriod.GetStateForSite(actor, site).Activated.Single(h => h.Layer == heuristicLayer);
+            Rule selectedRule = agentState.Activated.Single(r => r.Layer == layer);
 
-        //    if (selectedHeuristic.IsCollectiveAction)
-        //    {
-        //        int actorsCount = sameTypeActors.Count(a => currentPeriod.GetStateForSite(a, site).Activated.Single(h => h.Layer == heuristicLayer) == selectedHeuristic);
+            if (selectedRule.IsCollectiveAction)
+            {
+                int numberOfInvolvedAgents = agent.ConnectedAgents.Count(a => iterationState.Value[a].Activated.Single(r => r.Layer == layer) == selectedRule);
 
-        //        if (actorsCount + 1 < selectedHeuristic.RequiredParticipants)
-        //        {
-        //            actor.BlockedHeuristics.Add(selectedHeuristic);
-        //            SiteState siteState = currentPeriod.GetStateForSite(actor, site);
+                int requiredParticipants = selectedRule.RequiredParticipants;
 
-        //            siteState.Activated.Clear();
-        //            siteState.Matched.Clear();
 
-        //            ExecutePartI(actor, sameTypeActors, periodModel, goalState, layer, site);
-        //        }
-        //    }
-        //}
+                // Value 0 means all agents who participate in algorithm
+                if (requiredParticipants == 0)
+                {
+                    requiredParticipants = numberOfAgents;
+                }
+
+
+
+                if (numberOfInvolvedAgents < requiredParticipants - 1)
+                {
+                    agentState.BlockedRules.Add(selectedRule);
+
+                    agentState.Activated.Remove(selectedRule);
+                    
+                    ExecutePartI(agent, iterationState, rankedGoals, processedRules);
+                }
+            }
+        }
     }
 }
 

@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace Common.Configuration
 {
+    using Enums;
+
     public class InitialStateConfiguration
     {
-       public AgentStateConfiguration[] AgentsState { get; set; }
+        public SocialNetworkTypes SocialNetwork { get; set; }
+
+        public AgentStateConfiguration[] AgentsState { get; set; }
     }
 }

@@ -14,17 +14,17 @@ using Common.Randoms;
 using Common.Models;
 using Common.Processes;
 
-namespace CL2_M8
+namespace CL2_M9
 {
-    public sealed class CL2M8Algorithm : IAlgorithm
+    public sealed class CL2M9Algorithm : IAlgorithm
     {
-        public string Name { get { return "Cognitive level 2 Model 8"; } }
+        public string Name { get { return "Cognitive level 2 Model 9"; } }
 
         string _outputFolder;
 
         AgentList _agentList;
 
-        Configuration<CL2M8Agent> _configuration;
+        Configuration<CL2M9Agent> _configuration;
 
         ProcessConfig _processConfig;
 
@@ -37,11 +37,17 @@ namespace CL2_M8
         ActionSelection acts = new ActionSelection();
         ActionTaking at = new ActionTaking();
 
-        public CL2M8Algorithm(Configuration<CL2M8Agent> configuration)
+        public CL2M9Algorithm(Configuration<CL2M9Agent> configuration)
         {
             _configuration = configuration;
 
-            _processConfig = new ProcessConfig { ActionTakingEnabled = true, AnticipatoryLearningEnabled = true, RuleSelectionEnabled = true };
+            _processConfig = new ProcessConfig
+            {
+                ActionTakingEnabled = true,
+                AnticipatoryLearningEnabled = true,
+                RuleSelectionEnabled = true,
+                RuleSelectionPart2Enabled = true
+            };
 
             _outputStatistic = new List<M8Output>(_configuration.AlgorithmConfiguration.IterationCount);
 
@@ -84,13 +90,13 @@ namespace CL2_M8
             {
                 Dictionary<IConfigurableAgent, AgentState> currentIteration;
 
-                if (i>0)
+                if (i > 0)
                     currentIteration = _iterations.AddLast(new Dictionary<IConfigurableAgent, AgentState>()).Value;
                 else
                 {
                     currentIteration = _iterations.AddLast(IterationHelper.InitilizeBeginningState(_configuration.InitialState, _agentList.Agents.Cast<IConfigurableAgent>())).Value;
                 }
-                
+
                 Dictionary<IConfigurableAgent, AgentState> priorIteration = _iterations.Last.Previous?.Value;
 
                 var agentGroups = _agentList.Agents.Cast<IConfigurableAgent>().GroupBy(a => a[Agent.VariablesUsedInCode.AgentType]);
@@ -233,35 +239,27 @@ namespace CL2_M8
                     if (_processConfig.RuleSelectionPart2Enabled)
                     {
 
-                        ////4th round: AS part II
-                        //foreach (var actorGroup in actorGroups)
-                        //{
-                        //    foreach (Actor actor in actorGroup.Randomize())
-                        //    {
-                        //        List<Actor> sameTypeActors = actorGroup.ToList();
+                        //4th round: AS part II
+                        foreach (var agentGroup in agentGroups)
+                        {
+                            foreach (IConfigurableAgent agent in agentGroup.Randomize(_processConfig.AgentRandomizationEnabled))
+                            {
 
-                        //        sameTypeActors.Remove(actor);
+                                //Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
 
-                        //        if (sameTypeActors.Count > 0)
-                        //        {
-                        //            Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
+                                //foreach (Site site in assignedSites.Randomize())
+                                //{
+                                foreach (var set in agent.AssignedRules.GroupBy(r => r.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                                {
+                                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                                    {
+                                        acts.ExecutePartII(agent, _iterations.Last, rankedGoals[agent], layer.ToArray(), _agentList.Agents.Count);
+                                    }
+                                }
+                                //}
 
-                        //            foreach (Site site in assignedSites.Randomize())
-                        //            {
-                        //                foreach (var set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
-                        //                {
-                        //                    //optimization
-                        //                    GoalState criticalGoalState = rankedGoals[actor].First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
-
-                        //                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
-                        //                    {
-                        //                        heuristicSelection.ExecutePartII(actor, sameTypeActors, periods.Last, criticalGoalState, layer, site);
-                        //                    }
-                        //                }
-                        //            }
-                        //        }
-                        //    }
-                        //}
+                            }
+                        }
 
                     }
                 }

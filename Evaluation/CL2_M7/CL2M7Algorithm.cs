@@ -216,7 +216,7 @@ namespace CL2_M7
                             {
                                 foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                                 {
-                                    acts.ExecutePartI(agent, agentGroup.ToArray(), _iterations.Last, rankedGoals[agent], layer.ToArray());
+                                    acts.ExecutePartI(agent, _iterations.Last, rankedGoals[agent], layer.ToArray());
                                 }
                             }
                             //}

@@ -12,6 +12,7 @@ using System.IO;
 //using CL1_M6;
 using CL2_M7;
 using CL2_M8;
+using CL2_M9;
 
 using Common.Algorithm;
 using Common.Configuration;
@@ -126,6 +127,13 @@ namespace Factory
                         Configuration<CL2M8Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M8Agent>(), ReadInitialConfig(typeof(CL2M8Agent)));
 
                         return new CL2M8Algorithm(config);
+                    }
+
+                case Model.M9:
+                    {
+                        Configuration<CL2M9Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M9Agent>(), ReadInitialConfig(typeof(CL2M9Agent)));
+
+                        return new CL2M9Algorithm(config);
                     }
 
                 default:

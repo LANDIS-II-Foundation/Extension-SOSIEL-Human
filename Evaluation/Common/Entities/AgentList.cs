@@ -8,9 +8,12 @@ namespace Common.Entities
     using Configuration;
     using Randoms;
     using Helpers;
+    using Enums;
+
 
     public class AgentList
     {
+
         public List<IAgent> Agents { get; set; }
 
 
@@ -52,7 +55,7 @@ namespace Common.Entities
         }
 
 
-        public static AgentList Generate2<T>(int agentNumber, Dictionary<string,T> prototypes, InitialStateConfiguration initialState) where T: class, IAgent, ICloneableAgent<T>, IConfigurableAgent
+        public static AgentList Generate2<T>(int agentNumber, Dictionary<string, T> prototypes, InitialStateConfiguration initialState) where T : class, IConfigurableAgent, ICloneableAgent<T>
         {
             AgentList agentList = new AgentList();
 
@@ -81,7 +84,92 @@ namespace Common.Entities
                 }
             });
 
+
+            if (initialState.SocialNetwork != SocialNetworkTypes.None)
+            {
+                InitializeSocialNetwork(initialState.SocialNetwork, agentList);
+            }
+
             return agentList;
         }
+
+        private static void InitializeSocialNetwork(SocialNetworkTypes socialNetwork, AgentList agentList)
+        {
+            List<IConfigurableAgent> agents = agentList.Agents.Cast<IConfigurableAgent>().ToList();
+
+
+            switch (socialNetwork)
+            {
+                case SocialNetworkTypes.SN1:
+                    {
+                        
+                        agents.ForEach(a =>
+                        {
+                            a.ConnectedAgents = agents.Where(a2=>a2 != a).ToList();
+                        });
+
+
+                        break;
+                    }
+
+                case SocialNetworkTypes.SN2:
+                    {
+                        Queue<IConfigurableAgent> queue = new Queue<IConfigurableAgent>(agents);
+
+                        Queue<IConfigurableAgent> leafQueue = new Queue<IConfigurableAgent>();
+
+                        int minNumberOfLeafs = 2;
+
+                        leafQueue.Enqueue(queue.Dequeue());
+
+
+                        while (queue.Count > 0)
+                        {
+                            IConfigurableAgent vertex = leafQueue.Dequeue();
+
+                            List<IConfigurableAgent> leafs = new List<IConfigurableAgent>(minNumberOfLeafs);
+
+                            for (int i = 0; i < minNumberOfLeafs && queue.Count > 0; i++)
+                            {
+                                IConfigurableAgent item = queue.Dequeue();
+
+                                leafs.Add(item);
+                                leafQueue.Enqueue(item);
+                            }
+
+                            if (queue.Count < minNumberOfLeafs)
+                            {
+                                leafs.AddRange(queue);
+                                queue.Clear();
+                            }
+
+
+                            vertex.ConnectedAgents.AddRange(leafs);
+                        }
+
+                        break;
+                    }
+
+                case SocialNetworkTypes.SN3:
+                    {
+                        IConfigurableAgent vertex = agents[0];
+
+                        agents.Remove(vertex);
+
+
+                        vertex.ConnectedAgents.AddRange(agents);
+
+                        agents.ForEach(a =>
+                        {
+                            a.ConnectedAgents.Add(vertex);
+
+                        });
+
+
+                        break;
+                    }
+            }
+        }
+
     }
 }

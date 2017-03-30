@@ -25,7 +25,7 @@ namespace CL2_M7
 
         public GoalsSettings GoalsSettings { get; set; }
 
-
+        public List<IConfigurableAgent> ConnectedAgents { get; set; }
         public override dynamic this[string key]
         {
             get
