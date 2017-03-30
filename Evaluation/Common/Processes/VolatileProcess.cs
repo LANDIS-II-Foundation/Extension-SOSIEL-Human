@@ -9,6 +9,8 @@ namespace Common.Processes
     {
         protected abstract void AboveMin();
         protected abstract void BelowMax();
+        protected abstract void Maximize();
+
 
         protected void SpecificLogic(string tendency)
         {
@@ -20,7 +22,9 @@ namespace Common.Processes
                 case "BelowMax":
                     BelowMax();
                     break;
-
+                case "Maximize":
+                    Maximize();
+                    break;
                 default:
                     throw new Exception("Unknown managing of goal");
             }

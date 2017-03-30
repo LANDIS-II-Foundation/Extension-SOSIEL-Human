@@ -60,7 +60,7 @@ namespace Common.Entities
 
 
             //M8
-            public const string AgentsCommonPool = "PoolWellbeing";
+            public const string PoolWellbeing = "PoolWellbeing";
         }
 
         public int Id { get; set; }
@@ -108,7 +108,7 @@ namespace Common.Entities
                    new RuleSet(g.Key, Goals.Where(goal => SetSettings[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray(),
                        g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2 => new RuleLayer(SetSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
 
-            //AddDoNothingRules();
+            AddDoNothingRules();
 
             return _mentalProto;
         }

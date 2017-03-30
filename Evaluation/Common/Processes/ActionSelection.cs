@@ -89,6 +89,18 @@ namespace Common.Processes
             }
         }
 
+        protected override void Maximize()
+        {
+            var ai = agentState.AnticipationInfluence;
+
+            if (matchedRules.Length > 0)
+            {
+                Rule[] selected = matchedRules.GroupBy(r => ai[r][processedGoal]).OrderByDescending(hg => hg.Key).First().ToArray();
+
+                ruleForActivating = selected.RandomizeOne();
+            }
+        }
+
         IEnumerable<Goal> RankGoal(AgentState state)
         {
             int numberOfGoal = state.GoalsState.Count;
@@ -156,7 +168,7 @@ namespace Common.Processes
                 //todo
                 if (ruleForActivating == null)
                 {
-                    //heuristicForActivating = aiForMatchedHeuristics.Select(ai => ai.AssociatedHeuristic).Single(h => h.IsAction == false);
+                    ruleForActivating = processedRules.Single(h => h.IsAction == false);
                 }
             }
             else

@@ -23,6 +23,8 @@ namespace Common.Configuration
 
         public string[] AssignedGoals { get; set; }
 
+        public string[] ActivatedRulesOnFirstIteration { get; set; }
+
         public Dictionary<string, GoalStateConfiguration> GoalState { get; set; }
 
     }

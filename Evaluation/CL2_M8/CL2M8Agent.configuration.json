@@ -10,14 +10,14 @@
       "Goals": [
         {
           "Name": "PG1",
-          "Tendency": "AboveMin",
+          "Tendency": "Maximize",
           "ReferenceVariable": "PoolWellbeing",
           "FocalValue": 15,
           "ChangeFocalValueOnPrevious": true
         },
         {
           "Name": "PG2",
-          "Tendency": "AboveMin",
+          "Tendency": "Maximize",
           "ReferenceVariable": "AgentWellbeing",
           "FocalValue": 15,
           "ChangeFocalValueOnPrevious": true
@@ -33,7 +33,7 @@
           "Layer": {
             "1": {
               "Modifiable": false,
-              "MaxRuleNumber": 10,
+              "MaxRuleNumber": 15,
               "ConsequentValueInterval": [ 0, 100 ],
               "ConsequentRelationshipSign": "-"
             }
@@ -324,12 +324,8 @@
           "RS1_L1_R11"
         ],
         "AssignedGoals": [ "PG1", "PG2" ],
-        "GoalState": {
-          "PG1": {
-            "Proportion": 1,
-            "Value": 15
-          }
-        }
+
+        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R6" ]
       }
     ]
   }

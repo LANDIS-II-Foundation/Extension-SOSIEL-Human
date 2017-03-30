@@ -30,7 +30,7 @@ namespace CL2_M8
 
         LinkedList<Dictionary<IConfigurableAgent, AgentState>> _iterations = new LinkedList<Dictionary<IConfigurableAgent, AgentState>>();
 
-        List<AgentWellbeingOutput> _agentWellbeingStatistic;
+        List<M8Output> _outputStatistic;
 
 
         AnticipatoryLearning al = new AnticipatoryLearning();
@@ -43,7 +43,7 @@ namespace CL2_M8
 
             _processConfig = new ProcessConfig { ActionTakingEnabled = true, AnticipatoryLearningEnabled = true, RuleSelectionEnabled = true };
 
-            _agentWellbeingStatistic = new List<AgentWellbeingOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            _outputStatistic = new List<M8Output>(_configuration.AlgorithmConfiguration.IterationCount);
 
             _outputFolder = @"Output\CL2_M8";
 
@@ -56,8 +56,6 @@ namespace CL2_M8
         private void Initialize()
         {
             _agentList = AgentList.Generate2(_configuration.AlgorithmConfiguration.AgentCount, _configuration.AgentConfiguration, _configuration.InitialState);
-
-            _iterations.AddLast(IterationHelper.InitilizeBeginningState(_configuration.InitialState, _agentList.Agents.Cast<IConfigurableAgent>()));
         }
 
         private void ExecuteAlgorithm()
@@ -69,12 +67,12 @@ namespace CL2_M8
         private double CalculateAgentWellbeing(IAgent agent)
         {
             return agent[Agent.VariablesUsedInCode.Engage] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * _agentList.CalculateCommonC() / _agentList.Agents.Count;
+                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * _agentList.CalculateCommonC() / (double)_agentList.Agents.Count;
         }
 
-        private double CalculateCommonPoolWellbeing(IAgent agent)
+        private double CalculateCommonPoolWellbeing(double externalities)
         {
-            return agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * _agentList.CalculateCommonC() / _agentList.Agents.Count;
+            return externalities * _agentList.CalculateCommonC() / (double)_agentList.Agents.Count;
         }
 
         public async Task<string> Run()
@@ -84,8 +82,16 @@ namespace CL2_M8
 
             for (int i = 0; i < _configuration.AlgorithmConfiguration.IterationCount; i++)
             {
-                Dictionary<IConfigurableAgent, AgentState> currentIteration = _iterations.AddLast(new Dictionary<IConfigurableAgent, AgentState>()).Value;
-                Dictionary<IConfigurableAgent, AgentState> priorIteration = _iterations.Last.Previous.Value;
+                Dictionary<IConfigurableAgent, AgentState> currentIteration;
+
+                if (i>0)
+                    currentIteration = _iterations.AddLast(new Dictionary<IConfigurableAgent, AgentState>()).Value;
+                else
+                {
+                    currentIteration = _iterations.AddLast(IterationHelper.InitilizeBeginningState(_configuration.InitialState, _agentList.Agents.Cast<IConfigurableAgent>())).Value;
+                }
+                
+                Dictionary<IConfigurableAgent, AgentState> priorIteration = _iterations.Last.Previous?.Value;
 
                 var agentGroups = _agentList.Agents.Cast<IConfigurableAgent>().GroupBy(a => a[Agent.VariablesUsedInCode.AgentType]);
 
@@ -97,7 +103,9 @@ namespace CL2_M8
                     a[Agent.VariablesUsedInCode.Iteration] = i + 1;
 
                     rankedGoals.Add(a, null);
-                    currentIteration.Add(a, priorIteration[a].CreateForNextIteration());
+
+                    if (i > 0)
+                        currentIteration.Add(a, priorIteration[a].CreateForNextIteration());
                 });
 
                 if (_processConfig.AnticipatoryLearningEnabled && i > 0)
@@ -188,72 +196,74 @@ namespace CL2_M8
 
                 //}
 
-
-                //AS part I
-                foreach (var agentGroup in agentGroups)
+                if (_processConfig.RuleSelectionEnabled && i > 0)
                 {
-                    foreach (IConfigurableAgent agent in agentGroup.Randomize(_processConfig.AgentRandomizationEnabled))
+                    //AS part I
+                    foreach (var agentGroup in agentGroups)
                     {
-                        //range priority of goals by proportion only
-
-                        //Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
-
-                        //List<SiteState> siteStates = new List<SiteState>(assignedSites.Length);
-
-                        //foreach (Site site in assignedSites.Randomize())
-                        //{
-                        //    currentPeriod.SiteStates[actor].Add(SiteState.Create(actor.IsSiteSpecific, site));
-
-                        foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                        foreach (IConfigurableAgent agent in agentGroup.Randomize(_processConfig.AgentRandomizationEnabled))
                         {
-                            foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                            //range priority of goals by proportion only
+
+                            //Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
+
+                            //List<SiteState> siteStates = new List<SiteState>(assignedSites.Length);
+
+                            //foreach (Site site in assignedSites.Randomize())
+                            //{
+                            //    currentPeriod.SiteStates[actor].Add(SiteState.Create(actor.IsSiteSpecific, site));
+
+                            foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                             {
-                                acts.ExecutePartI(agent, agentGroup.ToArray(), _iterations.Last, rankedGoals[agent], layer.ToArray());
+                                foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                                {
+                                    acts.ExecutePartI(agent, agentGroup.ToArray(), _iterations.Last, rankedGoals[agent], layer.ToArray());
+                                }
                             }
+                            //}
                         }
+
+                        //if (actorGroup.Key.Type == 1)
+                        //{
+                        //    SetJobAvailableValue(periods.Last.Value);
                         //}
                     }
 
-                    //if (actorGroup.Key.Type == 1)
-                    //{
-                    //    SetJobAvailableValue(periods.Last.Value);
-                    //}
-                }
 
+                    if (_processConfig.RuleSelectionPart2Enabled)
+                    {
 
-                if (_processConfig.RuleSelectionPart2Enabled)
-                {
+                        ////4th round: AS part II
+                        //foreach (var actorGroup in actorGroups)
+                        //{
+                        //    foreach (Actor actor in actorGroup.Randomize())
+                        //    {
+                        //        List<Actor> sameTypeActors = actorGroup.ToList();
 
-                    ////4th round: AS part II
-                    //foreach (var actorGroup in actorGroups)
-                    //{
-                    //    foreach (Actor actor in actorGroup.Randomize())
-                    //    {
-                    //        List<Actor> sameTypeActors = actorGroup.ToList();
+                        //        sameTypeActors.Remove(actor);
 
-                    //        sameTypeActors.Remove(actor);
+                        //        if (sameTypeActors.Count > 0)
+                        //        {
+                        //            Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
 
-                    //        if (sameTypeActors.Count > 0)
-                    //        {
-                    //            Site[] assignedSites = currentPeriod.GetAssignedSites(actor);
+                        //            foreach (Site site in assignedSites.Randomize())
+                        //            {
+                        //                foreach (var set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                        //                {
+                        //                    //optimization
+                        //                    GoalState criticalGoalState = rankedGoals[actor].First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
 
-                    //            foreach (Site site in assignedSites.Randomize())
-                    //            {
-                    //                foreach (var set in actor.AssignedHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
-                    //                {
-                    //                    //optimization
-                    //                    GoalState criticalGoalState = rankedGoals[actor].First(gs => set.Key.AssociatedWith.Contains(gs.Goal));
+                        //                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                        //                    {
+                        //                        heuristicSelection.ExecutePartII(actor, sameTypeActors, periods.Last, criticalGoalState, layer, site);
+                        //                    }
+                        //                }
+                        //            }
+                        //        }
+                        //    }
+                        //}
 
-                    //                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
-                    //                    {
-                    //                        heuristicSelection.ExecutePartII(actor, sameTypeActors, periods.Last, criticalGoalState, layer, site);
-                    //                    }
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //}
-
+                    }
                 }
 
                 if (_processConfig.ActionTakingEnabled)
@@ -272,13 +282,9 @@ namespace CL2_M8
                 }
 
 
-                _agentList.Agents.ForEach(a =>
-                {
-                    a[Agent.VariablesUsedInCode.AgentWellbeing] = CalculateAgentWellbeing(a);
-                });
+                Calculations();
 
-
-                _agentWellbeingStatistic.Add(new AgentWellbeingOutput { Iteration = i+1, AgentWellbeings = _agentList.Agents.Select(a => (double)a[Agent.VariablesUsedInCode.AgentWellbeing]).ToArray() });
+                _outputStatistic.Add(new M8Output { Iteration = i + 1, PoolWellbeing = _agentList.Agents.First()[Agent.VariablesUsedInCode.PoolWellbeing], AgentWellbeings = _agentList.Agents.Select(a => (double)a[Agent.VariablesUsedInCode.AgentWellbeing]).ToArray() });
 
                 //Maintenance();
             }
@@ -290,10 +296,21 @@ namespace CL2_M8
             return _outputFolder;
         }
 
+        void Calculations()
+        {
+            double poolWellbeing = CalculateCommonPoolWellbeing(_agentList.Agents.First()[Agent.VariablesUsedInCode.MagnitudeOfExternalities]);
+
+            _agentList.Agents.ForEach(a =>
+            {
+                a[Agent.VariablesUsedInCode.PoolWellbeing] = poolWellbeing;
+                a[Agent.VariablesUsedInCode.AgentWellbeing] = CalculateAgentWellbeing(a);
+            });
+        }
+
 
         void SaveAgentWellbeingStatistic()
         {
-            ResultSavingHelper.Save(_agentWellbeingStatistic, $@"{_outputFolder}\agent_wellbeing_statistic.csv");
+            ResultSavingHelper.Save(_outputStatistic, $@"{_outputFolder}\agent_wellbeing_statistic.csv");
         }
 
     }

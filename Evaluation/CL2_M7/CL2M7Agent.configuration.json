@@ -12,7 +12,7 @@
           "Name": "PG1",
           "Tendency": "AboveMin",
           "ReferenceVariable": "AgentWellbeing",
-          "FocalValue": 16,
+          "FocalValue": 15,
           "Immutable": true
         }
       ],
@@ -45,11 +45,6 @@
               "Param": "AgentWellbeing",
               "Sign": ">=",
               "Value": 15
-            },
-            {
-              "Param": "Iteration",
-              "Sign": ">",
-              "Value": 1
             }
           ],
           "Consequent": {
@@ -76,11 +71,6 @@
               "Param": "AgentC",
               "Sign": "==",
               "Value": 0
-            },
-            {
-              "Param": "Iteration",
-              "Sign": ">",
-              "Value": 1
             }
           ],
           "Consequent": {
@@ -95,8 +85,8 @@
         {
           "RuleSet": 1,
           "RuleLayer": 1,
-          "RulePositionNumber": 2,
-          "Id": "RS1_L1_R2",
+          "RulePositionNumber": 3,
+          "Id": "RS1_L1_R3",
           "Antecedent": [
             {
               "Param": "AgentWellbeing",
@@ -107,11 +97,6 @@
               "Param": "AgentC",
               "Sign": "==",
               "ReferenceVariable": "E"
-            },
-            {
-              "Param": "Iteration",
-              "Sign": ">",
-              "Value": 1
             }
           ],
           "Consequent": {
@@ -123,34 +108,13 @@
           "RequiredParticipants": 1,
           "IsAction": true
         },
+      
+
         {
           "RuleSet": 1,
           "RuleLayer": 1,
           "RulePositionNumber": 4,
           "Id": "RS1_L1_R4",
-          "Antecedent": [
-            {
-              "Param": "Iteration",
-              "Sign": "==",
-              "Value": 1
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "Value": 0,
-            "CopyToCommon": true,
-            "SavePrevious": true
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
-
-
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 5,
-          "Id": "RS1_L1_R5",
           "Antecedent": [
             {
               "Param": "Iteration",
@@ -169,8 +133,8 @@
         {
           "RuleSet": 1,
           "RuleLayer": 1,
-          "RulePositionNumber": 6,
-          "Id": "RS1_L1_R6",
+          "RulePositionNumber": 5,
+          "Id": "RS1_L1_R5",
           "Antecedent": [
             {
               "Param": "Iteration",
@@ -208,23 +172,21 @@
           },
           "RS1_L1_R3": {
             "PG1": 15
-          },
-          "RS1_L1_R4": {
-            "PG1": 15
           }
         },
         "AssignedRules": [
           "RS1_L1_R1",
           "RS1_L1_R2",
-          "RS1_L1_R3",
-          "RS1_L1_R4"
+          "RS1_L1_R3"
         ],
         "AssignedGoals": [ "PG1" ],
+
+        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R3" ],
 
         "GoalState": {
           "PG1": {
             "Proportion": 1,
-            "Value": 16
+            "Value": 15
           }
         }
       },
@@ -245,15 +207,17 @@
           }
         },
         "AssignedRules": [
-          "RS1_L1_R5",
-          "RS1_L1_R6"
+          "RS1_L1_R4",
+          "RS1_L1_R5"
         ],
         "AssignedGoals": [ "PG1" ],
+
+        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R4" ],
 
         "GoalState": {
           "PG1": {
             "Proportion": 1,
-            "Value": 16
+            "Value": 15
           }
         }
       }

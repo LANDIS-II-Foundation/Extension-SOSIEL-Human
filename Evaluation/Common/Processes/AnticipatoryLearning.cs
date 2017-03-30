@@ -101,6 +101,10 @@ namespace Common.Processes
             }
         }
 
+        protected override void Maximize()
+        {
+            AboveMin();
+        }
 
         public Goal[] Execute(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> lastIteration)
         {

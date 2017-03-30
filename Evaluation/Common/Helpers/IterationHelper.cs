@@ -35,7 +35,7 @@ namespace Common.Helpers
 
                     a.Goals.ForEach(g =>
                     {
-                        inner.Add(g, source != null && source.ContainsKey(g.Name) ? source[g.Name] : 0);
+                        inner.Add(g, source != null && source.ContainsKey(g.Name) ? source[g.Name] : (r.IsAction ? 0 : -1));
                     });
 
                     ai.Add(r, inner);
@@ -57,9 +57,9 @@ namespace Common.Helpers
 
                         if (numberOfAssignedGoals > 1 && i < numberOfAssignedGoals - 1)
                         {
-                            proportion = LinearUniformRandom.GetInstance.Next(Convert.ToInt32(Math.Round(proportion*10)) + 1) * 0.1;
+                            proportion = Math.Round(LinearUniformRandom.GetInstance.Next(Convert.ToInt32(Math.Round(proportion*10)) + 1) * 0.1, 1, MidpointRounding.AwayFromZero);
 
-                            unadjustedProportion -= proportion;
+                            unadjustedProportion = unadjustedProportion - proportion;
                         }
                         
                         GoalState goalState = new GoalState(goal.FocalValue, goal.FocalValue, proportion);
@@ -78,6 +78,12 @@ namespace Common.Helpers
                         agentState.GoalsState.Add(goal, goalState);
                     });
                 }
+
+
+                Rule[] firstIterationsRule = a.InitialState.ActivatedRulesOnFirstIteration.Select(rId => a.AssignedRules.First(ar => ar.Id == rId)).ToArray();
+
+                agentState.Matched.AddRange(firstIterationsRule);
+                agentState.Activated.AddRange(firstIterationsRule);
 
                 temp.Add(a, agentState);
             });
