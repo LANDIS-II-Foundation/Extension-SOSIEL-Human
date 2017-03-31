@@ -13,6 +13,7 @@ using System.IO;
 using CL2_M7;
 using CL2_M8;
 using CL2_M9;
+using CL3_M10;
 
 using Common.Algorithm;
 using Common.Configuration;
@@ -135,6 +136,15 @@ namespace Factory
 
                         return new CL2M9Algorithm(config);
                     }
+
+                case Model.M10:
+                    {
+                        Configuration<CL3M10Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL3M10Agent>(), ReadInitialConfig(typeof(CL3M10Agent)));
+
+                        return new CL3M10Algorithm(config);
+
+                    }
+
 
                 default:
                     throw new NotImplementedException($"Model {algorithmConfig.Model} hasn't implemented  yet");

@@ -20,32 +20,47 @@ namespace Common.Processes
 
             var noConfidenceGoals = goals.Where(kvp => kvp.Value.Confidence == false).ToArray();
 
-            var noConfidenceProportions = noConfidenceGoals.Select(kvp =>
-                new { Proportion = kvp.Value.Proportion * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / kvp.Value.FocalValue), Goal = kvp.Key }).ToArray();
 
-            double totalNoConfidenceAdjustedProportions = noConfidenceProportions.Sum(p => p.Proportion);
+            if (noConfidenceGoals.Length > 0)
+            {
 
-            var confidenceGoals = goals.Where(kvp => kvp.Value.Confidence == true).ToArray();
+                var noConfidenceProportions = noConfidenceGoals.Select(kvp =>
+                    new { Proportion = kvp.Value.Proportion * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / kvp.Key.MaxGoalValue), Goal = kvp.Key }).ToArray();
 
-            double totalConfidenceUnadjustedProportion = confidenceGoals.Sum(kvp => kvp.Value.Proportion);
+                double totalNoConfidenctUnadjustedProportions = noConfidenceGoals.Sum(kvp => kvp.Value.Proportion);
 
-            var confidenceProportions = confidenceGoals.Select(kvp =>
-                new { Proportion = kvp.Value.Proportion * (1 - totalNoConfidenceAdjustedProportions) / totalConfidenceUnadjustedProportion, Goal = kvp.Key }).ToArray();
+                double totalNoConfidenceAdjustedProportions = noConfidenceProportions.Sum(p => p.Proportion);
+
+                var confidenceGoals = goals.Where(kvp => kvp.Value.Confidence == true).ToArray();
+
+                var confidenceProportions = confidenceGoals.Select(kvp =>
+                    new { Proportion = kvp.Value.Proportion * (1 - totalNoConfidenceAdjustedProportions) / totalNoConfidenctUnadjustedProportions, Goal = kvp.Key }).ToArray();
+
+                
+
+                var temp = Enumerable.Concat(noConfidenceProportions, confidenceProportions).Sum(o => o.Proportion);
+
+
+                Enumerable.Concat(noConfidenceProportions, confidenceProportions).ForEach(p =>
+                {
+                    goals[p.Goal].Proportion = p.Proportion;
+
+                });
+
+            }
+
 
             List<Goal> vector = new List<Goal>(100);
 
-            Enumerable.Concat(noConfidenceProportions, confidenceProportions).ForEach(p =>
+            goals.ForEach(kvp =>
             {
-                //save new proportion for each goal to the goal state
-                goals[p.Goal].Proportion = p.Proportion;
+                int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.Proportion * 100));
 
-
-                int numberOfInsertions = Convert.ToInt32(Math.Round(p.Proportion * 100));
-
-                for (int i = 0; i < numberOfInsertions; i++) { vector.Add(p.Goal); }
+                for (int i = 0; i < numberOfInsertions; i++) { vector.Add(kvp.Key); }
             });
 
-            for(int i = 0; i<numberOfGoal; i++)
+
+            for (int i = 0; i < numberOfGoal && vector.Count > 0; i++)
             {
                 Goal nextGoal = vector.RandomizeOne();
 
@@ -147,16 +162,7 @@ namespace Common.Processes
                     currentIterationAgentState.AnticipationInfluence[r][goal] = currentGoalState.AnticipatedInfluenceValue;
                 });
 
-                currentGoalState = prevGoalState;
-
                 SpecificLogic(goal.Tendency);
-
-
-                //todo
-                //if (prevGoalState.Goal.Increased)
-                //{
-                //    prevGoalState.Goal.LimitValue = prevGoalState.FocalValue;
-                //}
             }
 
             return SortByProportion(currentIterationAgentState.GoalsState).ToArray();

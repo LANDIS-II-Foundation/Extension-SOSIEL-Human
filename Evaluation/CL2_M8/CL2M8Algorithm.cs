@@ -30,7 +30,7 @@ namespace CL2_M8
 
         LinkedList<Dictionary<IConfigurableAgent, AgentState>> _iterations = new LinkedList<Dictionary<IConfigurableAgent, AgentState>>();
 
-        List<M8Output> _outputStatistic;
+        List<AgentContributionsOutput> _outputStatistic;
 
 
         AnticipatoryLearning al = new AnticipatoryLearning();
@@ -43,7 +43,7 @@ namespace CL2_M8
 
             _processConfig = new ProcessConfig { ActionTakingEnabled = true, AnticipatoryLearningEnabled = true, RuleSelectionEnabled = true };
 
-            _outputStatistic = new List<M8Output>(_configuration.AlgorithmConfiguration.IterationCount);
+            _outputStatistic = new List<AgentContributionsOutput>(_configuration.AlgorithmConfiguration.IterationCount);
 
             _outputFolder = @"Output\CL2_M8";
 
@@ -82,6 +82,10 @@ namespace CL2_M8
 
             for (int i = 0; i < _configuration.AlgorithmConfiguration.IterationCount; i++)
             {
+                Console.WriteLine($"Starting {i} iteration");
+
+
+
                 Dictionary<IConfigurableAgent, AgentState> currentIteration;
 
                 if (i>0)
@@ -284,7 +288,7 @@ namespace CL2_M8
 
                 Calculations();
 
-                _outputStatistic.Add(new M8Output { Iteration = i + 1, PoolWellbeing = _agentList.Agents.First()[Agent.VariablesUsedInCode.PoolWellbeing], AgentWellbeings = _agentList.Agents.Select(a => (double)a[Agent.VariablesUsedInCode.AgentWellbeing]).ToArray() });
+                _outputStatistic.Add(new AgentContributionsOutput { Iteration = i + 1, AgentContributions = _agentList.Agents.Select(a=>(double)a[Agent.VariablesUsedInCode.AgentC]).ToArray()});
 
                 //Maintenance();
             }
@@ -310,7 +314,7 @@ namespace CL2_M8
 
         void SaveAgentWellbeingStatistic()
         {
-            ResultSavingHelper.Save(_outputStatistic, $@"{_outputFolder}\agent_wellbeing_statistic.csv");
+            ResultSavingHelper.Save(_outputStatistic, $@"{_outputFolder}\contributions_statistic.csv");
         }
 
     }

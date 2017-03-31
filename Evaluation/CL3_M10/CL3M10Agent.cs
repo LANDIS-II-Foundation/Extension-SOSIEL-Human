@@ -9,13 +9,15 @@ using Common.Randoms;
 using Common.Configuration;
 
 
-namespace CL2_M8
+namespace CL3_M10
 {
-    public sealed class CL2M8Agent : Agent, ICloneableAgent<CL2M8Agent>, IConfigurableAgent
+    public sealed class CL3M10Agent : Agent, ICloneableAgent<CL3M10Agent>, IConfigurableAgent
     {
         public List<Rule> AssignedRules { get; set; } = new List<Rule>();
 
         public List<RuleSet> MentalProto { get; set; }
+
+        
 
         private Dictionary<string, dynamic> PrivateVariables { get; set; } = new Dictionary<string, dynamic>();
 
@@ -23,8 +25,7 @@ namespace CL2_M8
 
         public GoalsSettings GoalsSettings { get; set; }
 
-        public List<IConfigurableAgent> ConnectedAgents { get; set; }
-        
+        public List<IConfigurableAgent> ConnectedAgents { get; set; } = new List<IConfigurableAgent>();
 
         public override dynamic this[string key]
         {
@@ -52,9 +53,9 @@ namespace CL2_M8
             }
         }
 
-        public new CL2M8Agent Clone()
+        public new CL3M10Agent Clone()
         {
-            CL2M8Agent agent = (CL2M8Agent)base.Clone();
+            CL3M10Agent agent = (CL3M10Agent)base.Clone();
 
             agent.AssignedRules = new List<Rule>(AssignedRules);
             agent.MentalProto = TransformRulesToRuleSets();        
@@ -67,7 +68,7 @@ namespace CL2_M8
 
         protected override Agent CreateInstance()
         {
-            return new CL2M8Agent();
+            return new CL3M10Agent();
         }
 
         public void AssignRules(IEnumerable<string> assignedRules)

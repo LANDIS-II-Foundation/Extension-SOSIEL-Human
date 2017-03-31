@@ -280,12 +280,7 @@ namespace CL2_M7
                     }
                 }
 
-
-                _agentList.Agents.ForEach(a =>
-                {
-                    a[Agent.VariablesUsedInCode.AgentWellbeing] = CalculateAgentWellbeing(a);
-                });
-
+                Calculations();
 
                 _agentWellbeingStatistic.Add(new AgentWellbeingOutput { Iteration = i + 1, AgentWellbeings = _agentList.Agents.Select(a => (double)a[Agent.VariablesUsedInCode.AgentWellbeing]).ToArray() });
 
@@ -299,6 +294,13 @@ namespace CL2_M7
             return _outputFolder;
         }
 
+        private void Calculations()
+        {
+            _agentList.Agents.ForEach(a =>
+            {
+                a[Agent.VariablesUsedInCode.AgentWellbeing] = CalculateAgentWellbeing(a);
+            });
+        }
 
         void SaveAgentWellbeingStatistic()
         {

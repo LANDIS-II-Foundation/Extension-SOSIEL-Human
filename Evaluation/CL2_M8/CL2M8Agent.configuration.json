@@ -13,6 +13,7 @@
           "Tendency": "Maximize",
           "ReferenceVariable": "PoolWellbeing",
           "FocalValue": 15,
+          "MaxGoalValue": 15,
           "ChangeFocalValueOnPrevious": true
         },
         {
@@ -20,6 +21,7 @@
           "Tendency": "Maximize",
           "ReferenceVariable": "AgentWellbeing",
           "FocalValue": 15,
+          "MaxGoalValue": 23.5,
           "ChangeFocalValueOnPrevious": true
         }
       ],
@@ -51,7 +53,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {
@@ -70,7 +72,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {
@@ -89,7 +91,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {
@@ -108,7 +110,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {
@@ -127,7 +129,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {
@@ -146,7 +148,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {
@@ -165,7 +167,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {
@@ -184,7 +186,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {
@@ -203,7 +205,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {
@@ -222,7 +224,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {
@@ -241,7 +243,7 @@
             {
               "Param": "AgentStatus",
               "Sign": "==",
-              "Value": true
+              "Value": "active"
             }
           ],
           "Consequent": {

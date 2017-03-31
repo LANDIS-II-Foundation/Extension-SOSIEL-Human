@@ -10,15 +10,12 @@ namespace Common.Models
 {
 
     [DelimitedRecord(";")]
-    public class M8Output
+    public class AgentContributionsOutput
     {
         [FieldOrder(0)]
         public int Iteration { get; set; }
 
         [FieldOrder(1)]
-        public double PoolWellbeing { get; set; }
-
-        [FieldOrder(2)]
-        public double[] AgentWellbeings { get; set; }
+        public double[] AgentContributions { get; set; }
     }
 }

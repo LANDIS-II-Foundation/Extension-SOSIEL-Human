@@ -16,6 +16,8 @@ namespace Common.Entities
 
         public double FocalValue { get; set; }
 
+        public double MaxGoalValue { get; set; }
+
         public bool ChangeFocalValueOnPrevious { get; set; } 
     }
 }

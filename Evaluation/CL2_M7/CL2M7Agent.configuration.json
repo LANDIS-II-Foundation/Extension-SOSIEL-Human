@@ -13,6 +13,7 @@
           "Tendency": "AboveMin",
           "ReferenceVariable": "AgentWellbeing",
           "FocalValue": 15,
+          "MaxGoalValue": 23.5, 
           "Immutable": true
         }
       ],
@@ -216,8 +217,7 @@
 
         "GoalState": {
           "PG1": {
-            "Proportion": 1,
-            "Value": 15
+            "Proportion": 1
           }
         }
       }

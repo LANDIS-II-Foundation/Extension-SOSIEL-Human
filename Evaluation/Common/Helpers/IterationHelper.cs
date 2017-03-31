@@ -22,7 +22,7 @@ namespace Common.Helpers
             agents.ForEach(a =>
             {
                 AgentState agentState = AgentState.Create();
-                
+
                 Dictionary<Rule, Dictionary<Goal, double>> ai = new Dictionary<Rule, Dictionary<Goal, double>>();
 
                 a.AssignedRules.ForEach(r =>
@@ -45,7 +45,7 @@ namespace Common.Helpers
 
                 if (a.GoalsSettings.GenerateProportions)
                 {
-                    double unadjustedProportion = 1;
+                    int unadjustedProportion = 10;
 
                     int numberOfAssignedGoals = a.InitialState.AssignedGoals.Length;
 
@@ -53,16 +53,16 @@ namespace Common.Helpers
                     {
                         Goal goal = a.Goals.First(g => g.Name == gn);
 
-                        double proportion = unadjustedProportion;
+                        int proportion = unadjustedProportion;
 
                         if (numberOfAssignedGoals > 1 && i < numberOfAssignedGoals - 1)
                         {
-                            proportion = Math.Round(LinearUniformRandom.GetInstance.Next(Convert.ToInt32(Math.Round(proportion*10)) + 1) * 0.1, 1, MidpointRounding.AwayFromZero);
+                            proportion = LinearUniformRandom.GetInstance.Next(proportion + 1);
 
                             unadjustedProportion = unadjustedProportion - proportion;
                         }
-                        
-                        GoalState goalState = new GoalState(goal.FocalValue, goal.FocalValue, proportion);
+
+                        GoalState goalState = new GoalState(0, goal.FocalValue, proportion * 0.1);
 
                         agentState.GoalsState.Add(goal, goalState);
                     });
@@ -73,7 +73,7 @@ namespace Common.Helpers
                     {
                         Goal goal = a.Goals.First(g => g.Name == gs.Key);
 
-                        GoalState goalState = new GoalState(gs.Value.Value, goal.FocalValue, gs.Value.Proportion);
+                        GoalState goalState = new GoalState(0, goal.FocalValue, gs.Value.Proportion);
 
                         agentState.GoalsState.Add(goal, goalState);
                     });
