@@ -55,7 +55,7 @@ namespace Common.Entities
         }
 
 
-        public static AgentList Generate2<T>(int agentNumber, Dictionary<string, T> prototypes, InitialStateConfiguration initialState) where T : class, IConfigurableAgent, ICloneableAgent<T>
+        public static AgentList Generate2<T>(int agentNumber, Dictionary<string, T> prototypes, InitialStateConfiguration initialState, SiteList siteList) where T : class, IConfigurableAgent, ICloneableAgent<T>
         {
             AgentList agentList = new AgentList();
 
@@ -88,6 +88,23 @@ namespace Common.Entities
             if (initialState.SocialNetwork != SocialNetworkTypes.None)
             {
                 InitializeSocialNetwork(initialState.SocialNetwork, agentList);
+            }
+
+
+            if (siteList != null)
+            {
+                List<Site> availableSites = siteList.AsSiteEnumerable().ToList();
+
+                agentList.Agents.ForEach(agent =>
+                {
+                    Site selectedSite = availableSites.RandomizeOne();
+
+                    selectedSite.OccupiedBy = agent;
+
+                    agent[Agent.VariablesUsedInCode.AgentCurrentSite] = selectedSite;
+
+                    availableSites.Remove(selectedSite);
+                });
             }
 
             return agentList;

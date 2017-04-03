@@ -1,8 +1,8 @@
 ﻿{
   "AlgorithmConfiguration": {
-    "Model": 8,
+    "Model": 7,
     "IterationCount": 100,
-    "AgentCount": 10,
+    "AgentCount": 2,
     "VacantProportion": 0.3
   }
 }

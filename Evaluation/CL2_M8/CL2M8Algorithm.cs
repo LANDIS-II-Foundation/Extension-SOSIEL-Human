@@ -26,7 +26,7 @@ namespace CL2_M8
 
         Configuration<CL2M8Agent> _configuration;
 
-        ProcessConfig _processConfig;
+        ProcessConfiguration _processConfig;
 
         LinkedList<Dictionary<IConfigurableAgent, AgentState>> _iterations = new LinkedList<Dictionary<IConfigurableAgent, AgentState>>();
 
@@ -41,7 +41,7 @@ namespace CL2_M8
         {
             _configuration = configuration;
 
-            _processConfig = new ProcessConfig { ActionTakingEnabled = true, AnticipatoryLearningEnabled = true, RuleSelectionEnabled = true };
+            _processConfig = new ProcessConfiguration { ActionTakingEnabled = true, AnticipatoryLearningEnabled = true, RuleSelectionEnabled = true };
 
             _outputStatistic = new List<AgentContributionsOutput>(_configuration.AlgorithmConfiguration.IterationCount);
 
@@ -75,7 +75,7 @@ namespace CL2_M8
             return externalities * _agentList.CalculateCommonC() / (double)_agentList.Agents.Count;
         }
 
-        public async Task<string> Run()
+        public string Run()
         {
             Initialize();
 

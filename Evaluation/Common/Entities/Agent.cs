@@ -61,6 +61,11 @@ namespace Common.Entities
 
             //M8
             public const string PoolWellbeing = "PoolWellbeing";
+
+
+            //M11
+            public const string AgentE = "AgentE";
+
         }
 
         public int Id { get; set; }

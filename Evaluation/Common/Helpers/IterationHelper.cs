@@ -35,7 +35,7 @@ namespace Common.Helpers
 
                     a.Goals.ForEach(g =>
                     {
-                        inner.Add(g, source != null && source.ContainsKey(g.Name) ? source[g.Name] : (r.IsAction ? 0 : -1));
+                        inner.Add(g, source != null && source.ContainsKey(g.Name) ? source[g.Name] : 0 /*(r.IsAction ? 0 : -1)*/);
                     });
 
                     ai.Add(r, inner);

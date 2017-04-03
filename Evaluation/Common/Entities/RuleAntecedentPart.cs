@@ -5,21 +5,21 @@ using System.Linq;
 
 namespace Common.Entities
 {
-    using Entities;
+    using Environments;
     using Helpers;
 
-    public class RuleAntecedentPart : ICloneable
+    public class RuleAntecedentPart : ICloneable<RuleAntecedentPart>
     {
-        //public static RuleAntecedentPart Renew(RuleAntecedentPart old, dynamic newConst)
-        //{
-        //    RuleAntecedentPart newAntecedent = (RuleAntecedentPart)old.Clone();
+        public static RuleAntecedentPart Renew(RuleAntecedentPart old, dynamic newConst)
+        {
+            RuleAntecedentPart newAntecedent = old.Clone();
 
-        //    newAntecedent.antecedent = null;
+            newAntecedent.antecedent = null;
 
-        //    newAntecedent.Const = newConst;
+            newAntecedent.Value = newConst;
 
-        //    return newAntecedent;
-        //}
+            return newAntecedent;
+        }
 
         private Func<dynamic, dynamic, dynamic> antecedent;
 
@@ -54,9 +54,9 @@ namespace Common.Entities
             return antecedent(agent[Param], value);
         }
 
-        public object Clone()
+        public RuleAntecedentPart Clone()
         {
-            return MemberwiseClone();
+            return (RuleAntecedentPart)MemberwiseClone();
         }
     }
 }

@@ -27,7 +27,7 @@
           "Layer": {
             "1": {
               "Modifiable": false,
-              "MaxRuleNumber": 10,
+              "MaxNumberOfRules": 10,
               "ConsequentValueInterval": [ 0, 100 ],
               "ConsequentRelationshipSign": "-"
             }

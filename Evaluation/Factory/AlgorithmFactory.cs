@@ -10,10 +10,11 @@ using System.IO;
 //using CL1_M4;
 //using CL1_M5;
 //using CL1_M6;
-using CL2_M7;
-using CL2_M8;
-using CL2_M9;
-using CL3_M10;
+//using CL2_M7;
+//using CL2_M8;
+//using CL2_M9;
+//using CL3_M10;
+using CL4_M11;
 
 using Common.Algorithm;
 using Common.Configuration;
@@ -116,32 +117,40 @@ namespace Factory
                 //        return new CL1M6Algorithm(config);
                 //    }
 
-                case Model.M7:
-                    {
-                        Configuration<CL2M7Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M7Agent>(), ReadInitialConfig(typeof(CL2M7Agent)));
+                //case Model.M7:
+                //    {
+                //        Configuration<CL2M7Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M7Agent>(), ReadInitialConfig(typeof(CL2M7Agent)));
 
-                        return new CL2M7Algorithm(config);
-                    }
+                //        return new CL2M7Algorithm(config);
+                //    }
 
-                case Model.M8:
-                    {
-                        Configuration<CL2M8Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M8Agent>(), ReadInitialConfig(typeof(CL2M8Agent)));
+                //case Model.M8:
+                //    {
+                //        Configuration<CL2M8Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M8Agent>(), ReadInitialConfig(typeof(CL2M8Agent)));
 
-                        return new CL2M8Algorithm(config);
-                    }
+                //        return new CL2M8Algorithm(config);
+                //    }
 
-                case Model.M9:
-                    {
-                        Configuration<CL2M9Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M9Agent>(), ReadInitialConfig(typeof(CL2M9Agent)));
+                //case Model.M9:
+                //    {
+                //        Configuration<CL2M9Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M9Agent>(), ReadInitialConfig(typeof(CL2M9Agent)));
 
-                        return new CL2M9Algorithm(config);
-                    }
+                //        return new CL2M9Algorithm(config);
+                //    }
+
+                //case Model.M10:
+                //    {
+                //        Configuration<CL3M10Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL3M10Agent>(), ReadInitialConfig(typeof(CL3M10Agent)));
+
+                //        return new CL3M10Algorithm(config);
+
+                //    }
 
                 case Model.M10:
                     {
-                        Configuration<CL3M10Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL3M10Agent>(), ReadInitialConfig(typeof(CL3M10Agent)));
+                        Configuration<CL4M11Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL4M11Agent>(), ReadInitialConfig(typeof(CL4M11Agent)));
 
-                        return new CL3M10Algorithm(config);
+                        return new CL4M11Algorithm(config);
 
                     }
 

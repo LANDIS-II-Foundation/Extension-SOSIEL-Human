@@ -26,7 +26,7 @@ namespace CL2_M9
 
         Configuration<CL2M9Agent> _configuration;
 
-        ProcessConfig _processConfig;
+        ProcessConfiguration _processConfig;
 
         LinkedList<Dictionary<IConfigurableAgent, AgentState>> _iterations = new LinkedList<Dictionary<IConfigurableAgent, AgentState>>();
 
@@ -43,7 +43,7 @@ namespace CL2_M9
         {
             _configuration = configuration;
 
-            _processConfig = new ProcessConfig
+            _processConfig = new ProcessConfiguration
             {
                 ActionTakingEnabled = true,
                 AnticipatoryLearningEnabled = true,
@@ -83,7 +83,7 @@ namespace CL2_M9
             return externalities * _agentList.CalculateCommonC() / (double)_agentList.Agents.Count;
         }
 
-        public async Task<string> Run()
+        public string Run()
         {
             Initialize();
 

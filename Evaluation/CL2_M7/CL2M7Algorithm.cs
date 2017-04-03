@@ -26,7 +26,7 @@ namespace CL2_M7
 
         Configuration<CL2M7Agent> _configuration;
 
-        ProcessConfig _processConfig;
+        ProcessConfiguration _processConfig;
 
         LinkedList<Dictionary<IConfigurableAgent, AgentState>> _iterations = new LinkedList<Dictionary<IConfigurableAgent, AgentState>>();
 
@@ -41,7 +41,7 @@ namespace CL2_M7
         {
             _configuration = configuration;
 
-            _processConfig = new ProcessConfig { ActionTakingEnabled = true, AnticipatoryLearningEnabled = true, RuleSelectionEnabled = true };
+            _processConfig = new ProcessConfiguration { ActionTakingEnabled = true, AnticipatoryLearningEnabled = true, RuleSelectionEnabled = true };
 
             _agentWellbeingStatistic = new List<AgentWellbeingOutput>(_configuration.AlgorithmConfiguration.IterationCount);
 
@@ -81,7 +81,7 @@ namespace CL2_M7
                 + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * _agentList.CalculateCommonC() / _agentList.Agents.Count;
         }
 
-        public async Task<string> Run()
+        public string Run()
         {
             Initialize();
 
@@ -279,6 +279,9 @@ namespace CL2_M7
                         }
                     }
                 }
+
+
+                
 
                 Calculations();
 

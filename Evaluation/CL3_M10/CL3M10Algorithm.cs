@@ -26,7 +26,7 @@ namespace CL3_M10
 
         Configuration<CL3M10Agent> _configuration;
 
-        ProcessConfig _processConfig;
+        ProcessConfiguration _processConfig;
 
         LinkedList<Dictionary<IConfigurableAgent, AgentState>> _iterations = new LinkedList<Dictionary<IConfigurableAgent, AgentState>>();
 
@@ -44,7 +44,7 @@ namespace CL3_M10
         {
             _configuration = configuration;
 
-            _processConfig = new ProcessConfig
+            _processConfig = new ProcessConfiguration
             {
                 ActionTakingEnabled = true,
                 AnticipatoryLearningEnabled = true,
@@ -87,7 +87,7 @@ namespace CL3_M10
             return externalities * _agentList.CalculateCommonC() / (double)_agentList.Agents.Count;
         }
 
-        public async Task<string> Run()
+        public string Run()
         {
             Initialize();
 

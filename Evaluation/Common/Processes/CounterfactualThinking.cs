@@ -13,7 +13,7 @@ namespace Common.Processes
         Goal selectedGoal;
         GoalState selectedGoalState;
         //HeuristicLayer layer;
-        Dictionary<Rule, Dictionary<Goal, double>> anticipatedInfluence;
+        Dictionary<Rule, Dictionary<Goal, double>> anticipatedInfluences;
 
         Rule[] matchedRules;
         Rule activatedRule;
@@ -21,9 +21,8 @@ namespace Common.Processes
 
         protected override void AboveMin()
         {
-            //
-            Rule[] rules = anticipatedInfluence.Where(kvp=> matchedRules.Contains(kvp.Key))
-                .Where(kvp => kvp.Value >= 0 && ai.Value > selectedGoalState.DiffCurrentAndMin).ToArray();
+            Rule[] rules = anticipatedInfluences.Where(kvp=> matchedRules.Contains(kvp.Key))
+                .Where(kvp => kvp.Value[selectedGoal] >= 0 && kvp.Value[selectedGoal] > selectedGoalState.DiffCurrentAndMin).Select(kvp => kvp.Key).ToArray();
 
             //If 0 heuristics are identified, then heuristic-set-layer specific counterfactual thinking(t) = unsuccessful.
             if (rules.Length == 0)
@@ -32,27 +31,28 @@ namespace Common.Processes
             }
             else
             {
-                rules = rules.GroupBy(ai => ai.Value).OrderBy(h => h.Key).First().ToArray();
+                rules = rules.GroupBy(r => anticipatedInfluences[r][selectedGoal]).OrderBy(h => h.Key).First().ToArray();
 
-                confidence = rules.Any(ai => !(ai.AssociatedHeuristic == activatedRule || ai.AssociatedHeuristic.IsAction == false));
+                confidence = rules.Any(r => !(r == activatedRule || r.IsAction == false));
             }
         }
 
         protected override void BelowMax()
         {
-            AnticipatedInfluence[] result = anticipatedInfluence
-                .Where(ai => ai.Value < 0 && Math.Abs(ai.Value) > Math.Abs(selectedGoalState.DiffCurrentAndMin)).ToArray();
+            Rule[] rules = anticipatedInfluences.Where(kvp => matchedRules.Contains(kvp.Key))
+                .Where(kvp => kvp.Value[selectedGoal] < 0 && Math.Abs(kvp.Value[selectedGoal]) > Math.Abs(selectedGoalState.DiffCurrentAndMin)).Select(kvp => kvp.Key).ToArray();
 
+            
             //If 0 heuristics are identified, then heuristic-set-layer specific counterfactual thinking(t) = unsuccessful.
-            if (result.Length == 0)
+            if (rules.Length == 0)
             {
                 confidence = false;
             }
             else
             {
-                result = result.GroupBy(ai => ai.Value).OrderBy(h => h.Key).First().ToArray();
+                rules = rules.GroupBy(r => anticipatedInfluences[r][selectedGoal]).OrderBy(h => h.Key).First().ToArray();
 
-                confidence = result.Any(ai => !(ai.AssociatedHeuristic == activatedRule || ai.AssociatedHeuristic.IsAction == false));
+                confidence = rules.Any(r => !(r == activatedRule || r.IsAction == false));
             }
         }
 
@@ -61,7 +61,7 @@ namespace Common.Processes
 
         }
 
-        public bool? Execute(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> lastIteration, Goal[] rankedGoals,
+        public bool? Execute(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> lastIteration, Goal goal,
             Rule[] matched, RuleLayer layer)
         {
             confidence = null;
@@ -69,13 +69,13 @@ namespace Common.Processes
             //Period currentPeriod = periodModel.Value;
             Dictionary<IConfigurableAgent, AgentState> priorIteration = lastIteration.Previous.Value;
 
-            selectedGoal = rankedGoals.First(g => layer.Set.AssociatedWith.Contains(g));
+            selectedGoal = goal;
 
             selectedGoalState = lastIteration.Value[agent].GoalsState[selectedGoal];
 
             activatedRule = priorIteration[agent].Activated.First(r => r.Layer == layer);
 
-            anticipatedInfluence = lastIteration.Value[agent].AnticipationInfluence;
+            anticipatedInfluences = lastIteration.Value[agent].AnticipationInfluence;
 
             matchedRules = matched;
 

@@ -5,36 +5,40 @@ using System.Linq;
 namespace Common.Processes
 {
     using Enums;
-    using Models;
+    using Entities;
     using Randoms;
 
-    class Innovation
+    public class Innovation
     {
-        public void Execute(Actor actor, LinkedListNode<Period> periodModel, GoalState goalState, Site site, HeuristicLayer layer)
+        public void Execute(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> lastIteration, Goal goal,
+            RuleLayer layer)
         {
-            Period currentPeriod = periodModel.Value;
-            Period priorPeriod = periodModel.Previous.Value;
+            Dictionary<IConfigurableAgent, AgentState> currentIteration = lastIteration.Value;
+            Dictionary<IConfigurableAgent, AgentState> priorIteration = lastIteration.Previous.Value;
 
-            Heuristic activatedPriorPeriodHeuristic = priorPeriod.GetStateForSite(actor, site).GetActivated(layer);
+            Rule priorPeriodRule = priorIteration[agent].Activated.Single(r=>r.Layer == layer);
 
-            LinkedListNode<Period> tempNode = periodModel.Previous;
+            LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> tempNode = lastIteration.Previous;
 
-            while (activatedPriorPeriodHeuristic.IsAction == false && tempNode.Previous != null)
+            while (priorPeriodRule.IsAction == false && tempNode.Previous != null)
             {
                 tempNode = tempNode.Previous;
-                activatedPriorPeriodHeuristic = tempNode.Value.GetStateForSite(actor, site).GetActivated(layer);
+                priorPeriodRule = tempNode.Value[agent].Activated.Single(r => r.Layer == layer);
             }
 
-            HeuristicLayerParameters parameters = layer.LayerParameters;
+            RuleLayerSettings parameters = layer.LayerSettings;
 
+            Goal selectedGoal = goal;
+
+            GoalState selectedGoalState = lastIteration.Value[agent].GoalsState[selectedGoal];
 
             #region Generating consequent
             double min = parameters.MinValue;
             double max = parameters.MaxValue;
 
-            double consequentValue = activatedPriorPeriodHeuristic.Consequent.Value;
+            double consequentValue = priorPeriodRule.Consequent.Value;
 
-            switch (goalState.AnticipatedDirection)
+            switch (selectedGoalState.AnticipatedDirection)
             {
                 case AnticipatedDirection.Up:
                     {
@@ -76,32 +80,32 @@ namespace Common.Processes
                     }
             }
 
-            HeuristicConsequentPart consequent = HeuristicConsequentPart.Renew(activatedPriorPeriodHeuristic.Consequent, consequentValue);
+            RuleConsequent consequent = RuleConsequent.Renew(priorPeriodRule.Consequent, consequentValue);
             #endregion
 
 
             #region Generating antecedent
-            List<HeuristicAntecedentPart> antecedentsList = new List<HeuristicAntecedentPart>(activatedPriorPeriodHeuristic.Antecedent.Length);
+            List<RuleAntecedentPart> antecedentsList = new List<RuleAntecedentPart>(priorPeriodRule.Antecedent.Length);
             
-            foreach(HeuristicAntecedentPart antecedent in activatedPriorPeriodHeuristic.Antecedent)
+            foreach(RuleAntecedentPart antecedent in priorPeriodRule.Antecedent)
             {
-                dynamic newConst = actor[antecedent.Param];
+                dynamic newConst = agent[antecedent.Param];
 
-                HeuristicAntecedentPart newAntecedent = HeuristicAntecedentPart.Renew(antecedent, newConst);
+                RuleAntecedentPart newAntecedent = RuleAntecedentPart.Renew(antecedent, newConst);
 
                 antecedentsList.Add(newAntecedent);
             }
             #endregion
 
-            Heuristic generatedHeuristic = Heuristic.Create(antecedentsList.ToArray(), consequent);
+            Rule generatedRule = Rule.Create(antecedentsList.ToArray(), consequent);
 
-            layer.Add(generatedHeuristic);
+            layer.Add(generatedRule);
 
-            actor.AssignedHeuristics.Add(generatedHeuristic);
+            agent.AssignedRules.Add(generatedRule);
 
 
             //set consequent to actor's variables for next layers
-            generatedHeuristic.Apply(actor);
+            generatedRule.Apply(agent);
 
 
             //Heuristic[] activatedPriorPeriodSiteHeuristics = priorPeriod.GetStateForSite(actor, site).Activated

@@ -14,7 +14,7 @@
           "ReferenceVariable": "PoolWellbeing",
           "FocalValue": 15,
           "MaxGoalValue": 15,
-          "ChangeFocalValueOnPrevious": true
+          "ChangeFocalValueOnPrevious": false   
         },
         {
           "Name": "PG2",
@@ -22,7 +22,7 @@
           "ReferenceVariable": "AgentWellbeing",
           "FocalValue": 15,
           "MaxGoalValue": 23.5,
-          "ChangeFocalValueOnPrevious": true
+          "ChangeFocalValueOnPrevious": false
         }
       ],
       "GoalsSettings": {
@@ -35,7 +35,7 @@
           "Layer": {
             "1": {
               "Modifiable": false,
-              "MaxRuleNumber": 15,
+              "MaxNumberOfRules": 15,
               "ConsequentValueInterval": [ 0, 100 ],
               "ConsequentRelationshipSign": "-"
             }
@@ -51,99 +51,23 @@
           "Id": "RS1_L1_R1",
           "Antecedent": [
             {
-              "Param": "AgentStatus",
+              "Param": "AgentBetterSiteAvailable",
               "Sign": "==",
-              "Value": "active"
+              "Value": true
             }
           ],
           "Consequent": {
-            "Param": "AgentC",
-            "Value": 0
+            "Param": "AgentCurrentSite",
+            "ReferenceVariable": "AgentBetterSite"
           },
           "RequiredParticipants": 1,
           "IsAction": true
         },
         {
-          "RuleSet": 1,
+          "RuleSet": 2,
           "RuleLayer": 1,
-          "RulePositionNumber": 2,
-          "Id": "RS1_L1_R2",
-          "Antecedent": [
-            {
-              "Param": "AgentStatus",
-              "Sign": "==",
-              "Value": "active"
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "Value": 1
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 3,
-          "Id": "RS1_L1_R3",
-          "Antecedent": [
-            {
-              "Param": "AgentStatus",
-              "Sign": "==",
-              "Value": "active"
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "Value": 2
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 4,
-          "Id": "RS1_L1_R4",
-          "Antecedent": [
-            {
-              "Param": "AgentStatus",
-              "Sign": "==",
-              "Value": "active"
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "Value": 3
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 5,
-          "Id": "RS1_L1_R5",
-          "Antecedent": [
-            {
-              "Param": "AgentStatus",
-              "Sign": "==",
-              "Value": "active"
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "Value": 4
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 6,
-          "Id": "RS1_L1_R6",
+          "RulePositionNumber": 1,
+          "Id": "RS2_L1_R1",
           "Antecedent": [
             {
               "Param": "AgentStatus",
@@ -159,10 +83,10 @@
           "IsAction": true
         },
         {
-          "RuleSet": 1,
+          "RuleSet": 2,
           "RuleLayer": 1,
-          "RulePositionNumber": 7,
-          "Id": "RS1_L1_R7",
+          "RulePositionNumber": 2,
+          "Id": "RS2_L1_R2",
           "Antecedent": [
             {
               "Param": "AgentStatus",
@@ -172,116 +96,40 @@
           ],
           "Consequent": {
             "Param": "AgentC",
-            "Value": 6
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 8,
-          "Id": "RS1_L1_R8",
-          "Antecedent": [
-            {
-              "Param": "AgentStatus",
-              "Sign": "==",
-              "Value": "active"
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "Value": 7
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 9,
-          "Id": "RS1_L1_R9",
-          "Antecedent": [
-            {
-              "Param": "AgentStatus",
-              "Sign": "==",
-              "Value": "active"
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "Value": 8
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 10,
-          "Id": "RS1_L1_R10",
-          "Antecedent": [
-            {
-              "Param": "AgentStatus",
-              "Sign": "==",
-              "Value": "active"
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "Value": 9
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 11,
-          "Id": "RS1_L1_R11",
-          "Antecedent": [
-            {
-              "Param": "AgentStatus",
-              "Sign": "==",
-              "Value": "active"
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "Value": 10
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 12,
-          "Id": "RS1_L1_R12",
-          "Antecedent": [
-            {
-              "Param": "AgentStatus",
-              "Sign": "==",
-              "Value": "active"
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "Value": 10
+            "ReferenceVariable": "AgentE"
           },
           "RequiredParticipants": 0,
+          "IsAction": true
+        },
+        {
+          "RuleSet": 3,
+          "RuleLayer": 1,
+          "RulePositionNumber": 1,
+          "Id": "RS3_L1_R1",
+          "Antecedent": [
+            {
+              "Param": "AgentStatus",
+              "Sign": "==",
+              "Value": "active"
+            }
+          ],
+          "Consequent": {
+            "Param": "AgentE",
+            "Value": 5
+          },
+          "RequiredParticipants": 1,
           "IsAction": true
         }
       ]
     }
   },
   "InitialState": {
-    "SocialNetwork": 2,
+    "SocialNetwork": 4,
 
     "AgentsState": [
       {
         "PrototypeOfAgent": "Prototype1",
-        "NumberOfAgents": 1,
+        "NumberOfAgents": 1000,
 
         "PrivateVariables": {
 
@@ -307,34 +155,6 @@
           "RS1_L1_R5": {
             "PG1": 4,
             "PG2": 6
-          },
-          "RS1_L1_R6": {
-            "PG1": 5,
-            "PG2": 5
-          },
-          "RS1_L1_R7": {
-            "PG1": 6,
-            "PG2": 4
-          },
-          "RS1_L1_R8": {
-            "PG1": 7,
-            "PG2": 3
-          },
-          "RS1_L1_R9": {
-            "PG1": 8,
-            "PG2": 2
-          },
-          "RS1_L1_R10": {
-            "PG1": 9,
-            "PG2": 1
-          },
-          "RS1_L1_R11": {
-            "PG1": 10,
-            "PG2": 0
-          },
-          "RS1_L1_R12": {
-            "PG1": 15,
-            "PG2": 15
           }
         },
         "AssignedRules": [

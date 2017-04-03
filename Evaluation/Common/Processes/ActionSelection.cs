@@ -181,8 +181,8 @@ namespace Common.Processes
             //activatedHeuristic.FreshnessStatus = 0;
 
 
-            //todo     wrong implementation. 
-            //ruleForActivating.Apply(agent);
+            ruleForActivating.Apply(agent);
+
 
             if (ruleForActivating.IsCollectiveAction)
             {

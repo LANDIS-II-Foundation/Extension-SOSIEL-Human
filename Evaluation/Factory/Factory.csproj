@@ -47,21 +47,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CL2_M7\CL2_M7.csproj">
-      <Project>{85e3aa7a-f412-4884-8c06-f4dbfcd55153}</Project>
-      <Name>CL2_M7</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CL2_M8\CL2_M8.csproj">
-      <Project>{6a1abaf3-35f6-42c2-80d5-50b2e709b22a}</Project>
-      <Name>CL2_M8</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CL2_M9\CL2_M9.csproj">
-      <Project>{3bcc75d1-860e-4fc9-8940-52af25b62491}</Project>
-      <Name>CL2_M9</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CL3_M10\CL3_M10.csproj">
-      <Project>{be8a3302-93c7-48a5-9511-f7c5b946111e}</Project>
-      <Name>CL3_M10</Name>
+    <ProjectReference Include="..\CL4_M11\CL4_M11.csproj">
+      <Project>{0895920b-da02-46c8-858f-da7b815bcf29}</Project>
+      <Name>CL4_M11</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{50a0dc05-47bd-455a-b32e-ca2c9fc924fb}</Project>
@@ -71,7 +59,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.DayStamp" BuildVersion_ConfigurationName="Any" BuildVersion_BuildAction="Both" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_StartDate="2017/3/6" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2017/3/6" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildAction="Both" BuildVersion_ConfigurationName="Any" BuildVersion_BuildVersioningStyle="None.None.Increment.DayStamp" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

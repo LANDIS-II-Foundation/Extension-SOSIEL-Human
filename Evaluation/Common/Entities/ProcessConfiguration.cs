@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Entities
 {
-    public class ProcessConfig
+    public class ProcessConfiguration
     {
         public bool AgentRandomizationEnabled { get; set; }
 
@@ -24,6 +24,6 @@ namespace Common.Entities
 
         public bool ActionTakingEnabled { get; set; }
 
-        public bool ReproductionEnables { get; set; }
+        public bool ReproductionEnabled { get; set; }
     }
 }

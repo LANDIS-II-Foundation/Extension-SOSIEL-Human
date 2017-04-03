@@ -14,7 +14,7 @@
           "ReferenceVariable": "PoolWellbeing",
           "FocalValue": 15,
           "MaxGoalValue": 15,
-          "ChangeFocalValueOnPrevious": true
+          "ChangeFocalValueOnPrevious": false
         },
         {
           "Name": "PG2",
@@ -22,7 +22,7 @@
           "ReferenceVariable": "AgentWellbeing",
           "FocalValue": 15,
           "MaxGoalValue": 23.5,
-          "ChangeFocalValueOnPrevious": true
+          "ChangeFocalValueOnPrevious": false
         }
       ],
       "GoalsSettings": {
@@ -35,7 +35,7 @@
           "Layer": {
             "1": {
               "Modifiable": false,
-              "MaxRuleNumber": 15,
+              "MaxNumberOfRules": 15,
               "ConsequentValueInterval": [ 0, 100 ],
               "ConsequentRelationshipSign": "-"
             }

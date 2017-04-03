@@ -5,17 +5,19 @@ using System.Linq;
 
 namespace Common.Entities
 {
-    public sealed class RuleConsequent : ICloneable
+    using Environments;
+
+    public sealed class RuleConsequent : ICloneable<RuleConsequent>
     {
 
-        //internal static RuleConsequent Renew(RuleConsequent old, double newValue)
-        //{
-        //    RuleConsequent newConsequent = (RuleConsequent)old.Clone();
+        public static RuleConsequent Renew(RuleConsequent old, double newValue)
+        {
+            RuleConsequent newConsequent = old.Clone();
 
-        //    newConsequent.Value = newValue;
+            newConsequent.Value = newValue;
 
-        //    return newConsequent;
-        //}
+            return newConsequent;
+        }
 
 
         public string Param { get; set; }
@@ -28,9 +30,9 @@ namespace Common.Entities
 
         public bool SavePrevious { get; set; }
 
-        public object Clone()
+        public RuleConsequent Clone()
         {
-            return MemberwiseClone();
+            return (RuleConsequent)MemberwiseClone();
         }
     }
 }

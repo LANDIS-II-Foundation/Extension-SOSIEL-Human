@@ -11,7 +11,7 @@ namespace Common.Entities
         public bool Modifiable { get; set; } = false;
 
         //todo
-        public int MaxRuleNumber { get; set; } = 10;
+        public int MaxNumberOfRules { get; set; } = 10;
 
         //todo
         public int[] ConsequentValueInterval { get; set; }

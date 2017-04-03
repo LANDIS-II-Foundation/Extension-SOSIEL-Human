@@ -11,7 +11,8 @@ namespace Common.Enums
         None,
         SN1,
         SN2,
-        SN3
+        SN3,
+        CommonPool
 
     }
 }
