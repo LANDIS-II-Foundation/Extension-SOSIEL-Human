@@ -101,34 +101,34 @@ namespace Common.Processes
             }
         }
 
-        IEnumerable<Goal> RankGoal(AgentState state)
+        //IEnumerable<Goal> RankGoal(AgentState state)
+        //{
+        //    int numberOfGoal = state.GoalsState.Count;
+
+        //    List<Goal> vector = new List<Goal>(100);
+
+        //    state.GoalsState.ForEach(kvp =>
+        //    {
+        //        int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.Proportion * 100));
+
+        //        for (int i = 0; i < numberOfInsertions; i++) { vector.Add(kvp.Key); }
+        //    });
+
+        //    for (int i = 0; i < numberOfGoal; i++)
+        //    {
+        //        Goal nextGoal = vector.RandomizeOne();
+
+        //        vector.RemoveAll(o => o == nextGoal);
+
+        //        yield return nextGoal;
+        //    }
+        //}
+
+
+
+        void ShareCollectiveAction(IAgent currentAgent, Rule rule, Dictionary<IAgent, AgentState> agentStates)
         {
-            int numberOfGoal = state.GoalsState.Count;
-
-            List<Goal> vector = new List<Goal>(100);
-
-            state.GoalsState.ForEach(kvp =>
-            {
-                int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.Proportion * 100));
-
-                for (int i = 0; i < numberOfInsertions; i++) { vector.Add(kvp.Key); }
-            });
-
-            for (int i = 0; i < numberOfGoal; i++)
-            {
-                Goal nextGoal = vector.RandomizeOne();
-
-                vector.RemoveAll(o => o == nextGoal);
-
-                yield return nextGoal;
-            }
-        }
-
-
-
-        void ShareCollectiveAction(IConfigurableAgent currentAgent, Rule rule, Dictionary<IConfigurableAgent, AgentState> agentStates)
-        {
-            foreach (IConfigurableAgent agent in currentAgent.ConnectedAgents)
+            foreach (IAgent agent in currentAgent.ConnectedAgents)
             {
                 if (agent.AssignedRules.Contains(rule) == false)
                 {
@@ -141,7 +141,7 @@ namespace Common.Processes
             }
         }
 
-        public void ExecutePartI(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> iterationState,
+        public void ExecutePartI(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> iterationState,
             Goal[] rankedGoals, Rule[] processedRules)
         {
             ruleForActivating = null;
@@ -149,10 +149,10 @@ namespace Common.Processes
             agentState = iterationState.Value[agent];
             AgentState priorPeriod = iterationState.Previous.Value[agent];
 
-            if (rankedGoals == null)
-            {
-                rankedGoals = RankGoal(agentState).ToArray();
-            }
+            //if (rankedGoals == null)
+            //{
+            //    rankedGoals = RankGoal(agentState).ToArray();
+            //}
 
 
 
@@ -181,22 +181,21 @@ namespace Common.Processes
             //activatedHeuristic.FreshnessStatus = 0;
 
 
-            ruleForActivating.Apply(agent);
+            if (processedRules.First().Layer.Set.Layers.Count > 1)
+                ruleForActivating.Apply(agent);
 
 
             if (ruleForActivating.IsCollectiveAction)
             {
                 ShareCollectiveAction(agent, ruleForActivating, iterationState.Value);
             }
-
-
-            //SiteState siteState = currentPeriod.GetStateForSite(actor, site);
+            
 
             agentState.Activated.Add(ruleForActivating);
             agentState.Matched.AddRange(matchedRules);
         }
 
-        public void ExecutePartII(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> iterationState,
+        public void ExecutePartII(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> iterationState,
             Goal[] rankedGoals, Rule[] processedRules, int numberOfAgents)
         {
             AgentState agentState = iterationState.Value[agent];

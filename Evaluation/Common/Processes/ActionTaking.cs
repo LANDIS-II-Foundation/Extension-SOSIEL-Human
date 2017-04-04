@@ -9,7 +9,7 @@ namespace Common.Processes
 
     public class ActionTaking
     {
-        public void Execute(IConfigurableAgent agent, AgentState state)
+        public void Execute(IAgent agent, AgentState state)
         {
             state.Activated.OrderBy(r => r.Layer.Set).ThenBy(r => r.Layer).ForEach(r =>
                {

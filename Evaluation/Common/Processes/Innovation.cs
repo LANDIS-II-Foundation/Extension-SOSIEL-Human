@@ -10,15 +10,15 @@ namespace Common.Processes
 
     public class Innovation
     {
-        public void Execute(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> lastIteration, Goal goal,
+        public void Execute(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration, Goal goal,
             RuleLayer layer)
         {
-            Dictionary<IConfigurableAgent, AgentState> currentIteration = lastIteration.Value;
-            Dictionary<IConfigurableAgent, AgentState> priorIteration = lastIteration.Previous.Value;
+            Dictionary<IAgent, AgentState> currentIteration = lastIteration.Value;
+            Dictionary<IAgent, AgentState> priorIteration = lastIteration.Previous.Value;
 
             Rule priorPeriodRule = priorIteration[agent].Activated.Single(r=>r.Layer == layer);
 
-            LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> tempNode = lastIteration.Previous;
+            LinkedListNode<Dictionary<IAgent, AgentState>> tempNode = lastIteration.Previous;
 
             while (priorPeriodRule.IsAction == false && tempNode.Previous != null)
             {
@@ -103,41 +103,9 @@ namespace Common.Processes
 
             agent.AssignedRules.Add(generatedRule);
 
-
-            //set consequent to actor's variables for next layers
-            generatedRule.Apply(agent);
-
-
-            //Heuristic[] activatedPriorPeriodSiteHeuristics = priorPeriod.GetStateForSite(actor, site).Activated
-            //    .Where(h=>h.Layer.Set == layer.Set)
-            //    .OrderBy(h => h.Layer.PositionNumber)
-            //    .ToArray();
-
-            ////calculating new antecedent constant
-            //double result = priorPeriod.TotalBiomass;
-
-            //foreach (Heuristic heuristic in activatedPriorPeriodSiteHeuristics)
-            //{
-            //    if (heuristic == activatedPriorPeriodHeuristic)
-            //    {
-            //        break;
-            //    }
-
-            //    result = heuristic.ConsequentValue;
-            //}
-
-
-
-            //HeuristicParameters newHeuristicParams = new HeuristicParameters
-            //{
-            //    AntecedentConst = antecedentConst,
-            //    AntecedentInequalitySign = activatedPriorPeriodHeuristic.AntecedentInequalitySign,
-            //    ConsequentValue = consequentValue,
-            //    IsAction = true,
-            //    FreshnessStatus = 0
-            //};
-
-
+            if(layer.Set.Layers.Count > 1)
+                //set consequent to actor's variables for next layers
+                generatedRule.Apply(agent);
         }
     }
 }

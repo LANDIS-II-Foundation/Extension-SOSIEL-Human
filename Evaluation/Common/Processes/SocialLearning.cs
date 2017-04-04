@@ -13,9 +13,9 @@ namespace Common.Processes
 
     public class SocialLearning
     {
-        Dictionary<IConfigurableAgent, List<Rule>> confidentAgents = new Dictionary<IConfigurableAgent, List<Rule>>();
+        Dictionary<IAgent, List<Rule>> confidentAgents = new Dictionary<IAgent, List<Rule>>();
 
-        public void ExecuteSelection(IConfigurableAgent agent, AgentState agentState,
+        public void ExecuteSelection(IAgent agent, AgentState agentState,
             Goal[] rankedGoals, RuleLayer layer)
         {
             GoalState associatedGoalState = agentState.GoalsState[rankedGoals.First(g => layer.Set.AssociatedWith.Contains(g))];
@@ -32,11 +32,11 @@ namespace Common.Processes
             }
         }
 
-        public void ExecuteLearning(IConfigurableAgent[] allAgents, Dictionary<IConfigurableAgent, AgentState> iterationState)
+        public void ExecuteLearning(IAgent[] allAgents, Dictionary<IAgent, AgentState> iterationState)
         {
             foreach (var agent in allAgents)
             {
-                foreach (IConfigurableAgent connectedAgent in agent.ConnectedAgents)
+                foreach (IAgent connectedAgent in agent.ConnectedAgents)
                 {
                     foreach (Rule rule in confidentAgents[connectedAgent]
                         .Where(r => r.Layer.Set.AssociatedWith.Any(g => iterationState[agent].GoalsState.Any(kvp => kvp.Key == g))))

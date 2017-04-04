@@ -4,8 +4,10 @@
       "Variables": {
         "AgentType": 1,
         "AgentStatus": "active",
-        "E": 10,
-        "M": 1.5
+        "E": 10000,
+        "M": 1.5,
+        "P": 2,
+        "R": 2
       },
       "Goals": [
         {
@@ -19,15 +21,12 @@
         {
           "Name": "PG2",
           "Tendency": "Maximize",
-          "ReferenceVariable": "AgentWellbeing",
+          "ReferenceVariable": "AgentSavings",
           "FocalValue": 15,
           "MaxGoalValue": 23.5,
           "ChangeFocalValueOnPrevious": false
         }
       ],
-      "GoalsSettings": {
-        "GenerateProportions": true
-      },
 
       "SetSettings": {
         "1": {
@@ -120,131 +119,47 @@
           "RequiredParticipants": 1,
           "IsAction": true
         }
-      ]
+      ],
+
+      "UseDoNothing": true
     }
   },
   "InitialState": {
     "SocialNetwork": 4,
+    "GenerateGoalProportions": true,
 
     "AgentsState": [
       {
         "PrototypeOfAgent": "Prototype1",
         "NumberOfAgents": 1000,
 
-        "PrivateVariables": {
-
-        },
-
         "AnticipatedInfluenceState": {
           "RS1_L1_R1": {
             "PG1": 0,
-            "PG2": 10
+            "PG2": 0
           },
-          "RS1_L1_R2": {
-            "PG1": 1,
-            "PG2": 9
-          },
-          "RS1_L1_R3": {
-            "PG1": 2,
-            "PG2": 8
-          },
-          "RS1_L1_R4": {
-            "PG1": 3,
-            "PG2": 7
-          },
-          "RS1_L1_R5": {
-            "PG1": 4,
-            "PG2": 6
-          }
-        },
-        "AssignedRules": [
-          "RS1_L1_R1",
-          "RS1_L1_R2",
-          "RS1_L1_R3",
-          "RS1_L1_R4",
-          "RS1_L1_R5",
-          "RS1_L1_R6",
-          "RS1_L1_R7",
-          "RS1_L1_R8",
-          "RS1_L1_R9",
-          "RS1_L1_R10",
-          "RS1_L1_R11",
-          "RS1_L1_R12"
-        ],
-        "AssignedGoals": [ "PG1", "PG2" ],
-
-        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R6" ]
-      },
-      {
-        "PrototypeOfAgent": "Prototype1",
-        "NumberOfAgents": 9,
-
-        "PrivateVariables": {
-
-        },
-
-        "AnticipatedInfluenceState": {
-          "RS1_L1_R1": {
-            "PG1": 0,
-            "PG2": 10
-          },
-          "RS1_L1_R2": {
-            "PG1": 1,
-            "PG2": 9
-          },
-          "RS1_L1_R3": {
-            "PG1": 2,
-            "PG2": 8
-          },
-          "RS1_L1_R4": {
-            "PG1": 3,
-            "PG2": 7
-          },
-          "RS1_L1_R5": {
-            "PG1": 4,
-            "PG2": 6
-          },
-          "RS1_L1_R6": {
+          "RS2_L1_R1": {
             "PG1": 5,
             "PG2": 5
           },
-          "RS1_L1_R7": {
-            "PG1": 6,
-            "PG2": 4
-          },
-          "RS1_L1_R8": {
-            "PG1": 7,
-            "PG2": 3
-          },
-          "RS1_L1_R9": {
-            "PG1": 8,
-            "PG2": 2
-          },
-          "RS1_L1_R10": {
-            "PG1": 9,
-            "PG2": 1
-          },
-          "RS1_L1_R11": {
+          "RS2_L1_R2": {
             "PG1": 10,
-            "PG2": 0
+            "PG2": 10
+          },
+          "RS3_L1_R1": {
+            "PG1": 5,
+            "PG2": 5
           }
         },
         "AssignedRules": [
           "RS1_L1_R1",
-          "RS1_L1_R2",
-          "RS1_L1_R3",
-          "RS1_L1_R4",
-          "RS1_L1_R5",
-          "RS1_L1_R6",
-          "RS1_L1_R7",
-          "RS1_L1_R8",
-          "RS1_L1_R9",
-          "RS1_L1_R10",
-          "RS1_L1_R11"
+          "RS2_L1_R1",
+          "RS2_L1_R2",
+          "RS3_L1_R1"
         ],
         "AssignedGoals": [ "PG1", "PG2" ],
 
-        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R6" ]
+        "ActivatedRulesOnFirstIteration": [ "RS2_L1_R1", "RS3_L1_R1" ]
       }
     ]
   }

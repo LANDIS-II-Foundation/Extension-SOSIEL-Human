@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace Common.Entities
 {
+    using Configuration;
     using Exceptions;
     using Helpers;
 
@@ -31,7 +32,7 @@ namespace Common.Entities
             //M2
             public const string AgentC = "AgentC";
             //public const string MaxEngage = "MaxE";
-            public const string Engage = "E";
+            public const string Endowment = "E";
             public const string MagnitudeOfExternalities = "M";
             public const string CommonPoolSize = "CommonPoolSize";
             public const string CommonPoolSubtupeProportion = "CommonPoolSubtupeProportion";
@@ -65,23 +66,41 @@ namespace Common.Entities
 
             //M11
             public const string AgentE = "AgentE";
-
+            public const string AgentSavings = "AgentSavings";
+            public const string P = "P";
+            public const string R = "R";
+            public const string TotalEndowment = "TotalE";
         }
 
         public int Id { get; set; }
-        
-        [JsonProperty()]
-        protected Dictionary<string, dynamic> Variables { get; set; } = new Dictionary<string, dynamic>();
 
-        //todo
-        public List<Rule> Rules { get; set; }
+        public string PrototypeName { get; set; }
 
         public Dictionary<string, RuleSetSettings> SetSettings { get; set; }
 
         public List<Goal> Goals { get; set; }
 
+        public List<Rule> AssignedRules { get; set; }
+
+        public List<IAgent> ConnectedAgents { get; set; }
+
+        [JsonProperty()]
+        protected Dictionary<string, dynamic> Variables { get; set; } = new Dictionary<string, dynamic>();
+
+        protected List<RuleSet> MentalProto
+        {
+            get
+            {
+                return _mentalProto == null ? _mentalProto = TransformRulesToRuleSets() : _mentalProto;
+            }
+        }
+
+        [JsonProperty("Rules")]
+        private List<Rule> Rules { get; set; }
+
         private List<RuleSet> _mentalProto;
 
+        private bool UseDoNothing;
 
         private void AddDoNothingRules()
         {
@@ -104,7 +123,7 @@ namespace Common.Entities
             });
         }
 
-        protected List<RuleSet> TransformRulesToRuleSets()
+        private List<RuleSet> TransformRulesToRuleSets()
         {
             if (_mentalProto != null)
                 return _mentalProto;
@@ -164,15 +183,20 @@ namespace Common.Entities
         {
             Agent agent = CreateInstance();
 
+            agent.PrototypeName = PrototypeName;
+
+            //common variables
             agent.Variables = Variables;
-
-            if (agent.Variables.ContainsKey(VariablesUsedInCode.AgentCurrentSite))
-                agent.Variables.Remove(VariablesUsedInCode.AgentCurrentSite);
-
+            
             agent.Rules = Rules;
             agent.Goals = Goals;
             agent.SetSettings = SetSettings;
             agent._mentalProto = _mentalProto;
+            agent.AssignedRules = new List<Rule>(AssignedRules);
+            agent.ConnectedAgents = new List<IAgent>();
+
+            if (agent.Variables.ContainsKey(VariablesUsedInCode.AgentCurrentSite))
+                agent.Variables.Remove(VariablesUsedInCode.AgentCurrentSite);
 
             return agent;
         }
@@ -185,6 +209,27 @@ namespace Common.Entities
         public void GenerateCustomParams()
         {
 
+        }
+
+        public void SetToCommon(string key, dynamic value)
+        {
+            Variables[key] = value;
+        }
+
+        public void AssignRules(IEnumerable<string> assignedRules)
+        {
+            AssignedRules.Clear();
+
+            Rule[] allRules = MentalProto.SelectMany(rs => rs.AsRuleEnumerable()).ToArray();
+
+            Rule[] initialRules = allRules.Where(r => assignedRules.Contains(r.Id)).ToArray();
+
+            RuleLayer[] layers = initialRules.Select(r => r.Layer).Distinct().ToArray();
+
+            Rule[] additionalDoNothingRules = allRules.Where(r => r.IsAction == false && layers.Any(l => r.Layer == l)).ToArray();
+
+            AssignedRules.AddRange(initialRules);
+            AssignedRules.AddRange(additionalDoNothingRules);
         }
     }
 }

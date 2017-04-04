@@ -15,14 +15,21 @@ namespace Common.Entities
 
         public double DiffCurrentAndMin { get; set; }
 
+        public double DiffCurrentAndMax { get; set; }
+
         public double DiffPriorAndMin { get; set; }
+
+        public double DiffPriorAndMax { get; set; }
 
         public double DiffPriorAndCurrent { get; set; }
 
         public double AnticipatedInfluenceValue { get; set; }
 
+
         public double Proportion { get; set; }
 
+        public double AdjustedProportion { get; set; }
+        
         public bool Confidence { get; set; }
 
         public AnticipatedDirection AnticipatedDirection { get; set; }

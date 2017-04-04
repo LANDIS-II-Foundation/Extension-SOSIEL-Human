@@ -11,7 +11,7 @@ namespace Common.Algorithm
     using Helpers;
     using Processes;
 
-    public abstract class SosielAlgorithm
+    public abstract class SosielAlgorithm<T> where T: class, ICloneableAgent<T>
     {
         AlgorithmConfiguration _algorithmConfiguration;
 
@@ -19,7 +19,7 @@ namespace Common.Algorithm
 
         protected SiteList _siteList;
         protected AgentList _agentList;
-        LinkedList<Dictionary<IConfigurableAgent, AgentState>> _iterations = new LinkedList<Dictionary<IConfigurableAgent, AgentState>>();
+        protected LinkedList<Dictionary<IAgent, AgentState>> _iterations = new LinkedList<Dictionary<IAgent, AgentState>>();
 
         //processes
         AnticipatoryLearning al = new AnticipatoryLearning();
@@ -29,7 +29,7 @@ namespace Common.Algorithm
         ActionSelection acts = new ActionSelection();
         ActionTaking at = new ActionTaking();
 
-        
+
         public SosielAlgorithm(AlgorithmConfiguration algorithmConfiguration, ProcessConfiguration processConfiguration)
         {
             _algorithmConfiguration = algorithmConfiguration;
@@ -39,7 +39,7 @@ namespace Common.Algorithm
         protected abstract void InitializeAgents();
 
 
-        protected abstract Dictionary<IConfigurableAgent, AgentState> InitializeFirstIterationState();
+        protected abstract Dictionary<IAgent, AgentState> InitializeFirstIterationState();
 
 
         protected virtual void AfterInitialization() { }
@@ -56,8 +56,68 @@ namespace Common.Algorithm
 
         protected virtual void PostIterationStatistic(int iteration) { }
 
+        protected virtual void AgentsDeactivation()
+        {
 
-        
+        }
+
+        protected virtual void Reproduction(int minAgentNumber)
+        {
+            List<IAgent> activeAgents = _agentList.Agents.Cast<IAgent>()
+                .Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])
+                   .Where(s => s.IsOccupied).Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]) > 0).ToList();
+
+            if (activeAgents.Count == 0)
+                return;
+
+            int newAgentCount = minAgentNumber - activeAgents.Count;
+
+            int lastAgentId = _agentList.Agents.Count + 1;
+
+            while (newAgentCount > 0)
+            {
+                IAgent targetAgent = activeAgents.RandomizeOne();
+
+                IAgent[] poolOfParticipants = _siteList.CommonPool((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite])
+                    .Where(s => s.IsOccupied).Select(s => s.OccupiedBy).ToArray();
+
+                int contributionsAmount = poolOfParticipants.Sum(a => (int)a[Agent.VariablesUsedInCode.AgentC]);
+
+                List<IAgent> vector = new List<IAgent>(100);
+
+                poolOfParticipants.ForEach(a =>
+                {
+                    int count = Convert.ToInt32(Math.Round(a[Agent.VariablesUsedInCode.AgentC] / (double)contributionsAmount * 100, MidpointRounding.AwayFromZero));
+
+                    for (int i = 0; i < count; i++) { vector.Add(a); }
+                });
+
+                T prototype = vector.RandomizeOne() as T;
+
+                IAgent replica = prototype.Clone();
+
+                replica.Id = lastAgentId;
+
+                lastAgentId++;
+
+                Site targetSite = _siteList.TakeClosestEmptySites((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite]).RandomizeOne();
+
+                replica[Agent.VariablesUsedInCode.AgentCurrentSite] = targetSite;
+
+                newAgentCount--;
+
+                _agentList.Agents.Add(replica);
+                activeAgents.Add(replica);
+
+                _iterations.ForEach(iteration =>
+                {
+                    AgentState source = iteration[prototype];
+
+                    iteration.Add(replica, source);
+                });
+            }
+        }
+
 
 
 
@@ -68,22 +128,22 @@ namespace Common.Algorithm
                 PreIterationCalculations(i);
                 PreIterationStatistic(i);
 
-                Dictionary<IConfigurableAgent, AgentState> currentIteration;
+                Dictionary<IAgent, AgentState> currentIteration;
 
                 if (i > 1)
-                    currentIteration = _iterations.AddLast(new Dictionary<IConfigurableAgent, AgentState>()).Value;
+                    currentIteration = _iterations.AddLast(new Dictionary<IAgent, AgentState>()).Value;
                 else
                     currentIteration = _iterations.AddLast(InitializeFirstIterationState()).Value;
 
-                Dictionary<IConfigurableAgent, AgentState> priorIteration = _iterations.Last.Previous?.Value;
+                Dictionary<IAgent, AgentState> priorIteration = _iterations.Last.Previous?.Value;
 
-                IConfigurableAgent[] orderedAgents = _agentList.Agents.Cast<IConfigurableAgent>().Randomize(_processConfiguration.AgentRandomizationEnabled).ToArray();
+                IAgent[] orderedAgents = _agentList.Agents.Randomize(_processConfiguration.AgentRandomizationEnabled).ToArray();
                 var agentGroups = orderedAgents.GroupBy(a => a[Agent.VariablesUsedInCode.AgentType]).ToArray();
 
 
-                Dictionary<IConfigurableAgent, Goal[]> rankedGoals = new Dictionary<IConfigurableAgent, Goal[]>(_agentList.Agents.Count);
+                Dictionary<IAgent, Goal[]> rankedGoals = new Dictionary<IAgent, Goal[]>(_agentList.Agents.Count);
 
-                _agentList.Agents.Cast<IConfigurableAgent>().ForEach(a =>
+                _agentList.Agents.Cast<IAgent>().ForEach(a =>
                 {
                     rankedGoals.Add(a, null);
 
@@ -97,7 +157,7 @@ namespace Common.Algorithm
                     //1st round: AL, CT, IR
                     foreach (var agentGroup in agentGroups)
                     {
-                        foreach (IConfigurableAgent agent in agentGroup)
+                        foreach (IAgent agent in agentGroup)
                         {
                             //Anticipatory Learning Process
                             rankedGoals[agent] = al.Execute(agent, _iterations.Last);
@@ -130,7 +190,6 @@ namespace Common.Algorithm
 
                                                     if (_processConfiguration.InnovationEnabled == true)
                                                     {
-
                                                         if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
                                                             it.Execute(agent, _iterations.Last, selectedGoal, layer.Key);
                                                     }
@@ -150,7 +209,7 @@ namespace Common.Algorithm
                     foreach (var agentGroup in agentGroups)
                     {
 
-                        foreach (IConfigurableAgent agent in agentGroup)
+                        foreach (IAgent agent in agentGroup)
                         {
                             foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                             {
@@ -171,7 +230,7 @@ namespace Common.Algorithm
                     //AS part I
                     foreach (var agentGroup in agentGroups)
                     {
-                        foreach (IConfigurableAgent agent in agentGroup)
+                        foreach (IAgent agent in agentGroup)
                         {
                             foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                             {
@@ -180,7 +239,7 @@ namespace Common.Algorithm
                                     acts.ExecutePartI(agent, _iterations.Last, rankedGoals[agent], layer.ToArray());
                                 }
                             }
-                            
+
                         }
                     }
 
@@ -190,7 +249,7 @@ namespace Common.Algorithm
                         //4th round: AS part II
                         foreach (var agentGroup in agentGroups)
                         {
-                            foreach (IConfigurableAgent agent in agentGroup)
+                            foreach (IAgent agent in agentGroup)
                             {
 
                                 foreach (var set in agent.AssignedRules.GroupBy(r => r.Layer.Set).OrderBy(g => g.Key.PositionNumber))
@@ -210,7 +269,7 @@ namespace Common.Algorithm
                     //5th round: TA
                     foreach (var agentGroup in agentGroups)
                     {
-                        foreach (IConfigurableAgent agent in agentGroup)
+                        foreach (IAgent agent in agentGroup)
                         {
                             at.Execute(agent, currentIteration[agent]);
 
@@ -223,6 +282,16 @@ namespace Common.Algorithm
                 PostIterationCalculations(i);
 
                 PostIterationStatistic(i);
+
+                if (_processConfiguration.AgentsDeactivationEnabled)
+                {
+                    AgentsDeactivation();
+                }
+
+                if (_processConfiguration.ReproductionEnabled)
+                {
+                    Reproduction(_algorithmConfiguration.AgentCount);
+                }
             }
         }
 

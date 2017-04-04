@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AgentSubtype.cs" />
     <Compile Include="CL4M11Agent.cs" />
     <Compile Include="CL4M11Algorithm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -8,7 +8,7 @@ namespace Common.Entities
 {
     using Environments;
 
-    public interface ICloneableAgent<T> : IAgent, ICloneable<T> where T : class
+    public interface ICloneableAgent<T> : IAgent, ICloneable<T>
     {
 
     }

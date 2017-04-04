@@ -7,6 +7,7 @@ namespace Common.Processes
     using Enums;
     using Entities;
     using Helpers;
+    using Exceptions;
 
     public class AnticipatoryLearning : VolatileProcess
     {
@@ -23,7 +24,6 @@ namespace Common.Processes
 
             if (noConfidenceGoals.Length > 0)
             {
-
                 var noConfidenceProportions = noConfidenceGoals.Select(kvp =>
                     new { Proportion = kvp.Value.Proportion * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / kvp.Key.MaxGoalValue), Goal = kvp.Key }).ToArray();
 
@@ -36,17 +36,24 @@ namespace Common.Processes
                 var confidenceProportions = confidenceGoals.Select(kvp =>
                     new { Proportion = kvp.Value.Proportion * (1 - totalNoConfidenceAdjustedProportions) / totalNoConfidenctUnadjustedProportions, Goal = kvp.Key }).ToArray();
 
-                
+
 
                 var temp = Enumerable.Concat(noConfidenceProportions, confidenceProportions).Sum(o => o.Proportion);
 
 
                 Enumerable.Concat(noConfidenceProportions, confidenceProportions).ForEach(p =>
                 {
-                    goals[p.Goal].Proportion = p.Proportion;
+                    goals[p.Goal].AdjustedProportion = p.Proportion;
 
                 });
 
+            } 
+            else
+            {
+                goals.ForEach(kvp =>
+                {
+                    kvp.Value.AdjustedProportion = kvp.Value.Proportion;
+                });
             }
 
 
@@ -54,7 +61,7 @@ namespace Common.Processes
 
             goals.ForEach(kvp =>
             {
-                int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.Proportion * 100));
+                int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.AdjustedProportion * 100));
 
                 for (int i = 0; i < numberOfInsertions; i++) { vector.Add(kvp.Key); }
             });
@@ -118,10 +125,24 @@ namespace Common.Processes
 
         protected override void Maximize()
         {
-            AboveMin();
+            if (currentGoalState.DiffCurrentAndMax < 0)
+            {
+                currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
+
+                currentGoalState.Confidence = false;
+            }
+            else if (currentGoalState.DiffCurrentAndMax == 0)
+            {
+                currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
+                currentGoalState.Confidence = true;
+            }
+            else
+            {
+                throw new AlgorithmException("Unexpected value: DiffCurrentAndMax");
+            }
         }
 
-        public Goal[] Execute(IConfigurableAgent agent, LinkedListNode<Dictionary<IConfigurableAgent, AgentState>> lastIteration)
+        public Goal[] Execute(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration)
         {
             AgentState currentIterationAgentState = lastIteration.Value[agent];
             AgentState previousIterationAgentState = lastIteration.Previous.Value[agent];
@@ -146,12 +167,13 @@ namespace Common.Processes
                 currentGoalState.DiffPriorAndCurrent = prevGoalState.Value - currentGoalState.Value;
 
 
+                currentGoalState.DiffPriorAndMax = prevGoalState.Value - goal.MaxGoalValue;
+
+                currentGoalState.DiffCurrentAndMax = currentGoalState.Value - goal.MaxGoalValue;
+
                 //goalState.Value contains prior Iteration value
                 currentGoalState.AnticipatedInfluenceValue = currentGoalState.Value - prevGoalState.Value;
 
-
-                //todo
-                //currentGS.FocalValue = value;
 
                 //2.Update the anticipated influence of heuristics activated in prior Iteration
                 IEnumerable<Rule> activatedInPriorIteration = previousIterationAgentState.Activated;

@@ -14,9 +14,9 @@ namespace Common.Helpers
     {
 
 
-        public static Dictionary<IConfigurableAgent, AgentState> InitilizeBeginningState(InitialStateConfiguration conf, IEnumerable<IConfigurableAgent> agents)
+        public static Dictionary<IAgent, AgentState> InitilizeBeginningState(InitialStateConfiguration configuration, IEnumerable<IAgent> agents)
         {
-            Dictionary<IConfigurableAgent, AgentState> temp = new Dictionary<IConfigurableAgent, AgentState>();
+            Dictionary<IAgent, AgentState> temp = new Dictionary<IAgent, AgentState>();
 
 
             agents.ForEach(a =>
@@ -25,11 +25,13 @@ namespace Common.Helpers
 
                 Dictionary<Rule, Dictionary<Goal, double>> ai = new Dictionary<Rule, Dictionary<Goal, double>>();
 
+                AgentStateConfiguration stateConfiguration = configuration.AgentsState.Single(st => st.PrototypeOfAgent == a.PrototypeName);
+
                 a.AssignedRules.ForEach(r =>
                 {
                     Dictionary<string, double> source;
 
-                    a.InitialState.AnticipatedInfluenceState.TryGetValue(r.Id, out source);
+                    stateConfiguration.AnticipatedInfluenceState.TryGetValue(r.Id, out source);
 
                     Dictionary<Goal, double> inner = new Dictionary<Goal, double>();
 
@@ -43,13 +45,13 @@ namespace Common.Helpers
 
                 agentState.AnticipationInfluence = ai;
 
-                if (a.GoalsSettings.GenerateProportions)
+                if (configuration.GenerateGoalProportions)
                 {
                     int unadjustedProportion = 10;
 
-                    int numberOfAssignedGoals = a.InitialState.AssignedGoals.Length;
+                    int numberOfAssignedGoals = stateConfiguration.AssignedGoals.Length;
 
-                    a.InitialState.AssignedGoals.ForEach((gn, i) =>
+                    stateConfiguration.AssignedGoals.ForEach((gn, i) =>
                     {
                         Goal goal = a.Goals.First(g => g.Name == gn);
 
@@ -69,7 +71,7 @@ namespace Common.Helpers
                 }
                 else
                 {
-                    a.InitialState.GoalState.ForEach(gs =>
+                    stateConfiguration.GoalState.ForEach(gs =>
                     {
                         Goal goal = a.Goals.First(g => g.Name == gs.Key);
 
@@ -80,7 +82,7 @@ namespace Common.Helpers
                 }
 
 
-                Rule[] firstIterationsRule = a.InitialState.ActivatedRulesOnFirstIteration.Select(rId => a.AssignedRules.First(ar => ar.Id == rId)).ToArray();
+                Rule[] firstIterationsRule = stateConfiguration.ActivatedRulesOnFirstIteration.Select(rId => a.AssignedRules.First(ar => ar.Id == rId)).ToArray();
 
                 agentState.Matched.AddRange(firstIterationsRule);
                 agentState.Activated.AddRange(firstIterationsRule);

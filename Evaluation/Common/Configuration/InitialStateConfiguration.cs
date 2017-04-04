@@ -12,6 +12,8 @@ namespace Common.Configuration
     {
         public SocialNetworkTypes SocialNetwork { get; set; }
 
+        public bool GenerateGoalProportions { get; set; }
+
         public AgentStateConfiguration[] AgentsState { get; set; }
     }
 }

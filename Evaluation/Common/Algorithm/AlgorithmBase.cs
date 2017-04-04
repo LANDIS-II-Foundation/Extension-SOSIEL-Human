@@ -170,7 +170,7 @@ namespace Common.Algorithm
                 });
         }
 
-        protected virtual void Reproduction<T>(int minAgentNumber, int noncoType) where T : class, IAgent, ICloneableAgent<T>
+        protected virtual void Reproduction<T>(int minAgentNumber, int noncoType) where T : ICloneableAgent<T>
         {
             List<IAgent> activeAgents = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" 
                 && _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])

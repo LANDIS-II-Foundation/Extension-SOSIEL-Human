@@ -25,37 +25,38 @@ namespace Common.Entities
             return Agents.Sum(a => a[Agent.VariablesUsedInCode.AgentC]);
         }
 
-        public static AgentList Generate<T>(int agentNumber, T prototype, SiteList siteList) where T : class, IAgent, ICloneableAgent<T>
-        {
-            List<Site> availableSites = siteList.AsSiteEnumerable().ToList();
+        //public static AgentList Generate<T>(int agentNumber, T prototype, SiteList siteList) where T : class, IAgent, ICloneableAgent<T>
+        //{
+        //    List<Site> availableSites = siteList.AsSiteEnumerable().ToList();
 
-            AgentList agentList = new AgentList();
+        //    AgentList agentList = new AgentList();
 
-            agentList.Agents = new List<IAgent>(agentNumber);
+        //    agentList.Agents = new List<IAgent>(agentNumber);
 
-            for (int i = 1; i <= agentNumber; i++)
-            {
-                T agent = prototype.Clone();
+        //    for (int i = 1; i <= agentNumber; i++)
+        //    {
+        //        T agent = prototype.Clone();
 
-                agent.GenerateCustomParams();
+        //        agent.GenerateCustomParams();
 
-                agent.Id = i;
+        //        agent.Id = i;
 
-                Site selectedSite = availableSites[LinearUniformRandom.GetInstance.Next(availableSites.Count)];
+        //        Site selectedSite = availableSites[LinearUniformRandom.GetInstance.Next(availableSites.Count)];
 
-                selectedSite.OccupiedBy = agent;
+        //        selectedSite.OccupiedBy = agent;
 
-                agent[Agent.VariablesUsedInCode.AgentCurrentSite] = selectedSite;
+        //        agent[Agent.VariablesUsedInCode.AgentCurrentSite] = selectedSite;
 
-                agentList.Agents.Add(agent);
-                availableSites.Remove(selectedSite);
-            }
+        //        agentList.Agents.Add(agent);
+        //        availableSites.Remove(selectedSite);
+        //    }
 
-            return agentList;
-        }
+        //    return agentList;
+        //}
 
 
-        public static AgentList Generate2<T>(int agentNumber, Dictionary<string, T> prototypes, InitialStateConfiguration initialState, SiteList siteList) where T : class, IConfigurableAgent, ICloneableAgent<T>
+        public static AgentList Generate2<T>(int agentNumber, Dictionary<string, T> prototypes, InitialStateConfiguration initialState, SiteList siteList)
+            where T : class, ICloneableAgent<T>
         {
             AgentList agentList = new AgentList();
 
@@ -68,17 +69,19 @@ namespace Common.Entities
 
             initialState.AgentsState.ForEach(astate =>
             {
+                T prototype = prototypes[astate.PrototypeOfAgent];
+
+                //call before clonning agents
+                prototype.AssignRules(astate.AssignedRules);
+                prototype.PrototypeName = astate.PrototypeOfAgent;
+
                 for (int i = 0; i < astate.NumberOfAgents; i++)
                 {
-                    T agent = prototypes[astate.PrototypeOfAgent].Clone();
+                    T agent = prototype.Clone();
 
                     agent.GenerateCustomParams();
 
                     agent.Id = ind++;
-
-                    agent.AssignRules(astate.AssignedRules);
-
-                    agent.InitialState = astate;
 
                     agentList.Agents.Add(agent);
                 }
@@ -112,17 +115,17 @@ namespace Common.Entities
 
         private static void InitializeSocialNetwork(SocialNetworkTypes socialNetwork, AgentList agentList)
         {
-            List<IConfigurableAgent> agents = agentList.Agents.Cast<IConfigurableAgent>().ToList();
+            List<IAgent> agents = agentList.Agents.Cast<IAgent>().ToList();
 
 
             switch (socialNetwork)
             {
                 case SocialNetworkTypes.SN1:
                     {
-                        
+
                         agents.ForEach(a =>
                         {
-                            a.ConnectedAgents = agents.Where(a2=>a2 != a).ToList();
+                            a.ConnectedAgents = agents.Where(a2 => a2 != a).ToList();
                         });
 
 
@@ -131,9 +134,9 @@ namespace Common.Entities
 
                 case SocialNetworkTypes.SN2:
                     {
-                        Queue<IConfigurableAgent> queue = new Queue<IConfigurableAgent>(agents);
+                        Queue<IAgent> queue = new Queue<IAgent>(agents);
 
-                        Queue<IConfigurableAgent> leafQueue = new Queue<IConfigurableAgent>();
+                        Queue<IAgent> leafQueue = new Queue<IAgent>();
 
                         int minNumberOfLeafs = 2;
 
@@ -142,13 +145,13 @@ namespace Common.Entities
 
                         while (queue.Count > 0)
                         {
-                            IConfigurableAgent vertex = leafQueue.Dequeue();
+                            IAgent vertex = leafQueue.Dequeue();
 
-                            List<IConfigurableAgent> leafs = new List<IConfigurableAgent>(minNumberOfLeafs);
+                            List<IAgent> leafs = new List<IAgent>(minNumberOfLeafs);
 
                             for (int i = 0; i < minNumberOfLeafs && queue.Count > 0; i++)
                             {
-                                IConfigurableAgent item = queue.Dequeue();
+                                IAgent item = queue.Dequeue();
 
                                 leafs.Add(item);
                                 leafQueue.Enqueue(item);
@@ -169,7 +172,7 @@ namespace Common.Entities
 
                 case SocialNetworkTypes.SN3:
                     {
-                        IConfigurableAgent vertex = agents[0];
+                        IAgent vertex = agents[0];
 
                         agents.Remove(vertex);
 

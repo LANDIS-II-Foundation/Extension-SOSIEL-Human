@@ -16,15 +16,13 @@ using Common.Processes;
 
 namespace CL4_M11
 {
-    public sealed class CL4M11Algorithm : SosielAlgorithm, IAlgorithm
+    public sealed class CL4M11Algorithm : SosielAlgorithm<CL4M11Agent>, IAlgorithm
     {
         public string Name { get { return "Cognitive level 4 Model 11"; } }
 
         string _outputFolder;
 
         Configuration<CL4M11Agent> _configuration;
-
-        LinkedList<Dictionary<IConfigurableAgent, AgentState>> _iterations = new LinkedList<Dictionary<IConfigurableAgent, AgentState>>();
 
         List<AgentContributionsOutput> _agentContributionsStatistic;
         List<RuleFrequenciesOutput> _ruleFrequenciesStatistic;
@@ -72,32 +70,67 @@ namespace CL4_M11
             _agentList = AgentList.Generate2(_configuration.AlgorithmConfiguration.AgentCount, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
         }
 
-        protected override Dictionary<IConfigurableAgent, AgentState> InitializeFirstIterationState()
+        protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
         {
-            return IterationHelper.InitilizeBeginningState(_configuration.InitialState, _agentList.Agents.Cast<IConfigurableAgent>());
+            return IterationHelper.InitilizeBeginningState(_configuration.InitialState, _agentList.Agents);
+        }
+
+        protected override void AfterInitialization()
+        {
+            StatisticHelper.SaveState(_outputFolder, "initial", _agentList, _siteList);
+
+        }
+
+        protected override void AfterAlgorithmExecuted()
+        {
+            StatisticHelper.SaveState(_outputFolder, "final", _agentList, _siteList);
         }
 
         protected override void PreIterationCalculations(int iteration)
         {
             base.PreIterationCalculations(iteration);
 
-            _agentList.Agents.ForEach(a =>
-            {
-                a[Agent.VariablesUsedInCode.Iteration] = iteration;
-            });
+            _agentList.Agents.First().SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
         }
 
         protected override void PostIterationCalculations(int iteration)
         {
             base.PostIterationCalculations(iteration);
 
-            double poolWellbeing = CalculateCommonPoolWellbeing(_agentList.Agents.First()[Agent.VariablesUsedInCode.MagnitudeOfExternalities]);
+            IAgent agent = _agentList.Agents.First();
+
+            UpdateEndowment();
 
             _agentList.Agents.ForEach(a =>
             {
-                a[Agent.VariablesUsedInCode.PoolWellbeing] = poolWellbeing;
-                a[Agent.VariablesUsedInCode.AgentWellbeing] = CalculateAgentWellbeing(a);
+                a.ConnectedAgents = _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite]).Where(s => s.IsOccupied)
+                    .Select(s => s.OccupiedBy).ToList();
+
+                a[Agent.VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentWellbeing(a);
             });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+
+            
         }
 
         protected override void PostIterationStatistic(int iteration)
@@ -111,18 +144,39 @@ namespace CL4_M11
 
         private double CalculateAgentWellbeing(IAgent agent)
         {
-            return agent[Agent.VariablesUsedInCode.Engage] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * _agentList.CalculateCommonC() / (double)_agentList.Agents.Count;
+            int commonPoolC = agent.ConnectedAgents.Sum(a=>a[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
+
+            return agent[Agent.VariablesUsedInCode.AgentE] - agent[Agent.VariablesUsedInCode.AgentC]
+                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)agent.ConnectedAgents.Count + 1);
         }
 
-        private double CalculateCommonPoolWellbeing(double externalities)
+        private double CalculateAgentWellbeing(IAgent agent, Site centerSite)
         {
-            return externalities * _agentList.CalculateCommonC() / (double)_agentList.Agents.Count;
+            var commonPool = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied).ToArray();
+
+            int commonPoolC = commonPool.Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
+
+            return agent[Agent.VariablesUsedInCode.AgentE] - agent[Agent.VariablesUsedInCode.AgentC]
+                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)commonPool.Length + 1);
+        }
+
+        
+        private void UpdateEndowment()
+        {
+            IAgent agent = _agentList.Agents.First();
+
+            int totalE = _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active")
+                .Sum(a => (int)a[Agent.VariablesUsedInCode.AgentE]);
+
+            //E(t) == ( r ^ p ) * ( E(t-1) – total_e(t-1) )
+            int endowment = Math.Pow(agent[Agent.VariablesUsedInCode.R], agent[Agent.VariablesUsedInCode.P]) * (agent[Agent.VariablesUsedInCode.Endowment] - agent[Agent.VariablesUsedInCode.TotalEndowment]);
+
+            agent.SetToCommon(Agent.VariablesUsedInCode.TotalEndowment, totalE);
+            agent.SetToCommon(Agent.VariablesUsedInCode.Endowment, endowment);
         }
 
 
-
-        RuleFrequenciesOutput CreateRuleFrequenciesRecord(int iteration, Dictionary<IConfigurableAgent, AgentState> iterationState)
+        RuleFrequenciesOutput CreateRuleFrequenciesRecord(int iteration, Dictionary<IAgent, AgentState> iterationState)
         {
             //todo
 

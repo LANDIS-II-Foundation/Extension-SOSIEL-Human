@@ -75,7 +75,7 @@ namespace Common.Entities
 
                 if(Consequent.CopyToCommon)
                 {
-                    (agent as IConfigurableAgent).SetToCommon($"{Agent.VariablesUsedInCode.AgentPrefix}_{agent.Id}_{key}", agent[Consequent.Param]);
+                    agent.SetToCommon($"{Agent.VariablesUsedInCode.AgentPrefix}_{agent.Id}_{key}", agent[Consequent.Param]);
                 }
             }
 
@@ -83,7 +83,7 @@ namespace Common.Entities
             {
                 string key = $"{Agent.VariablesUsedInCode.AgentPrefix}_{agent.Id}_{Consequent.Param}";
 
-                (agent as IConfigurableAgent).SetToCommon(key, value);
+                agent.SetToCommon(key, value);
             }
 
             agent[Consequent.Param] = value;

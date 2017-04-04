@@ -51,10 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algorithm\AlgorithmBase.cs" />
     <Compile Include="Algorithm\SosielAlgorithm.cs" />
     <Compile Include="Configuration\GoalStateConfiguration.cs" />
-    <Compile Include="Entities\GoalsSettings.cs" />
     <Compile Include="Entities\GoalState.cs" />
     <Compile Include="Entities\ProcessConfiguration.cs" />
     <Compile Include="Entities\RuleLayerSettings.cs" />
@@ -63,7 +61,6 @@
     <Compile Include="Entities\IterationState.cs" />
     <Compile Include="Configuration\AgentStateConfiguration.cs" />
     <Compile Include="Entities\Goal.cs" />
-    <Compile Include="Entities\IConfigurableAgent.cs" />
     <Compile Include="Configuration\InitialStateConfiguration.cs" />
     <Compile Include="Entities\AgentState.cs" />
     <Compile Include="Entities\RuleSetSettings.cs" />
@@ -88,12 +85,14 @@
     <Compile Include="Enums\SiteType.cs" />
     <Compile Include="Enums\SocialNetworkTypes.cs" />
     <Compile Include="Environments\ICloneable.cs" />
+    <Compile Include="Exceptions\AlgorithmException.cs" />
     <Compile Include="Exceptions\ConfigVariableException.cs" />
     <Compile Include="Helpers\AntecedentBuilder.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\IEnumerableHelper.cs" />
     <Compile Include="Helpers\IterationHelper.cs" />
     <Compile Include="Helpers\ResultSavingHelper.cs" />
+    <Compile Include="Helpers\StatisticHelper.cs" />
     <Compile Include="Models\AgentWellbeingOutput.cs" />
     <Compile Include="Models\AvgVariablesOutput.cs" />
     <Compile Include="Models\AvgWellbeingOutput.cs" />
