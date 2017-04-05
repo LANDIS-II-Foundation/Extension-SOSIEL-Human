@@ -17,9 +17,9 @@ namespace Common.Processes
 
         IEnumerable<Goal> SortByProportion(Dictionary<Goal, GoalState> goals)
         {
-            int numberOfGoal = goals.Count;
+            var importantGoals = goals.Where(kvp => kvp.Value.Proportion > 0).ToArray();
 
-            var noConfidenceGoals = goals.Where(kvp => kvp.Value.Confidence == false).ToArray();
+            var noConfidenceGoals = importantGoals.Where(kvp => kvp.Value.Confidence == false).ToArray();
 
 
             if (noConfidenceGoals.Length > 0)
@@ -47,7 +47,7 @@ namespace Common.Processes
 
                 });
 
-            } 
+            }
             else
             {
                 goals.ForEach(kvp =>
@@ -67,7 +67,7 @@ namespace Common.Processes
             });
 
 
-            for (int i = 0; i < numberOfGoal && vector.Count > 0; i++)
+            for (int i = 0; i < importantGoals.Length && vector.Count > 0; i++)
             {
                 Goal nextGoal = vector.RandomizeOne();
 
@@ -75,6 +75,14 @@ namespace Common.Processes
 
 
                 yield return nextGoal;
+            }
+
+            Goal[] otherGoals = goals.Where(kvp => kvp.Value.Proportion == 0)
+                .OrderByDescending(kvp => kvp.Key.RankingEnabled).Select(kvp=>kvp.Key).ToArray();
+
+            foreach (Goal goal in otherGoals)
+            {
+                yield return goal;
             }
         }
 

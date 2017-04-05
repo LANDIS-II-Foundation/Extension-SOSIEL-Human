@@ -16,7 +16,8 @@
           "ReferenceVariable": "PoolWellbeing",
           "FocalValue": 15,
           "MaxGoalValue": 15,
-          "ChangeFocalValueOnPrevious": false   
+          "ChangeFocalValueOnPrevious": false,
+          "RecalculateMaxGoalValue": true
         },
         {
           "Name": "PG2",
@@ -24,19 +25,54 @@
           "ReferenceVariable": "AgentSavings",
           "FocalValue": 15,
           "MaxGoalValue": 23.5,
-          "ChangeFocalValueOnPrevious": false
+          "ChangeFocalValueOnPrevious": false,
+          "RecalculateMaxGoalValue": true
+        },
+        {
+          "Name": "PG3",
+          "Tendency": "Maximize",
+          "ReferenceVariable": "AgentSiteWellbeing",
+          "FocalValue": 15,
+          "MaxGoalValue": 23.5,
+          "ChangeFocalValueOnPrevious": false,
+          "RankingEnabled": false
         }
       ],
 
       "SetSettings": {
         "1": {
+          "AssociatedWith": [ "PG3" ],
+          "Layer": {
+            "1": {
+              "Modifiable": false
+            }
+          }
+        },
+        "2": {
           "AssociatedWith": [ "PG1", "PG2" ],
           "Layer": {
             "1": {
               "Modifiable": false,
               "MaxNumberOfRules": 15,
               "ConsequentValueInterval": [ 0, 100 ],
-              "ConsequentRelationshipSign": "-"
+              "ConsequentRelationshipSign": {
+                "PG1": "+",
+                "PG2": "-"
+              }
+            }
+          }
+        },
+        "3": {
+          "AssociatedWith": [ "PG1", "PG2" ],
+          "Layer": {
+            "1": {
+              "Modifiable": true,
+              "MaxNumberOfRules": 15,
+              "ConsequentValueInterval": [ 0, 100 ],
+              "ConsequentRelationshipSign": {
+                "PG1": "+",
+                "PG2": "+"
+              }
             }
           }
         }
@@ -79,6 +115,7 @@
             "Value": 5
           },
           "RequiredParticipants": 1,
+          "IsModifiable": true,
           "IsAction": true
         },
         {
@@ -132,6 +169,10 @@
       {
         "PrototypeOfAgent": "Prototype1",
         "NumberOfAgents": 1000,
+
+        "PrivateVariables": {
+
+        },
 
         "AnticipatedInfluenceState": {
           "RS1_L1_R1": {

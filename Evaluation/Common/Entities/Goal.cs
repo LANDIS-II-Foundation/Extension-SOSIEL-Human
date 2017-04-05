@@ -18,6 +18,10 @@ namespace Common.Entities
 
         public double MaxGoalValue { get; set; }
 
-        public bool ChangeFocalValueOnPrevious { get; set; } 
+        public bool ChangeFocalValueOnPrevious { get; set; }
+
+        public bool RecalculateMaxGoalValue { get; set; }
+
+        public bool RankingEnabled { get; set; } = true;
     }
 }

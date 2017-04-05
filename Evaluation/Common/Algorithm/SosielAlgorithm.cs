@@ -11,7 +11,7 @@ namespace Common.Algorithm
     using Helpers;
     using Processes;
 
-    public abstract class SosielAlgorithm<T> where T: class, ICloneableAgent<T>
+    public abstract class SosielAlgorithm<T> where T : class, ICloneableAgent<T>
     {
         AlgorithmConfiguration _algorithmConfiguration;
 
@@ -47,12 +47,12 @@ namespace Common.Algorithm
         protected virtual void AfterAlgorithmExecuted() { }
 
 
-        protected virtual void PreIterationCalculations(int iteration) { }
+        protected virtual void PreIterationCalculations(int iteration, IAgent[] orderedAgents) { }
 
         protected virtual void PreIterationStatistic(int iteration) { }
 
 
-        protected virtual void PostIterationCalculations(int iteration) { }
+        protected virtual void PostIterationCalculations(int iteration, IAgent[] orderedAgents) { }
 
         protected virtual void PostIterationStatistic(int iteration) { }
 
@@ -125,7 +125,10 @@ namespace Common.Algorithm
         {
             for (int i = 1; i <= _algorithmConfiguration.IterationCount; i++)
             {
-                PreIterationCalculations(i);
+                IAgent[] orderedAgents = _agentList.ActiveAgents.Randomize(_processConfiguration.AgentRandomizationEnabled).ToArray();
+                var agentGroups = orderedAgents.GroupBy(a => a[Agent.VariablesUsedInCode.AgentType]).ToArray();
+
+                PreIterationCalculations(i, orderedAgents);
                 PreIterationStatistic(i);
 
                 Dictionary<IAgent, AgentState> currentIteration;
@@ -137,8 +140,6 @@ namespace Common.Algorithm
 
                 Dictionary<IAgent, AgentState> priorIteration = _iterations.Last.Previous?.Value;
 
-                IAgent[] orderedAgents = _agentList.Agents.Randomize(_processConfiguration.AgentRandomizationEnabled).ToArray();
-                var agentGroups = orderedAgents.GroupBy(a => a[Agent.VariablesUsedInCode.AgentType]).ToArray();
 
 
                 Dictionary<IAgent, Goal[]> rankedGoals = new Dictionary<IAgent, Goal[]>(_agentList.Agents.Count);
@@ -177,7 +178,7 @@ namespace Common.Algorithm
                                         {
                                             foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                                             {
-                                                if (layer.Key.LayerSettings.Modifiable)
+                                                if (layer.Key.LayerSettings.Modifiable || (!layer.Key.LayerSettings.Modifiable && layer.Any(r=>r.IsModifiable)))
                                                 {
                                                     Rule[] matchedPriorPeriodHeuristics = priorIteration[agent]
                                                             .Matched.Where(h => h.Layer == layer.Key).ToArray();
@@ -279,7 +280,7 @@ namespace Common.Algorithm
                     }
                 }
 
-                PostIterationCalculations(i);
+                PostIterationCalculations(i, orderedAgents);
 
                 PostIterationStatistic(i);
 

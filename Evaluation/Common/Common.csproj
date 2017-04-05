@@ -94,10 +94,11 @@
     <Compile Include="Helpers\ResultSavingHelper.cs" />
     <Compile Include="Helpers\StatisticHelper.cs" />
     <Compile Include="Models\AgentWellbeingOutput.cs" />
-    <Compile Include="Models\AvgVariablesOutput.cs" />
+    <Compile Include="Models\ValuesOutput.cs" />
     <Compile Include="Models\AvgWellbeingOutput.cs" />
     <Compile Include="Models\CommonPoolOutput.cs" />
     <Compile Include="Models\CommonPoolSubtypeFrequencyOutput.cs" />
+    <Compile Include="Models\CommonPoolSubtypeFrequencyWithDisturbanceOutput.cs" />
     <Compile Include="Models\EdgeOutput.cs" />
     <Compile Include="Models\EdgeOutputComparer.cs" />
     <Compile Include="Models\AgentContributionsOutput.cs" />
@@ -125,7 +126,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.DayStamp" BuildVersion_ConfigurationName="Any" BuildVersion_BuildAction="Both" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_StartDate="2017/3/6" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2017/3/6" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildAction="Both" BuildVersion_ConfigurationName="Any" BuildVersion_BuildVersioningStyle="None.None.Increment.DayStamp" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

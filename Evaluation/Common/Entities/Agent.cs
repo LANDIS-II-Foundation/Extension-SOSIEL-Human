@@ -65,6 +65,8 @@ namespace Common.Entities
 
 
             //M11
+            public const string CommonPoolUnalike = "CommonPoolUnalike";
+
             public const string AgentE = "AgentE";
             public const string AgentSavings = "AgentSavings";
             public const string P = "P";

@@ -8,7 +8,7 @@ using FileHelpers;
 
 namespace Common.Models
 {
-    public class AvgVariableItem
+    public class ValueItem
     {
         public string Name { get; set; }
 
@@ -22,7 +22,7 @@ namespace Common.Models
     }
 
     [DelimitedRecord(";")]
-    public class AvgVariablesOutput
+    public class ValuesOutput
     {
         [FieldOrder(0)]
         public int Iteration { get; set; }
@@ -31,6 +31,6 @@ namespace Common.Models
         //todo: replace on property
         [FieldOrder(1)]
         [FieldConverter(typeof(ToStringConverter))]
-        public AvgVariableItem[] Avgs;
+        public List<ValueItem> Values;
     }
 }

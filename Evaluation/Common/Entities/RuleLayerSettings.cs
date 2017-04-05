@@ -17,25 +17,23 @@ namespace Common.Entities
         public int[] ConsequentValueInterval { get; set; }
 
         //todo
-        public string ConsequentRelationshipSign { get; set; }
+        public Dictionary<string, string> ConsequentRelationshipSign { get; set; }
 
-        public ConsequentRelationship ConsequentRelationship
+        public static ConsequentRelationship ConvertSign(string sign)
         {
-            get
+            switch (sign)
             {
-                switch (ConsequentRelationshipSign)
-                {
-                    case "+":
-                        return ConsequentRelationship.Positive;
-                    case "-":
-                        return ConsequentRelationship.Negative;
+                case "+":
+                    return ConsequentRelationship.Positive;
+                case "-":
+                    return ConsequentRelationship.Negative;
 
-                    default:
-                        //todo
-                        throw new Exception("trouble with relationship");
-                }
+                default:
+                    //todo
+                    throw new Exception("trouble with relationship");
             }
         }
+
 
         public int MinValue
         {

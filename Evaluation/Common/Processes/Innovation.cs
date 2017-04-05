@@ -26,86 +26,89 @@ namespace Common.Processes
                 priorPeriodRule = tempNode.Value[agent].Activated.Single(r => r.Layer == layer);
             }
 
-            RuleLayerSettings parameters = layer.LayerSettings;
-
-            Goal selectedGoal = goal;
-
-            GoalState selectedGoalState = lastIteration.Value[agent].GoalsState[selectedGoal];
-
-            #region Generating consequent
-            double min = parameters.MinValue;
-            double max = parameters.MaxValue;
-
-            double consequentValue = priorPeriodRule.Consequent.Value;
-
-            switch (selectedGoalState.AnticipatedDirection)
+            if (layer.LayerSettings.Modifiable || (!layer.LayerSettings.Modifiable && priorPeriodRule.IsModifiable))
             {
-                case AnticipatedDirection.Up:
-                    {
-                        if (parameters.ConsequentRelationship == ConsequentRelationship.Positive)
+                RuleLayerSettings parameters = layer.LayerSettings;
+
+                Goal selectedGoal = goal;
+
+                GoalState selectedGoalState = lastIteration.Value[agent].GoalsState[selectedGoal];
+
+                #region Generating consequent
+                double min = parameters.MinValue;
+                double max = parameters.MaxValue;
+
+                double consequentValue = priorPeriodRule.Consequent.Value;
+
+                switch (selectedGoalState.AnticipatedDirection)
+                {
+                    case AnticipatedDirection.Up:
                         {
-                            max = Math.Abs(consequentValue - max);
+                            if (RuleLayerSettings.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Positive)
+                            {
+                                max = Math.Abs(consequentValue - max);
 
-                            consequentValue += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                                consequentValue += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                            }
+                            if (RuleLayerSettings.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Negative)
+                            {
+                                max = Math.Abs(consequentValue - min);
+
+                                consequentValue -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                            }
+
+                            break;
                         }
-                        if (parameters.ConsequentRelationship == ConsequentRelationship.Negative)
+                    case AnticipatedDirection.Down:
                         {
-                            max = Math.Abs(consequentValue - min);
+                            if (RuleLayerSettings.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Positive)
+                            {
+                                max = Math.Abs(consequentValue - min);
 
-                            consequentValue -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                                consequentValue -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                            }
+                            if (RuleLayerSettings.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Negative)
+                            {
+                                max = Math.Abs(consequentValue - max);
+
+                                consequentValue += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                            }
+
+                            break;
                         }
-
-                        break;
-                    }
-                case AnticipatedDirection.Down:
-                    {
-                        if (parameters.ConsequentRelationship == ConsequentRelationship.Positive)
+                    default:
                         {
-                            max = Math.Abs(consequentValue - min);
-
-                            consequentValue -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                            throw new Exception("Not implemented for AnticipatedDirection == 'stay'");
                         }
-                        if (parameters.ConsequentRelationship == ConsequentRelationship.Negative)
-                        {
-                            max = Math.Abs(consequentValue - max);
+                }
 
-                            consequentValue += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
-                        }
+                RuleConsequent consequent = RuleConsequent.Renew(priorPeriodRule.Consequent, consequentValue);
+                #endregion
 
-                        break;
-                    }
-                default:
-                    {
-                        throw new Exception("Not implemented for AnticipatedDirection == 'stay'");
-                    }
+
+                #region Generating antecedent
+                List<RuleAntecedentPart> antecedentsList = new List<RuleAntecedentPart>(priorPeriodRule.Antecedent.Length);
+
+                foreach (RuleAntecedentPart antecedent in priorPeriodRule.Antecedent)
+                {
+                    dynamic newConst = agent[antecedent.Param];
+
+                    RuleAntecedentPart newAntecedent = RuleAntecedentPart.Renew(antecedent, newConst);
+
+                    antecedentsList.Add(newAntecedent);
+                }
+                #endregion
+
+                Rule generatedRule = Rule.Create(antecedentsList.ToArray(), consequent);
+
+                layer.Add(generatedRule);
+
+                agent.AssignedRules.Add(generatedRule);
+
+                if (layer.Set.Layers.Count > 1)
+                    //set consequent to actor's variables for next layers
+                    generatedRule.Apply(agent);
             }
-
-            RuleConsequent consequent = RuleConsequent.Renew(priorPeriodRule.Consequent, consequentValue);
-            #endregion
-
-
-            #region Generating antecedent
-            List<RuleAntecedentPart> antecedentsList = new List<RuleAntecedentPart>(priorPeriodRule.Antecedent.Length);
-            
-            foreach(RuleAntecedentPart antecedent in priorPeriodRule.Antecedent)
-            {
-                dynamic newConst = agent[antecedent.Param];
-
-                RuleAntecedentPart newAntecedent = RuleAntecedentPart.Renew(antecedent, newConst);
-
-                antecedentsList.Add(newAntecedent);
-            }
-            #endregion
-
-            Rule generatedRule = Rule.Create(antecedentsList.ToArray(), consequent);
-
-            layer.Add(generatedRule);
-
-            agent.AssignedRules.Add(generatedRule);
-
-            if(layer.Set.Layers.Count > 1)
-                //set consequent to actor's variables for next layers
-                generatedRule.Apply(agent);
         }
     }
 }

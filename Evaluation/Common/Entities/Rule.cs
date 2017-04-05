@@ -22,7 +22,9 @@ namespace Common.Entities
         public int FreshnessStatus { get; set; }
 
         public bool IsAction { get;  set; }
-               
+        
+        public bool IsModifiable { get; set; }
+
         public int RequiredParticipants { get;  set; }
 
         public bool IsCollectiveAction

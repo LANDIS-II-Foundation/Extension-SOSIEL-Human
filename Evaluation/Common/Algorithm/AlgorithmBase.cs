@@ -130,25 +130,7 @@ namespace Common.Algorithm
             return sp;
         }
 
-        protected virtual CommonPoolSubtypeFrequencyOutput CreateCommonPoolFrequencyRecord(int iteration, double disturbance, int subtype)
-        {
-            CommonPoolSubtypeFrequencyOutput sf = new CommonPoolSubtypeFrequencyOutput { Iteration = iteration, Disturbance = disturbance };
-
-            sf.IntervalFrequency = new int[10];
-
-            _agentList.Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active").AsParallel()
-                .Select(a => CalculateSubtypeProportion(subtype, a[Agent.VariablesUsedInCode.AgentCurrentSite]))
-                .Select(v => new { Interval = Math.Round(v, 1, MidpointRounding.AwayFromZero), Value = v }).AsSequential()
-                .ForEach(o =>
-                {
-                    int i = Convert.ToInt32((o.Interval == 0 ? 0.1 : o.Interval) / 0.1) - 1;
-
-                    sf.IntervalFrequency[i]++;
-                });
-
-            return sf;
-        }
-
+        
         protected virtual double CalculateAgentWellbeing(IAgent agent, Site centerSite)
         {
             throw new NotImplementedException($"Method CalculateAgentWellbeing not implemented for agent {agent.GetType().Name}");

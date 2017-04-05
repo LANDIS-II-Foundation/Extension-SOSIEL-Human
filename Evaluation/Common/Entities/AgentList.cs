@@ -13,8 +13,15 @@ namespace Common.Entities
 
     public class AgentList
     {
-
         public List<IAgent> Agents { get; set; }
+
+        public IAgent[] ActiveAgents
+        {
+            get
+            {
+                return Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active").ToArray();
+            }
+        }
 
 
         private AgentList() { }
@@ -24,6 +31,7 @@ namespace Common.Entities
         {
             return Agents.Sum(a => a[Agent.VariablesUsedInCode.AgentC]);
         }
+
 
         //public static AgentList Generate<T>(int agentNumber, T prototype, SiteList siteList) where T : class, IAgent, ICloneableAgent<T>
         //{
@@ -55,7 +63,7 @@ namespace Common.Entities
         //}
 
 
-        public static AgentList Generate2<T>(int agentNumber, Dictionary<string, T> prototypes, InitialStateConfiguration initialState, SiteList siteList)
+        public static AgentList Generate2<T>(int agentNumber, Dictionary<string, T> prototypes, InitialStateConfiguration initialState, SiteList siteList = null)
             where T : class, ICloneableAgent<T>
         {
             AgentList agentList = new AgentList();
@@ -74,6 +82,11 @@ namespace Common.Entities
                 //call before clonning agents
                 prototype.AssignRules(astate.AssignedRules);
                 prototype.PrototypeName = astate.PrototypeOfAgent;
+
+                astate.PrivateVariables.ForEach(kvp =>
+                {
+                    prototype[kvp.Key] = kvp.Value;
+                });
 
                 for (int i = 0; i < astate.NumberOfAgents; i++)
                 {

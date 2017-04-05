@@ -25,19 +25,12 @@
           "ChangeFocalValueOnPrevious": false
         }
       ],
-      "GoalsSettings": {
-        "GenerateProportions": true
-      },
-
       "SetSettings": {
         "1": {
           "AssociatedWith": [ "PG1", "PG2" ],
           "Layer": {
             "1": {
               "Modifiable": false,
-              "MaxNumberOfRules": 15,
-              "ConsequentValueInterval": [ 0, 100 ],
-              "ConsequentRelationshipSign": "-"
             }
           }
         }
@@ -277,6 +270,7 @@
   },
   "InitialState": {
     "SocialNetwork": 2,
+    "GenerateGoalProportions": true,
 
     "AgentsState": [
       {
@@ -423,6 +417,8 @@
           "RS1_L1_R11"
         ],
         "AssignedGoals": [ "PG1", "PG2" ],
+
+        "RandomizeFirstIterationRule": true,
 
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R6" ]
       }

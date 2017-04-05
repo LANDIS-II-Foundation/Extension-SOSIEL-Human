@@ -24,8 +24,12 @@ namespace CL4_M11
 
         Configuration<CL4M11Agent> _configuration;
 
-        List<AgentContributionsOutput> _agentContributionsStatistic;
-        List<RuleFrequenciesOutput> _ruleFrequenciesStatistic;
+
+        //statistics
+        List<SubtypeProportionOutput> _subtypeProportionStatistic;
+        List<CommonPoolSubtypeFrequencyOutput> _commonPoolFrequencyStatistic;
+        List<ValuesOutput> _valuesOutput;
+
 
         public static ProcessConfiguration GetProcessConfiguration()
         {
@@ -38,16 +42,21 @@ namespace CL4_M11
                     SocialLearningEnabled = true,
                     CounterfactualThinkingEnabled = true,
                     InnovationEnabled = true,
-                    ReproductionEnabled = true
+                    ReproductionEnabled = true,
+                    AgentRandomizationEnabled = true,
+                    AgentsDeactivationEnabled = true
                 };
         }
 
         public CL4M11Algorithm(Configuration<CL4M11Agent> configuration) : base(configuration.AlgorithmConfiguration, GetProcessConfiguration())
         {
             _configuration = configuration;
-            
-            _agentContributionsStatistic = new List<AgentContributionsOutput>(_configuration.AlgorithmConfiguration.IterationCount);
-            _ruleFrequenciesStatistic = new List<RuleFrequenciesOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+
+            //statistics
+            _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            _commonPoolFrequencyStatistic = new List<CommonPoolSubtypeFrequencyOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            _valuesOutput = new List<ValuesOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+
             
             _outputFolder = @"Output\CL4_M11";
 
@@ -77,68 +86,106 @@ namespace CL4_M11
 
         protected override void AfterInitialization()
         {
-            StatisticHelper.SaveState(_outputFolder, "initial", _agentList, _siteList);
+            StatisticHelper.SaveState(_outputFolder, "initial", _agentList.ActiveAgents, _siteList);
 
+
+            _subtypeProportionStatistic.Add(StatisticHelper.CreateSubtypeProportionRecord(_agentList.ActiveAgents, 0, (int)AgentSubtype.Co));
         }
 
         protected override void AfterAlgorithmExecuted()
         {
-            StatisticHelper.SaveState(_outputFolder, "final", _agentList, _siteList);
+            StatisticHelper.SaveState(_outputFolder, "final", _agentList.ActiveAgents, _siteList);
+
+
+
         }
 
-        protected override void PreIterationCalculations(int iteration)
+        protected override void PreIterationCalculations(int iteration, IAgent[] orderedAgents)
         {
-            base.PreIterationCalculations(iteration);
+            base.PreIterationCalculations(iteration, orderedAgents);
 
             _agentList.Agents.First().SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
+
+            LookingForBetterSites(orderedAgents);
         }
 
-        protected override void PostIterationCalculations(int iteration)
+        protected override void PostIterationCalculations(int iteration, IAgent[] orderedAgents)
         {
-            base.PostIterationCalculations(iteration);
+            base.PostIterationCalculations(iteration, orderedAgents);
 
             IAgent agent = _agentList.Agents.First();
 
             UpdateEndowment();
 
-            _agentList.Agents.ForEach(a =>
+            orderedAgents.AsParallel().ForAll(a =>
             {
-                a.ConnectedAgents = _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite]).Where(s => s.IsOccupied)
+                Site currentSite = a[Agent.VariablesUsedInCode.AgentCurrentSite];
+
+                a.ConnectedAgents = _siteList.AdjacentSites(currentSite).Where(s => s.IsOccupied)
                     .Select(s => s.OccupiedBy).ToList();
 
+                a[Agent.VariablesUsedInCode.AgentSubtype] = a[Agent.VariablesUsedInCode.AgentC] > 0 ? AgentSubtype.Co : AgentSubtype.NonCo;
+
+
+                a[Agent.VariablesUsedInCode.NeighborhoodSize] = currentSite.GroupSize;
+                a[Agent.VariablesUsedInCode.NeighborhoodVacantSites] = currentSite.GroupSize - a.ConnectedAgents.Count;
+
+
+                a[Agent.VariablesUsedInCode.CommonPoolUnalike] = a.ConnectedAgents.Count(a2 => a2[Agent.VariablesUsedInCode.AgentSubtype] != a[Agent.VariablesUsedInCode.AgentSubtype]);
+                a[Agent.VariablesUsedInCode.CommonPoolSize] = a[Agent.VariablesUsedInCode.NeighborhoodSize] + 1 - a[Agent.VariablesUsedInCode.NeighborhoodVacantSites];
+
+                a[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion] = (a[Agent.VariablesUsedInCode.CommonPoolSize] - a[Agent.VariablesUsedInCode.CommonPoolUnalike]) / (double)a[Agent.VariablesUsedInCode.CommonPoolSize];
+
+                a[Agent.VariablesUsedInCode.CommonPoolC] = a.ConnectedAgents.Sum(a2 => a2[Agent.VariablesUsedInCode.AgentC]) + a[Agent.VariablesUsedInCode.AgentC];
+
+                
+
                 a[Agent.VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentWellbeing(a);
+
+                a[Agent.VariablesUsedInCode.PoolWellbeing] = CalculatePoolWellbeing(a);
+
+                a[Agent.VariablesUsedInCode.AgentSavings] = a[Agent.VariablesUsedInCode.AgentE] - a[Agent.VariablesUsedInCode.AgentC];
             });
 
 
 
+        }
 
 
+        protected override void AgentsDeactivation()
+        {
+            base.AgentsDeactivation();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
-
-            
+            _agentList.ActiveAgents.ForEach(a =>
+            {
+                if(a[Agent.VariablesUsedInCode.AgentSiteWellbeing] <= 0)
+                {
+                    a[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
+                }
+            });
         }
 
         protected override void PostIterationStatistic(int iteration)
         {
             base.PostIterationStatistic(iteration);
 
-            _agentContributionsStatistic.Add(new AgentContributionsOutput { Iteration = iteration, AgentContributions = _agentList.Agents.Select(a => (double)a[Agent.VariablesUsedInCode.AgentC]).ToArray() });
-            _ruleFrequenciesStatistic.Add(CreateRuleFrequenciesRecord(iteration, _iterations.Last.Value));
+            IAgent[] activeAgents = _agentList.ActiveAgents;
+
+            //subtype proportions
+            _subtypeProportionStatistic.Add(StatisticHelper.CreateSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.Co));
+            //frequency
+            _commonPoolFrequencyStatistic.Add(StatisticHelper.CreateCommonPoolFrequencyRecord(activeAgents, iteration, (int)AgentSubtype.Co));
+            //params
+            ValuesOutput valuesRecord = StatisticHelper.CreateValuesRecord(activeAgents, iteration,
+                Agent.VariablesUsedInCode.Endowment,
+                $"AVG_{Agent.VariablesUsedInCode.AgentE}",
+                $"AVG_{Agent.VariablesUsedInCode.AgentC}"
+                );
+
+            valuesRecord.Values.Add(new ValueItem { Name = "N", Value = activeAgents.Length });
+
+
+            _valuesOutput.Add(valuesRecord);
         }
 
 
@@ -160,7 +207,44 @@ namespace CL4_M11
                 + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)commonPool.Length + 1);
         }
 
-        
+        private double CalculatePoolWellbeing(IAgent agent)
+        {
+            int commonPoolC = agent.ConnectedAgents.Sum(a => a[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
+
+            return agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)agent.ConnectedAgents.Count + 1);
+        }
+
+        private void LookingForBetterSites(IAgent[] orderedAgent)
+        {
+            List<Site> vacantSites = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied == false).ToList();
+
+            orderedAgent.ForEach(agent =>
+            {
+
+                Site[] betterSites = vacantSites.AsParallel()
+                        .Select(site => new
+                        {
+                            site,
+                            Wellbeing = CalculateAgentWellbeing(agent, site)
+                        })
+                        .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing]).AsSequential()
+                        .GroupBy(obj => obj.Wellbeing).OrderByDescending(obj => obj.Key)
+                        .Take(1).SelectMany(g => g.Select(o => o.site)).ToArray();
+
+                if (betterSites.Length > 0)
+                {
+                    agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = true;
+
+                    Site currentSite = agent[Agent.VariablesUsedInCode.AgentCurrentSite];
+                    Site selectedSite = betterSites.RandomizeOne();
+                    agent[Agent.VariablesUsedInCode.AgentBetterSite] = selectedSite;
+
+                    vacantSites.Add(currentSite);
+                    vacantSites.Remove(selectedSite);
+                };
+            });
+        }
+
         private void UpdateEndowment()
         {
             IAgent agent = _agentList.Agents.First();
@@ -175,31 +259,5 @@ namespace CL4_M11
             agent.SetToCommon(Agent.VariablesUsedInCode.Endowment, endowment);
         }
 
-
-        RuleFrequenciesOutput CreateRuleFrequenciesRecord(int iteration, Dictionary<IAgent, AgentState> iterationState)
-        {
-            //todo
-
-            //List<Rule> allRules = _agentList.Agents.First().Rules;
-
-            RuleFrequenceItem[] items = iterationState.SelectMany(kvp => kvp.Value.Activated).GroupBy(r => r.Id)
-                .Select(g => new RuleFrequenceItem { RuleId = g.Key, Frequence = g.Count() }).ToArray();
-
-
-
-            return new RuleFrequenciesOutput { Iteration = iteration, RuleFrequencies = items };
-
-
-        }
-
-        void SaveAgentWellbeingStatistic()
-        {
-            ResultSavingHelper.Save(_agentContributionsStatistic, $@"{_outputFolder}\contributions_statistic.csv");
-        }
-
-        void SaveRuleFrequenceStatistic()
-        {
-            ResultSavingHelper.Save(_ruleFrequenciesStatistic, $@"{_outputFolder}\rule_frequencies_statistic.csv");
-        }
     }
 }

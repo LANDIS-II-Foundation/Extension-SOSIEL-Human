@@ -60,7 +60,6 @@ namespace CL4_M11
             this[VariablesUsedInCode.AgentSubtype] = AgentSubtype.NonCo;
             this[VariablesUsedInCode.AgentC] = 0;
             this[VariablesUsedInCode.AgentWellbeing] = 0;
-            this[$"{VariablesUsedInCode.PreviousPrefix}_{VariablesUsedInCode.AgentC}"] = 0;
         }
     }
 }

@@ -12,8 +12,6 @@ namespace Common.Helpers
 
     public static class IterationHelper
     {
-
-
         public static Dictionary<IAgent, AgentState> InitilizeBeginningState(InitialStateConfiguration configuration, IEnumerable<IAgent> agents)
         {
             Dictionary<IAgent, AgentState> temp = new Dictionary<IAgent, AgentState>();
@@ -49,25 +47,32 @@ namespace Common.Helpers
                 {
                     int unadjustedProportion = 10;
 
-                    int numberOfAssignedGoals = stateConfiguration.AssignedGoals.Length;
+                    var goalsForRanking = a.Goals.Join(stateConfiguration.AssignedGoals, g => g.Name, gs => gs, (g, gs) => new { g, gs }).ToArray();
 
-                    stateConfiguration.AssignedGoals.ForEach((gn, i) =>
-                    {
-                        Goal goal = a.Goals.First(g => g.Name == gn);
+                    int numberOfRankingGoals = goalsForRanking.Count(o => o.g.RankingEnabled);
 
-                        int proportion = unadjustedProportion;
-
-                        if (numberOfAssignedGoals > 1 && i < numberOfAssignedGoals - 1)
+                    goalsForRanking.OrderByDescending(o=>o.g.RankingEnabled).ForEach((o, i) =>
                         {
-                            proportion = LinearUniformRandom.GetInstance.Next(proportion + 1);
+                            int proportion = unadjustedProportion;
 
-                            unadjustedProportion = unadjustedProportion - proportion;
-                        }
+                            if (o.g.RankingEnabled)
+                            {
+                                if (numberOfRankingGoals > 1 && i < numberOfRankingGoals - 1)
+                                {
+                                    proportion = LinearUniformRandom.GetInstance.Next(proportion + 1);
+                                }
 
-                        GoalState goalState = new GoalState(0, goal.FocalValue, proportion * 0.1);
+                                unadjustedProportion = unadjustedProportion - proportion;
+                            } 
+                            else
+                            {
+                                proportion = 0;
+                            }
 
-                        agentState.GoalsState.Add(goal, goalState);
-                    });
+                            GoalState goalState = new GoalState(0, o.g.FocalValue, proportion * 0.1);
+
+                            agentState.GoalsState.Add(o.g, goalState);
+                        });
                 }
                 else
                 {

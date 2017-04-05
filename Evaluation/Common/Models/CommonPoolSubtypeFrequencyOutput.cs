@@ -15,9 +15,6 @@ namespace Common.Models
         public int Iteration { get; set; }
 
         [FieldOrder(1)]
-        public double Disturbance { get; set; }
-
-        [FieldOrder(2)]
         [FieldConverter(typeof(ToStringConverter))]
         public int[] IntervalFrequency;
     }
