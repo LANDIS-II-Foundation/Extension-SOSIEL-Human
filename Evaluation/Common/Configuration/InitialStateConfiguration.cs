@@ -14,6 +14,8 @@ namespace Common.Configuration
 
         public bool GenerateGoalProportions { get; set; }
 
+        public bool RandomlySelectRule { get; set; }
+
         public AgentStateConfiguration[] AgentsState { get; set; }
     }
 }

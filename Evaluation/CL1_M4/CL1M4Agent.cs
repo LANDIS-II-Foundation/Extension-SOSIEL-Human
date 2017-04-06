@@ -8,8 +8,36 @@ using Common.Randoms;
 
 namespace CL1_M4
 {
-    public class CL1M4Agent : Agent, ICloneableAgent<CL1M4Agent>
+    public sealed class CL1M4Agent : Agent, ICloneableAgent<CL1M4Agent>
     {
+        private Dictionary<string, dynamic> PrivateVariables { get; set; } = new Dictionary<string, dynamic>();
+
+        public override dynamic this[string key]
+        {
+            get
+            {
+                if (PrivateVariables.ContainsKey(key))
+                    return PrivateVariables[key];
+                else
+                {
+                    return base[key];
+                }
+            }
+
+            set
+            {
+                if (Variables.ContainsKey(key))
+                {
+                    base[key] = value;
+                }
+                else
+                {
+                    PrivateVariables[key] = value;
+                }
+
+            }
+        }
+
         public new CL1M4Agent Clone()
         {
             return (CL1M4Agent)base.Clone();
@@ -34,7 +62,7 @@ namespace CL1_M4
 
             if (subtype == AgentSubtype.Co || subtype == AgentSubtype.Enf)
             {
-                this[VariablesUsedInCode.AgentC] = this[VariablesUsedInCode.Engage];
+                this[VariablesUsedInCode.AgentC] = this[VariablesUsedInCode.Endowment];
 
                 if (subtype == AgentSubtype.Enf)
                 {

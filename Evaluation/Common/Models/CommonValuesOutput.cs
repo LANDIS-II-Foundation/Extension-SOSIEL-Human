@@ -22,7 +22,7 @@ namespace Common.Models
     }
 
     [DelimitedRecord(";")]
-    public class ValuesOutput
+    public class CommonValuesOutput
     {
         [FieldOrder(0)]
         public int Iteration { get; set; }

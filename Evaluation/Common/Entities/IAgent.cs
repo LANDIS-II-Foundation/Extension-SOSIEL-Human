@@ -17,6 +17,8 @@ namespace Common.Entities
 
         List<IAgent> ConnectedAgents { get; set; }
 
+        IEnumerable<Rule> MentalModelRules { get; }
+
         void GenerateCustomParams();
 
         void SetToCommon(string key, dynamic value);

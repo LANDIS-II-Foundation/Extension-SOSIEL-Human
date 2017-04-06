@@ -4,6 +4,8 @@ using System.Linq;
 
 using System.Threading.Tasks;
 
+using FileHelpers;
+
 namespace Common.Helpers
 {
     using Entities;
@@ -23,7 +25,7 @@ namespace Common.Helpers
                 .ToArray())
                 .ContinueWith(data =>
                 {
-                    ResultSavingHelper.Save(data.Result, $@"{outputFolder}\nodes_{state}.csv");
+                    Save(data.Result, $@"{outputFolder}\nodes_{state}.csv");
                 });
 
             Task edgeTask = Task.Factory.StartNew(
@@ -40,15 +42,24 @@ namespace Common.Helpers
                 .ToArray())
                 .ContinueWith(data =>
                 {
-                    ResultSavingHelper.Save(data.Result, $@"{outputFolder}\edges_{state}.csv");
+                    Save(data.Result, $@"{outputFolder}\edges_{state}.csv");
                 });
 
 
             Task.WaitAll(nodeTask, edgeTask);
         }
 
+        public static AgentNumericValuesOutput CreateAgentValuesRecord(IAgent[] activeAgents, int iteration, params string[] variableNames)
+        {
+            List<NumericValuesItem> valueItems = variableNames.Select(v =>
+            {
+                return new NumericValuesItem { Name = v, Values = activeAgents.Select(a => a[v]).ToArray() };
+            }).ToList();
 
-        public static ValuesOutput CreateValuesRecord(IAgent[] activeAgents, int iteration, params string[] variableNames)
+            return new AgentNumericValuesOutput { Iteration = iteration, Values = valueItems };
+        }
+
+        public static CommonValuesOutput CreateCommonValuesRecord(IAgent[] activeAgents, int iteration, params string[] variableNames)
         {
             List<ValueItem> valueItems = variableNames.Select(v =>
             {
@@ -68,7 +79,7 @@ namespace Common.Helpers
                 return new ValueItem { Name = v, Value = value };
             }).ToList();
 
-            return new ValuesOutput { Iteration = iteration, Values = valueItems };
+            return new CommonValuesOutput { Iteration = iteration, Values = valueItems };
         }
 
         public static SubtypeProportionOutput CreateSubtypeProportionRecord(IAgent[] activeAgents, int iteration, int subtype)
@@ -103,8 +114,9 @@ namespace Common.Helpers
             sf.IntervalFrequency = new int[10];
 
             activeAgents.AsParallel()
-                .Select(a => {
-                    if((int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
+                .Select(a =>
+                {
+                    if ((int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
                     {
                         return (double)a[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion];
                     }
@@ -124,30 +136,45 @@ namespace Common.Helpers
             return sf;
         }
 
-        //public static CommonPoolSubtypeFrequencyWithDisturbanceOutput CreateCommonPoolFrequencyWithDisturbanceRecord(IAgent[] activeAgents, Func<Site, int, double> subtypeCalculatingFunc, int iteration, int subtype, int disturbance)
-        //{
-        //    CommonPoolSubtypeFrequencyWithDisturbanceOutput record = (CommonPoolSubtypeFrequencyWithDisturbanceOutput)CreateCommonPoolFrequencyRecord(activeAgents, subtypeCalculatingFunc, iteration, subtype);
-
-        //    record.Disturbance = disturbance;
-
-        //    return record;
-        //}
 
 
-        //RuleFrequenciesOutput CreateRuleFrequenciesRecord(int iteration, Dictionary<IAgent, AgentState> iterationState)
-        //{
-        //    //todo
+        public static void Save<T>(IEnumerable<T> data, string fileName) where T : class
+        {
+            DelimitedFileEngine<T> engine = new DelimitedFileEngine<T>();
 
-        //    //List<Rule> allRules = _agentList.Agents.First().Rules;
-
-        //    RuleFrequenceItem[] items = iterationState.SelectMany(kvp => kvp.Value.Activated).GroupBy(r => r.Id)
-        //        .Select(g => new RuleFrequenceItem { RuleId = g.Key, Frequence = g.Count() }).ToArray();
+            engine.WriteFile(fileName, data);
+        }
 
 
+        public static RuleFrequenciesOutput CreateRuleFrequenciesRecord(IAgent[] activeAgents, int iteration)
+        {
+            return new RuleFrequenciesOutput
+            {
+                Iteration = iteration,
+                RuleFrequencies = activeAgents.First().MentalModelRules.Select(r => new RuleFrequenceItem
+                    { RuleId = r.Id, Frequence = activeAgents.Count(a => a.AssignedRules.Contains(r)) }).ToArray()
+            };
+        }
 
-        //    return new RuleFrequenciesOutput { Iteration = iteration, RuleFrequencies = items };
+        public static AvgWellbeingOutput CreateAvgWellbeingStatisticRecord(IAgent[] activeAgents, int iteration)
+        {
+            AvgWellbeingOutput aw = new AvgWellbeingOutput { Iteration = iteration };
+
+            aw.Avgs = activeAgents.GroupBy(a => a[Agent.VariablesUsedInCode.AgentSubtype])
+                .OrderBy(g => g.Key)
+                .Select(g => new AvgWellbeingItem { Type = EnumHelper.EnumValueAsString(g.Key), AvgValue = g.Average(a => a[Agent.VariablesUsedInCode.AgentSiteWellbeing]) }).ToArray();
+
+            return aw;
+        }
 
 
-        //}
+        public static CommonPoolSubtypeFrequencyWithDisturbanceOutput CreateCommonPoolFrequencyWithDisturbanceRecord(IAgent[] activeAgents, int iteration, int subtype, int disturbance)
+        {
+            CommonPoolSubtypeFrequencyWithDisturbanceOutput record = (CommonPoolSubtypeFrequencyWithDisturbanceOutput)CreateCommonPoolFrequencyRecord(activeAgents, iteration, subtype);
+
+            record.Disturbance = disturbance;
+
+            return record;
+        }
     }
 }

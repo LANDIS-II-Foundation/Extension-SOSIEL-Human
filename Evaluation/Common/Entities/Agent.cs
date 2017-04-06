@@ -40,7 +40,7 @@ namespace Common.Entities
             public const string AgentSiteWellbeing = "AgentSiteWellbeing";
 
             //M3
-            public const string InitialDisturbance = "InitialDisturbance";
+            public const string Disturbance = "Disturbance";
             public const string DisturbanceIncrement = "DisturbanceIncrement";
 
             //M4
@@ -85,6 +85,15 @@ namespace Common.Entities
         public List<Rule> AssignedRules { get; set; }
 
         public List<IAgent> ConnectedAgents { get; set; }
+
+
+        public IEnumerable<Rule> MentalModelRules
+        {
+            get
+            {
+                return _mentalProto.SelectMany(s => s.AsRuleEnumerable());
+            }
+        }
 
         [JsonProperty()]
         protected Dictionary<string, dynamic> Variables { get; set; } = new Dictionary<string, dynamic>();
