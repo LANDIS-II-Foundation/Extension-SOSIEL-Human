@@ -2,13 +2,28 @@
   "AgentConfiguration": {
     "Variables": {
       "AgentType": 1,
-      "AgentStatus": "active",
       "E": 10,
       "P": 5,
       "M": 1,
-      "AgentBetterSiteAvailable": false,
-      "InitialDisturbance": 0.2,
-      "DisturbanceIncrement": 0.2 
+      "Disturbance": 0.2,
+      "DisturbanceIncrement": 0.2
+    },
+    "Goals": [
+      {
+        "Name": "PG1",
+        "Tendency": "AboveMin",
+        "ReferenceVariable": "AgentSiteWellbeing"
+      }
+    ],
+    "SetSettings": {
+      "1": {
+        "AssociatedWith": [ "PG1" ],
+        "Layer": {
+          "1": {
+            "Modifiable": false
+          }
+        }
+      }
     },
     "Rules": [
       {
@@ -29,9 +44,39 @@
           "Value": 0,
           "VariableValue": "AgentBetterSite"
         },
-        "FreshnessStatus": 1,
         "RequiredParticipants": 1,
         "IsAction": true
+      }
+    ]
+  },
+  "InitialState": {
+    "AgentsState": [
+      {
+        "PrototypeOfAgent": "Prototype1",
+        "NumberOfAgents": 1000,
+
+        "PrivateVariables": {
+          "AgentStatus": "active",
+          "AgentBetterSiteAvailable": false
+        },
+        "AnticipatedInfluenceState": {
+          "RS1_L1_R1": {
+            "PG1": 15
+          }
+        },
+        "AssignedRules": [
+          "RS1_L1_R1"
+        ],
+        "AssignedGoals": [ "PG1" ],
+
+        "ActivatedRulesOnFirstIteration": [],
+
+        "GoalState": {
+          "PG1": {
+            "Proportion": 1,
+            "Value": 15
+          }
+        }
       }
     ]
   }

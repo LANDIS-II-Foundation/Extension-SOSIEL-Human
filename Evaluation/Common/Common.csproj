@@ -58,7 +58,6 @@
     <Compile Include="Entities\RuleLayerSettings.cs" />
     <Compile Include="Entities\RuleLayer.cs" />
     <Compile Include="Entities\RuleSet.cs" />
-    <Compile Include="Entities\IterationState.cs" />
     <Compile Include="Configuration\AgentStateConfiguration.cs" />
     <Compile Include="Entities\Goal.cs" />
     <Compile Include="Configuration\InitialStateConfiguration.cs" />
@@ -91,10 +90,10 @@
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\IEnumerableHelper.cs" />
     <Compile Include="Helpers\IterationHelper.cs" />
-    <Compile Include="Helpers\ResultSavingHelper.cs" />
     <Compile Include="Helpers\StatisticHelper.cs" />
+    <Compile Include="Models\AgentNumericValuesOutput.cs" />
     <Compile Include="Models\AgentWellbeingOutput.cs" />
-    <Compile Include="Models\ValuesOutput.cs" />
+    <Compile Include="Models\CommonValuesOutput.cs" />
     <Compile Include="Models\AvgWellbeingOutput.cs" />
     <Compile Include="Models\CommonPoolOutput.cs" />
     <Compile Include="Models\CommonPoolSubtypeFrequencyOutput.cs" />
@@ -120,13 +119,14 @@
     <Compile Include="Randoms\PowerLawRandom.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2017/3/6" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildAction="Both" BuildVersion_ConfigurationName="Any" BuildVersion_BuildVersioningStyle="None.None.Increment.DayStamp" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.Increment.DayStamp" BuildVersion_ConfigurationName="Any" BuildVersion_BuildAction="Both" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_StartDate="2017/3/6" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

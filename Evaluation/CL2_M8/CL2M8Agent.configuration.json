@@ -3,7 +3,6 @@
     "Prototype1": {
       "Variables": {
         "AgentType": 1,
-        "AgentStatus": "active",
         "E": 10,
         "M": 1.5
       },
@@ -13,31 +12,22 @@
           "Tendency": "Maximize",
           "ReferenceVariable": "PoolWellbeing",
           "FocalValue": 15,
-          "MaxGoalValue": 15,
-          "ChangeFocalValueOnPrevious": false
+          "MaxGoalValue": 15
         },
         {
           "Name": "PG2",
           "Tendency": "Maximize",
           "ReferenceVariable": "AgentWellbeing",
           "FocalValue": 15,
-          "MaxGoalValue": 23.5,
-          "ChangeFocalValueOnPrevious": false
+          "MaxGoalValue": 23.5
         }
       ],
-      "GoalsSettings": {
-        "GenerateProportions": true
-      },
-
       "SetSettings": {
         "1": {
           "AssociatedWith": [ "PG1", "PG2" ],
           "Layer": {
             "1": {
-              "Modifiable": false,
-              "MaxNumberOfRules": 15,
-              "ConsequentValueInterval": [ 0, 100 ],
-              "ConsequentRelationshipSign": "-"
+              "Modifiable": false
             }
           }
         }
@@ -257,13 +247,16 @@
     }
   },
   "InitialState": {
+    "GenerateGoalProportions": true,
+    "RandomlySelectRule": true,
+
     "AgentsState": [
       {
         "PrototypeOfAgent": "Prototype1",
         "NumberOfAgents": 10,
 
         "PrivateVariables": {
-
+          "AgentStatus": "active"
         },
 
         "AnticipatedInfluenceState": {
@@ -327,7 +320,7 @@
         ],
         "AssignedGoals": [ "PG1", "PG2" ],
 
-        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R6" ]
+        "ActivatedRulesOnFirstIteration": [ ]
       }
     ]
   }

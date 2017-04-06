@@ -86,11 +86,23 @@ namespace Common.Helpers
                     });
                 }
 
+                if (configuration.RandomlySelectRule)
+                {
+                    a.AssignedRules.GroupBy(r => new { r.RuleSet, r.RuleLayer }).ForEach(g =>
+                     {
+                         Rule selectedRule = g.RandomizeOne();
 
-                Rule[] firstIterationsRule = stateConfiguration.ActivatedRulesOnFirstIteration.Select(rId => a.AssignedRules.First(ar => ar.Id == rId)).ToArray();
+                         agentState.Matched.Add(selectedRule);
+                         agentState.Activated.Add(selectedRule);
+                     });
+                }
+                else
+                {
+                    Rule[] firstIterationsRule = stateConfiguration.ActivatedRulesOnFirstIteration.Select(rId => a.AssignedRules.First(ar => ar.Id == rId)).ToArray();
 
-                agentState.Matched.AddRange(firstIterationsRule);
-                agentState.Activated.AddRange(firstIterationsRule);
+                    agentState.Matched.AddRange(firstIterationsRule);
+                    agentState.Activated.AddRange(firstIterationsRule);
+                }
 
                 temp.Add(a, agentState);
             });

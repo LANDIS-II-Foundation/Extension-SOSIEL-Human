@@ -28,7 +28,7 @@ namespace CL4_M11
         //statistics
         List<SubtypeProportionOutput> _subtypeProportionStatistic;
         List<CommonPoolSubtypeFrequencyOutput> _commonPoolFrequencyStatistic;
-        List<ValuesOutput> _valuesOutput;
+        List<CommonValuesOutput> _valuesOutput;
 
 
         public static ProcessConfiguration GetProcessConfiguration()
@@ -55,7 +55,7 @@ namespace CL4_M11
             //statistics
             _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.IterationCount);
             _commonPoolFrequencyStatistic = new List<CommonPoolSubtypeFrequencyOutput>(_configuration.AlgorithmConfiguration.IterationCount);
-            _valuesOutput = new List<ValuesOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            _valuesOutput = new List<CommonValuesOutput>(_configuration.AlgorithmConfiguration.IterationCount);
 
             
             _outputFolder = @"Output\CL4_M11";
@@ -96,7 +96,9 @@ namespace CL4_M11
         {
             StatisticHelper.SaveState(_outputFolder, "final", _agentList.ActiveAgents, _siteList);
 
-
+            StatisticHelper.Save(_subtypeProportionStatistic, $@"{_outputFolder}\subtype_proportion_statistic.csv");
+            StatisticHelper.Save(_commonPoolFrequencyStatistic, $@"{_outputFolder}\common_pool_frequncy_statistic.csv");
+            StatisticHelper.Save(_valuesOutput, $@"{_outputFolder}\values_statistic.csv");
 
         }
 
@@ -140,7 +142,7 @@ namespace CL4_M11
 
                 
 
-                a[Agent.VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentWellbeing(a);
+                a[Agent.VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentSiteWellbeing(a);
 
                 a[Agent.VariablesUsedInCode.PoolWellbeing] = CalculatePoolWellbeing(a);
 
@@ -161,6 +163,7 @@ namespace CL4_M11
                 if(a[Agent.VariablesUsedInCode.AgentSiteWellbeing] <= 0)
                 {
                     a[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
+                    a[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
                 }
             });
         }
@@ -176,7 +179,7 @@ namespace CL4_M11
             //frequency
             _commonPoolFrequencyStatistic.Add(StatisticHelper.CreateCommonPoolFrequencyRecord(activeAgents, iteration, (int)AgentSubtype.Co));
             //params
-            ValuesOutput valuesRecord = StatisticHelper.CreateValuesRecord(activeAgents, iteration,
+            CommonValuesOutput valuesRecord = StatisticHelper.CreateCommonValuesRecord(activeAgents, iteration,
                 Agent.VariablesUsedInCode.Endowment,
                 $"AVG_{Agent.VariablesUsedInCode.AgentE}",
                 $"AVG_{Agent.VariablesUsedInCode.AgentC}"
@@ -189,7 +192,7 @@ namespace CL4_M11
         }
 
 
-        private double CalculateAgentWellbeing(IAgent agent)
+        private double CalculateAgentSiteWellbeing(IAgent agent)
         {
             int commonPoolC = agent.ConnectedAgents.Sum(a=>a[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
 
@@ -197,7 +200,7 @@ namespace CL4_M11
                 + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)agent.ConnectedAgents.Count + 1);
         }
 
-        private double CalculateAgentWellbeing(IAgent agent, Site centerSite)
+        private double CalculateAgentSiteWellbeing(IAgent agent, Site centerSite)
         {
             var commonPool = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied).ToArray();
 
@@ -225,7 +228,7 @@ namespace CL4_M11
                         .Select(site => new
                         {
                             site,
-                            Wellbeing = CalculateAgentWellbeing(agent, site)
+                            Wellbeing = CalculateAgentSiteWellbeing(agent, site)
                         })
                         .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing]).AsSequential()
                         .GroupBy(obj => obj.Wellbeing).OrderByDescending(obj => obj.Key)

@@ -3,7 +3,6 @@
     "Prototype1": {
       "Variables": {
         "AgentType": 1,
-        "AgentStatus": "active",
         "E": 10000,
         "M": 1.5,
         "P": 2,
@@ -171,7 +170,7 @@
         "NumberOfAgents": 1000,
 
         "PrivateVariables": {
-
+          "AgentStatus": "active"
         },
 
         "AnticipatedInfluenceState": {
@@ -198,7 +197,7 @@
           "RS2_L1_R2",
           "RS3_L1_R1"
         ],
-        "AssignedGoals": [ "PG1", "PG2" ],
+        "AssignedGoals": [ "PG1", "PG2", "PG3" ],
 
         "ActivatedRulesOnFirstIteration": [ "RS2_L1_R1", "RS3_L1_R1" ]
       }
