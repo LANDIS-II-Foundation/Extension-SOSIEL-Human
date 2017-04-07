@@ -53,9 +53,9 @@ namespace CL4_M11
             _configuration = configuration;
 
             //statistics
-            _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.IterationCount);
-            _commonPoolFrequencyStatistic = new List<CommonPoolSubtypeFrequencyOutput>(_configuration.AlgorithmConfiguration.IterationCount);
-            _valuesOutput = new List<CommonValuesOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
+            _commonPoolFrequencyStatistic = new List<CommonPoolSubtypeFrequencyOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
+            _valuesOutput = new List<CommonValuesOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
 
             
             _outputFolder = @"Output\CL4_M11";
@@ -73,10 +73,11 @@ namespace CL4_M11
 
         protected override void InitializeAgents()
         {
-            _siteList = SiteList.Generate(_configuration.AlgorithmConfiguration.AgentCount,
-                _configuration.AlgorithmConfiguration.VacantProportion);
+            numberOfAgents = _configuration.InitialState.AgentsState.Sum(astate => astate.NumberOfAgents);
 
-            _agentList = AgentList.Generate2(_configuration.AlgorithmConfiguration.AgentCount, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
+            _siteList = SiteList.Generate(numberOfAgents, _configuration.AlgorithmConfiguration.VacantProportion);
+
+            _agentList = AgentList.Generate2(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
@@ -89,7 +90,7 @@ namespace CL4_M11
             StatisticHelper.SaveState(_outputFolder, "initial", _agentList.ActiveAgents, _siteList);
 
 
-            _subtypeProportionStatistic.Add(StatisticHelper.CreateSubtypeProportionRecord(_agentList.ActiveAgents, 0, (int)AgentSubtype.Co));
+            _subtypeProportionStatistic.Add(StatisticHelper.CreateCommonPoolSubtypeProportionRecord(_agentList.ActiveAgents, 0, (int)AgentSubtype.Co));
         }
 
         protected override void AfterAlgorithmExecuted()
@@ -175,7 +176,7 @@ namespace CL4_M11
             IAgent[] activeAgents = _agentList.ActiveAgents;
 
             //subtype proportions
-            _subtypeProportionStatistic.Add(StatisticHelper.CreateSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.Co));
+            _subtypeProportionStatistic.Add(StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.Co));
             //frequency
             _commonPoolFrequencyStatistic.Add(StatisticHelper.CreateCommonPoolFrequencyRecord(activeAgents, iteration, (int)AgentSubtype.Co));
             //params

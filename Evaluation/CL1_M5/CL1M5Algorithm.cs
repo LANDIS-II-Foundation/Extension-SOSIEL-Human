@@ -36,6 +36,7 @@ namespace CL1_M5
                 ActionTakingEnabled = true,
                 RuleSelectionEnabled = true,
                 AgentRandomizationEnabled = true,
+                ReproductionEnabled = true,
                 AgentsDeactivationEnabled = true
             };
         }
@@ -45,8 +46,8 @@ namespace CL1_M5
             _configuration = configuration;
 
             //statistics
-            _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.IterationCount);
-            _commonPoolSubtypeFrequency = new List<CommonPoolSubtypeFrequencyWithDisturbanceOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
+            _commonPoolSubtypeFrequency = new List<CommonPoolSubtypeFrequencyWithDisturbanceOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
 
             _outputFolder = @"Output\CL1_M5";
 
@@ -63,10 +64,11 @@ namespace CL1_M5
 
         protected override void InitializeAgents()
         {
-            _siteList = SiteList.Generate(_configuration.AlgorithmConfiguration.AgentCount,
-                 _configuration.AlgorithmConfiguration.VacantProportion);
+            numberOfAgents = _configuration.InitialState.AgentsState.Sum(astate => astate.NumberOfAgents);
 
-            _agentList = AgentList.Generate2(_configuration.AlgorithmConfiguration.AgentCount, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
+            _siteList = SiteList.Generate(numberOfAgents, _configuration.AlgorithmConfiguration.VacantProportion);
+
+            _agentList = AgentList.Generate2(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
@@ -148,7 +150,7 @@ namespace CL1_M5
             IAgent agent = activeAgents.First();
 
 
-            _subtypeProportionStatistic.Add(StatisticHelper.CreateSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.StrCo));
+            _subtypeProportionStatistic.Add(StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.StrCo));
             _commonPoolSubtypeFrequency.Add(StatisticHelper.CreateCommonPoolFrequencyWithDisturbanceRecord(activeAgents, iteration, (int)AgentSubtype.StrCo, agent[Agent.VariablesUsedInCode.Disturbance]));
         }
 
@@ -198,6 +200,8 @@ namespace CL1_M5
         {
             List<Site> vacantSites = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied == false).ToList();
 
+            bool isAnyAgentMove = false;
+
             orderedAgents.ForEach(agent =>
             {
 
@@ -221,8 +225,12 @@ namespace CL1_M5
 
                     vacantSites.Add(currentSite);
                     vacantSites.Remove(selectedSite);
+                    isAnyAgentMove = true;
                 };
             });
+
+            if (isAnyAgentMove == false)
+                algorithmStoppage = true;
         }
     }
 }

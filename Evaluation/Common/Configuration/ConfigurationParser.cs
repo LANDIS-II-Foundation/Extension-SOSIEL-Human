@@ -50,27 +50,11 @@ namespace Common.Configuration
             return json.SelectToken("AlgorithmConfiguration").ToObject<AlgorithmConfiguration>(serializer);
         }
 
-        public static Dictionary<string, T> ParseAgentConfiguration<T>(string jsonContent) where T : class
+        public static Configuration<T> ParseModelConfiguration<T>(string jsonContent) where T : class
         {
             JToken json = JToken.Parse(jsonContent);
 
-            return json.SelectToken("AgentConfiguration").ToObject<Dictionary<string, T>>(serializer);
-        }
-
-        public static InitialStateConfiguration ParseInitialStateConfiguration(string jsonContent)
-        {
-            JToken json = JToken.Parse(jsonContent);
-
-            JToken state = json.SelectToken("InitialState");
-
-            if (state != null)
-            {
-                return state.ToObject<InitialStateConfiguration>(serializer);
-            }
-            else
-            {
-                return null;
-            }
+            return json.ToObject<Configuration<T>>(serializer);
         }
 
         public static Configuration<T> ParseConfiguration<T>(string jsonContent) where T : class

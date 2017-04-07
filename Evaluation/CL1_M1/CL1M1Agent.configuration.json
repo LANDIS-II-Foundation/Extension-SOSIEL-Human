@@ -2,9 +2,24 @@
   "AgentConfiguration": {
     "Variables": {
       "AgentType": 1,
-      "AgentStatus": "active",
-      "AgentPG": 0.125,
-      "AgentBetterSiteAvailable": false
+      "AgentG1": 0.125
+    },
+    "Goals": [
+      {
+        "Name": "PG1",
+        "Tendency": "AboveMin",
+        "ReferenceVariable": "NeighborhoodSubtypeProportion"
+      }
+    ],
+    "SetSettings": {
+      "1": {
+        "AssociatedWith": [ "PG1" ],
+        "Layer": {
+          "1": {
+            "Modifiable": false
+          }
+        }
+      }
     },
     "Rules": [
       {
@@ -16,24 +31,51 @@
           {
             "Param": "NeighborhoodSubtypeProportion",
             "Sign": "<",
-            "Value": 0,
-            "ReferenceVariable": "AgentPG"
+            "ReferenceVariable": "AgentG1"
           },
           {
             "Param": "AgentBetterSiteAvailable",
             "Sign": "==",
-            "Value": true,
-            "ReferenceVariable": ""
+            "Value": true
           }
         ],
         "Consequent": {
           "Param": "AgentCurrentSite",
-          "Value": 0,
           "VariableValue": "AgentBetterSite"
         },
-        "FreshnessStatus": 1,
         "RequiredParticipants": 1,
         "IsAction": true
+      }
+    ]
+  },
+  "InitialState": {
+    "AgentsState": [
+      {
+        "PrototypeOfAgent": "Prototype1",
+        "NumberOfAgents": 1000,
+
+        "PrivateVariables": {
+          "AgentStatus": "active",
+          "AgentBetterSiteAvailable": false
+        },
+        "AnticipatedInfluenceState": {
+          "RS1_L1_R1": {
+            "PG1": 15
+          }
+        },
+        "AssignedRules": [
+          "RS1_L1_R1"
+        ],
+        "AssignedGoals": [ "PG1" ],
+
+        "ActivatedRulesOnFirstIteration": [],
+
+        "GoalState": {
+          "PG1": {
+            "Proportion": 1,
+            "Value": 15
+          }
+        }
       }
     ]
   }

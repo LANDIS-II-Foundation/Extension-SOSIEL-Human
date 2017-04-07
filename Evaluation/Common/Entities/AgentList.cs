@@ -70,9 +70,6 @@ namespace Common.Entities
 
             agentList.Agents = new List<IAgent>(agentNumber);
 
-            if (agentNumber != initialState.AgentsState.Sum(astate => astate.NumberOfAgents))
-                throw new Exception($"Number of agents which described in algorithm.json and sum of agets in {typeof(T).Name}.configuration.json are different");
-
             int ind = 1;
 
             initialState.AgentsState.ForEach(astate =>

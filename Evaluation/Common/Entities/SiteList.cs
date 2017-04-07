@@ -18,7 +18,7 @@ namespace Common.Entities
 
         private static int CalculateMatrixSize(int agentsCount, double vacantProportion)
         {
-            return (int)Math.Round(Math.Sqrt(agentsCount / (1 - vacantProportion)));
+            return Convert.ToInt32(Math.Ceiling(Math.Sqrt((1 + vacantProportion) * agentsCount)));
         }
 
         private static Site CreateSite(int horizontalPosition, int verticalPosition, int startIndex, int size)

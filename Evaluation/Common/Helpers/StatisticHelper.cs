@@ -82,7 +82,7 @@ namespace Common.Helpers
             return new CommonValuesOutput { Iteration = iteration, Values = valueItems };
         }
 
-        public static SubtypeProportionOutput CreateSubtypeProportionRecord(IAgent[] activeAgents, int iteration, int subtype)
+        public static SubtypeProportionOutput CreateCommonPoolSubtypeProportionRecord(IAgent[] activeAgents, int iteration, int subtype)
         {
             IAgent[] suitableAgents = activeAgents.Where(a => (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).ToArray();
 
@@ -99,6 +99,31 @@ namespace Common.Helpers
                     else
                     {
                         return a.ConnectedAgents.Count(a2 => (int)a2[Agent.VariablesUsedInCode.AgentSubtype] == subtype) / (double)a[Agent.VariablesUsedInCode.CommonPoolSize];
+                    }
+                });
+            }
+
+
+            return new SubtypeProportionOutput { Iteration = iteration, Proportion = proportion };
+        }
+
+        public static SubtypeProportionOutput CreateNeighbourhoodSubtypeProportionRecord(IAgent[] activeAgents, int iteration, int subtype)
+        {
+            IAgent[] suitableAgents = activeAgents.Where(a => (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).ToArray();
+
+            double proportion = 0;
+
+            if (suitableAgents.Length > 0)
+            {
+                proportion = suitableAgents.Average(a =>
+                {
+                    if ((int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
+                    {
+                        return (double)a[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion];
+                    }
+                    else
+                    {
+                        return a.ConnectedAgents.Count(a2 => (int)a2[Agent.VariablesUsedInCode.AgentSubtype] == subtype) / (double)a[Agent.VariablesUsedInCode.NeighborhoodSize];
                     }
                 });
             }

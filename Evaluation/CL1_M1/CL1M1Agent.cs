@@ -7,10 +7,37 @@ using Common.Randoms;
 
 namespace CL1_M1
 {
-
-
     public class CL1M1Agent : Agent, ICloneableAgent<CL1M1Agent>
     {
+        private Dictionary<string, dynamic> PrivateVariables { get; set; } = new Dictionary<string, dynamic>();
+
+        public override dynamic this[string key]
+        {
+            get
+            {
+                if (PrivateVariables.ContainsKey(key))
+                    return PrivateVariables[key];
+                else
+                {
+                    return base[key];
+                }
+            }
+
+            set
+            {
+                if (Variables.ContainsKey(key))
+                {
+                    base[key] = value;
+                }
+                else
+                {
+                    PrivateVariables[key] = value;
+                }
+
+            }
+        }
+
+
         public new CL1M1Agent Clone()
         {
             return (CL1M1Agent)base.Clone();

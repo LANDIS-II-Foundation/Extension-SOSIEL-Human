@@ -46,7 +46,7 @@ namespace CL2_M8
             _configuration = configuration;
 
             //statistics
-            _agentContributions = new List<AgentNumericValuesOutput>(_configuration.AlgorithmConfiguration.IterationCount);
+            _agentContributions = new List<AgentNumericValuesOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
 
             _outputFolder = @"Output\CL2_M8";
 
@@ -63,7 +63,9 @@ namespace CL2_M8
 
         protected override void InitializeAgents()
         {
-            _agentList = AgentList.Generate2(_configuration.AlgorithmConfiguration.AgentCount, _configuration.AgentConfiguration, _configuration.InitialState);
+            numberOfAgents = _configuration.InitialState.AgentsState.Sum(astate => astate.NumberOfAgents);
+
+            _agentList = AgentList.Generate2(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()

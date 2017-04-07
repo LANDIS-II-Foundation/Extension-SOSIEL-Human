@@ -17,6 +17,8 @@ namespace Common.Algorithm
 
         ProcessConfiguration _processConfiguration;
 
+        protected bool algorithmStoppage = false;
+        protected int numberOfAgents = 0;
         protected SiteList _siteList;
         protected AgentList _agentList;
         protected LinkedList<Dictionary<IAgent, AgentState>> _iterations = new LinkedList<Dictionary<IAgent, AgentState>>();
@@ -123,7 +125,7 @@ namespace Common.Algorithm
 
         private void Sosiel()
         {
-            for (int i = 1; i <= _algorithmConfiguration.IterationCount; i++)
+            for (int i = 1; i <= _algorithmConfiguration.NumberOfIterations; i++)
             {
                 IAgent[] orderedAgents = _agentList.ActiveAgents.Randomize(_processConfiguration.AgentRandomizationEnabled).ToArray();
                 var agentGroups = orderedAgents.GroupBy(a => a[Agent.VariablesUsedInCode.AgentType]).ToArray();
@@ -291,8 +293,11 @@ namespace Common.Algorithm
 
                 if (_processConfiguration.ReproductionEnabled)
                 {
-                    Reproduction(_algorithmConfiguration.AgentCount);
+                    Reproduction(numberOfAgents);
                 }
+
+                if (algorithmStoppage || _agentList.ActiveAgents.Length == 0)
+                    break;
             }
         }
 
