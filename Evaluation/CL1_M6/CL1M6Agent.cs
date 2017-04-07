@@ -32,7 +32,12 @@ namespace CL1_M6
                 }
                 else
                 {
+                    if (PrivateVariables.ContainsKey(key))
+                        PreSetValue(key, PrivateVariables[key]);
+
                     PrivateVariables[key] = value;
+
+                    PostSetValue(key, value);
                 }
 
             }

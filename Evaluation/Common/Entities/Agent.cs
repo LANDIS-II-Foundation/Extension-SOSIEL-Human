@@ -12,6 +12,11 @@ namespace Common.Entities
 
     public class Agent : IAgent, ICloneableAgent<Agent>
     {
+        public override string ToString()
+        {
+            return EnumHelper.EnumValueAsString(this[VariablesUsedInCode.AgentSubtype]);
+        }
+
         public static class VariablesUsedInCode
         {
             //Common
@@ -82,7 +87,7 @@ namespace Common.Entities
 
         public List<Goal> Goals { get; set; }
 
-        public List<Rule> AssignedRules { get; set; }
+        public List<Rule> AssignedRules { get; set; } = new List<Rule>();
 
         public List<IAgent> ConnectedAgents { get; set; }
 
@@ -95,7 +100,7 @@ namespace Common.Entities
             }
         }
 
-        [JsonProperty()]
+        [JsonProperty]
         protected Dictionary<string, dynamic> Variables { get; set; } = new Dictionary<string, dynamic>();
 
         protected List<RuleSet> MentalProto
@@ -106,11 +111,12 @@ namespace Common.Entities
             }
         }
 
-        [JsonProperty("Rules")]
-        private List<Rule> Rules { get; set; }
+        [JsonProperty]
+        private List<Rule> Rules;
 
         private List<RuleSet> _mentalProto;
 
+        [JsonProperty]
         private bool UseDoNothing;
 
         private void AddDoNothingRules()
@@ -121,12 +127,33 @@ namespace Common.Entities
                 {
                     if (!l.Rules.Any(r => r.IsAction == false))
                     {
+                        Rule proto = l.Rules.First();
+
                         Rule doNothing = new Rule
                         {
                             Antecedent = new RuleAntecedentPart[] { new RuleAntecedentPart { Param = VariablesUsedInCode.AgentStatus, Sign = "==", Value = "active" } },
-                            Consequent = new RuleConsequent { Param = VariablesUsedInCode.AgentC, Value = 0, CopyToCommon = true, SavePrevious = true },
+                            RequiredParticipants = 1,
                             IsAction = false
                         };
+
+                        if(proto.Consequent.Param == VariablesUsedInCode.AgentCurrentSite)
+                        {
+                            doNothing.Consequent = new RuleConsequent
+                            {
+                                Param = VariablesUsedInCode.AgentStatus,
+                                VariableValue = VariablesUsedInCode.AgentStatus
+                            };
+                        }
+                        else
+                        {
+                            doNothing.Consequent = new RuleConsequent
+                            {
+                                Param = proto.Consequent.Param,
+                                Value = 0,
+                                CopyToCommon = proto.Consequent.CopyToCommon,
+                                SavePrevious = proto.Consequent.SavePrevious
+                            };
+                        }
 
                         l.Add(doNothing);
                     }
@@ -143,7 +170,8 @@ namespace Common.Entities
                    new RuleSet(g.Key, Goals.Where(goal => SetSettings[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray(),
                        g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2 => new RuleLayer(SetSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
 
-            AddDoNothingRules();
+            if (UseDoNothing)
+                AddDoNothingRules();
 
             return _mentalProto;
         }
@@ -205,6 +233,7 @@ namespace Common.Entities
             agent._mentalProto = _mentalProto;
             agent.AssignedRules = new List<Rule>(AssignedRules);
             agent.ConnectedAgents = new List<IAgent>();
+            agent.UseDoNothing = UseDoNothing;
 
             if (agent.Variables.ContainsKey(VariablesUsedInCode.AgentCurrentSite))
                 agent.Variables.Remove(VariablesUsedInCode.AgentCurrentSite);

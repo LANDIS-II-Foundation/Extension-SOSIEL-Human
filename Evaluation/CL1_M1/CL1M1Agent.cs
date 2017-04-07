@@ -7,7 +7,7 @@ using Common.Randoms;
 
 namespace CL1_M1
 {
-    public class CL1M1Agent : Agent, ICloneableAgent<CL1M1Agent>
+    public sealed class CL1M1Agent : Agent, ICloneableAgent<CL1M1Agent>
     {
         private Dictionary<string, dynamic> PrivateVariables { get; set; } = new Dictionary<string, dynamic>();
 
@@ -31,7 +31,12 @@ namespace CL1_M1
                 }
                 else
                 {
+                    if (PrivateVariables.ContainsKey(key))
+                        PreSetValue(key, PrivateVariables[key]);
+
                     PrivateVariables[key] = value;
+
+                    PostSetValue(key, value);
                 }
 
             }
@@ -40,7 +45,11 @@ namespace CL1_M1
 
         public new CL1M1Agent Clone()
         {
-            return (CL1M1Agent)base.Clone();
+            CL1M1Agent agent = (CL1M1Agent)base.Clone();
+
+            agent.PrivateVariables = new Dictionary<string, dynamic>(PrivateVariables);
+
+            return agent;
         }
 
         protected override Agent CreateInstance()

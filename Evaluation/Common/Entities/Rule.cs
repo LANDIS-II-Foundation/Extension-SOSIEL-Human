@@ -31,7 +31,7 @@ namespace Common.Entities
         {
             get
             {
-                return RequiredParticipants > 1;
+                return RequiredParticipants > 1 || RequiredParticipants == 0;
             }
         }
 

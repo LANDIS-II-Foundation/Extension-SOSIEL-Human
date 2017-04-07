@@ -7,12 +7,20 @@ using FileHelpers;
 namespace Common.Models
 {
     [DelimitedRecord(";")]
-    public class EdgeOutput 
+    public class EdgeOutput :IHeader
     {
+        public string HeaderLine
+        {
+            get
+            {
+                return "ID1;ID2";
+            }
+        }
+
         public int AgentId { get; set; }
 
         public int AdjacentAgentId { get; set; }
 
-      
+        
     }
 }

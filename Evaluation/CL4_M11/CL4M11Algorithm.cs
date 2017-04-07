@@ -77,7 +77,7 @@ namespace CL4_M11
 
             _siteList = SiteList.Generate(numberOfAgents, _configuration.AlgorithmConfiguration.VacantProportion);
 
-            _agentList = AgentList.Generate2(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
+            _agentList = AgentList.Generate(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
@@ -176,7 +176,9 @@ namespace CL4_M11
             IAgent[] activeAgents = _agentList.ActiveAgents;
 
             //subtype proportions
-            _subtypeProportionStatistic.Add(StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.Co));
+            SubtypeProportionOutput spo = StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.Co);
+            spo.Subtype = EnumHelper.EnumValueAsString(AgentSubtype.Co);
+            _subtypeProportionStatistic.Add(spo);
             //frequency
             _commonPoolFrequencyStatistic.Add(StatisticHelper.CreateCommonPoolFrequencyRecord(activeAgents, iteration, (int)AgentSubtype.Co));
             //params
@@ -245,7 +247,11 @@ namespace CL4_M11
 
                     vacantSites.Add(currentSite);
                     vacantSites.Remove(selectedSite);
-                };
+                }
+                else
+                {
+                    agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = false;
+                }
             });
         }
 

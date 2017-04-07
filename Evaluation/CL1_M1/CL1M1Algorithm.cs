@@ -31,7 +31,8 @@ namespace CL1_M1
             {
                 ActionTakingEnabled = true,
                 RuleSelectionEnabled = true,
-                AgentRandomizationEnabled = true
+                AgentRandomizationEnabled = true,
+                AlgorithmStopIfAllAgentsSelectDoNothing = true
             };
         }
 
@@ -61,7 +62,7 @@ namespace CL1_M1
 
             _siteList = SiteList.Generate(numberOfAgents, _configuration.AlgorithmConfiguration.VacantProportion);
 
-            _agentList = AgentList.Generate2(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
+            _agentList = AgentList.Generate(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
@@ -88,8 +89,6 @@ namespace CL1_M1
             IAgent agent = _agentList.Agents.First();
 
             agent.SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
-
-            agent.SetToCommon(Agent.VariablesUsedInCode.Disturbance, agent[Agent.VariablesUsedInCode.Disturbance] + agent[Agent.VariablesUsedInCode.DisturbanceIncrement]);
 
             if (iteration > 1)
                 LookingForBetterSites(orderedAgents);
@@ -126,7 +125,9 @@ namespace CL1_M1
             IAgent agent = activeAgents.First();
 
 
-            _subtypeProportionStatistic.Add(StatisticHelper.CreateNeighbourhoodSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.TypeA));
+            SubtypeProportionOutput spo = StatisticHelper.CreateNeighbourhoodSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.TypeA);
+            spo.Subtype = EnumHelper.EnumValueAsString(AgentSubtype.TypeA);
+            _subtypeProportionStatistic.Add(spo);
         }
 
         private double CalculateSubtypeProportion(AgentSubtype subtype, Site centerSite)
@@ -139,8 +140,6 @@ namespace CL1_M1
         private void LookingForBetterSites(IAgent[] orderedAgents)
         {
             List<Site> vacantSites = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied == false).ToList();
-
-            bool isAnyAgentMove = false;
 
             orderedAgents.ForEach(agent =>
             {
@@ -173,13 +172,13 @@ namespace CL1_M1
 
                     vacantSites.Add(currentSite);
                     vacantSites.Remove(selectedSite);
-
-                    isAnyAgentMove = true;
-                };
+                }
+                else
+                {
+                    agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = false;
+                }
             });
 
-            if (isAnyAgentMove == false)
-                algorithmStoppage = true;
         }
     }
 }

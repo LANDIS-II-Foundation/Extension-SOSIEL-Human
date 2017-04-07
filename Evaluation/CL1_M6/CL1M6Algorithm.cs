@@ -37,7 +37,8 @@ namespace CL1_M6
                 RuleSelectionEnabled = true,
                 AgentRandomizationEnabled = true,
                 AgentsDeactivationEnabled = true,
-                ReproductionEnabled = true
+                ReproductionEnabled = true,
+                AlgorithmStopIfAllAgentsSelectDoNothing = true
             };
         }
 
@@ -68,7 +69,7 @@ namespace CL1_M6
 
             _siteList = SiteList.Generate(numberOfAgents, _configuration.AlgorithmConfiguration.VacantProportion);
 
-            _agentList = AgentList.Generate2(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
+            _agentList = AgentList.Generate(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
@@ -135,8 +136,8 @@ namespace CL1_M6
 
                 if (a[Agent.VariablesUsedInCode.AgentSubtype] != AgentSubtype.NonCo)
                 {
-                    agent[Agent.VariablesUsedInCode.AgentSubtype] = (agent[Agent.VariablesUsedInCode.AgentC] + agent[Agent.VariablesUsedInCode.AgentP])
-                        > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing] ? AgentSubtype.StrCo : AgentSubtype.WeakCo;
+                    a[Agent.VariablesUsedInCode.AgentSubtype] = (a[Agent.VariablesUsedInCode.AgentC] + a[Agent.VariablesUsedInCode.AgentP])
+                        > a[Agent.VariablesUsedInCode.AgentSiteWellbeing] ? AgentSubtype.StrCo : AgentSubtype.WeakCo;
                 }
 
             });
@@ -150,8 +151,25 @@ namespace CL1_M6
             IAgent agent = activeAgents.First();
 
 
-            _subtypeProportionStatistic.Add(StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.StrCo));
+            SubtypeProportionOutput spo = StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.StrCo);
+            spo.Subtype = EnumHelper.EnumValueAsString(AgentSubtype.StrCo);
+            _subtypeProportionStatistic.Add(spo);
+
             _commonPoolSubtypeFrequency.Add(StatisticHelper.CreateCommonPoolFrequencyWithDisturbanceRecord(activeAgents, iteration, (int)AgentSubtype.StrCo, agent[Agent.VariablesUsedInCode.Disturbance]));
+        }
+
+        protected override void AgentsDeactivation()
+        {
+            base.AgentsDeactivation();
+
+            _agentList.ActiveAgents.ForEach(a =>
+            {
+                if (a[Agent.VariablesUsedInCode.AgentSiteWellbeing] <= 0)
+                {
+                    a[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
+                    a[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
+                }
+            });
         }
 
 
@@ -230,7 +248,11 @@ namespace CL1_M6
                     vacantSites.Add(currentSite);
                     vacantSites.Remove(selectedSite);
                     isAnyAgentMove = true;
-                };
+                }
+                else
+                {
+                    agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = false;
+                }
             });
 
             if (isAnyAgentMove == false)

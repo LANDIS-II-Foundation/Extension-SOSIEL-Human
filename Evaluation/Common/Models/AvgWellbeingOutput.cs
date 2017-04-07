@@ -16,15 +16,25 @@ namespace Common.Models
 
         public override string ToString()
         {
-            return string.Format("{0}: {1:0.000}", Type, AvgValue);
+            return string.Format("{0:0.000}", AvgValue);
         }
     }
 
     [DelimitedRecord(";")]
-    public class AvgWellbeingOutput
+    public class AvgWellbeingOutput: IHeader
     {
+        public string HeaderLine
+        {
+            get
+            {
+                return "Iteration;Co;NonCo";
+            }
+        }
+
         [FieldOrder(0)]
         public int Iteration { get; set; }
+
+
 
         //todo: replace on property
         [FieldOrder(1)]

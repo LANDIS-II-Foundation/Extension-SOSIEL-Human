@@ -35,7 +35,12 @@ namespace CL4_M11
                 }
                 else
                 {
+                    if (PrivateVariables.ContainsKey(key))
+                        PreSetValue(key, PrivateVariables[key]);
+
                     PrivateVariables[key] = value;
+
+                    PostSetValue(key, value);
                 }
 
             }

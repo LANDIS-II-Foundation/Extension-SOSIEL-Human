@@ -32,7 +32,12 @@ namespace CL1_M4
                 }
                 else
                 {
+                    if (PrivateVariables.ContainsKey(key))
+                        PreSetValue(key, PrivateVariables[key]);
+
                     PrivateVariables[key] = value;
+
+                    PostSetValue(key, value);
                 }
 
             }
@@ -40,7 +45,11 @@ namespace CL1_M4
 
         public new CL1M4Agent Clone()
         {
-            return (CL1M4Agent)base.Clone();
+            CL1M4Agent agent = (CL1M4Agent)base.Clone();
+
+            agent.PrivateVariables = new Dictionary<string, dynamic>(PrivateVariables);
+
+            return agent;
         }
 
         protected override Agent CreateInstance()

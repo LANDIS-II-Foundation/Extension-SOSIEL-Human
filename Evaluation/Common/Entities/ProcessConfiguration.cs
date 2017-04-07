@@ -27,5 +27,7 @@ namespace Common.Entities
         public bool ReproductionEnabled { get; set; }
 
         public bool AgentsDeactivationEnabled { get; set; }
+
+        public bool AlgorithmStopIfAllAgentsSelectDoNothing { get; set; }
     }
 }

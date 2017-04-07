@@ -34,7 +34,8 @@ namespace CL1_M2
             {
                 ActionTakingEnabled = true,
                 RuleSelectionEnabled = true,
-                AgentRandomizationEnabled = true
+                AgentRandomizationEnabled = true,
+                AlgorithmStopIfAllAgentsSelectDoNothing = true
             };
         }
 
@@ -65,7 +66,7 @@ namespace CL1_M2
 
             _siteList = SiteList.Generate(numberOfAgents, _configuration.AlgorithmConfiguration.VacantProportion);
 
-            _agentList = AgentList.Generate2(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
+            _agentList = AgentList.Generate(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
@@ -93,8 +94,6 @@ namespace CL1_M2
             IAgent agent = _agentList.Agents.First();
 
             agent.SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
-
-            agent.SetToCommon(Agent.VariablesUsedInCode.Disturbance, agent[Agent.VariablesUsedInCode.Disturbance] + agent[Agent.VariablesUsedInCode.DisturbanceIncrement]);
 
             if (iteration > 1)
                 LookingForBetterSites(orderedAgents);
@@ -139,7 +138,10 @@ namespace CL1_M2
             IAgent agent = activeAgents.First();
 
 
-            _subtypeProportionStatistic.Add(StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.Co));
+            SubtypeProportionOutput spo = StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.Co);
+            spo.Subtype = EnumHelper.EnumValueAsString(AgentSubtype.Co);
+            _subtypeProportionStatistic.Add(spo);
+
             _averageWellbeing.Add(StatisticHelper.CreateAvgWellbeingStatisticRecord(activeAgents, iteration));
         }
 
@@ -197,7 +199,11 @@ namespace CL1_M2
                     vacantSites.Add(currentSite);
                     vacantSites.Remove(selectedSite);
                     isAnyAgentMove = true;
-                };
+                }
+                else
+                {
+                    agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = false;
+                }
             });
 
             if (isAnyAgentMove == false)

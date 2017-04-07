@@ -1,54 +1,58 @@
 ﻿{
   "AgentConfiguration": {
-    "Variables": {
-      "AgentType": 1,
-      "E": 10,
-      "M": 1,
-      "ResourceMax": 20,
+    "Prototype1": {
+      "Variables": {
+        "AgentType": 1,
+        "E": 10,
+        "M": 1,
+        "ResourceMax": 20,
 
-      "Disturbance": 0,
-      "DisturbanceIncrement": 0.2
-    },
-    "Goals": [
-      {
-        "Name": "PG1",
-        "Tendency": "Maximize",
-        "ReferenceVariable": "AgentSiteWellbeing"
-      }
-    ],
-    "SetSettings": {
-      "1": {
-        "AssociatedWith": [ "PG1" ],
-        "Layer": {
-          "1": {
-            "Modifiable": false
+        "Disturbance": 0,
+        "DisturbanceIncrement": 0.2
+      },
+      "Goals": [
+        {
+          "Name": "PG1",
+          "Tendency": "Maximize",
+          "ReferenceVariable": "AgentSiteWellbeing"
+        }
+      ],
+      "SetSettings": {
+        "1": {
+          "AssociatedWith": [ "PG1" ],
+          "Layer": {
+            "1": {
+              "Modifiable": false
+            }
           }
         }
-      }
-    },
-    "Rules": [
-      {
-        "RuleSet": 1,
-        "RuleLayer": 1,
-        "RulePositionNumber": 1,
-        "Id": "RS1_L1_R1",
-        "Antecedent": [
-          {
-            "Param": "AgentBetterSiteAvailable",
-            "Sign": "==",
-            "Value": true,
-            "ReferenceVariable": ""
-          }
-        ],
-        "Consequent": {
-          "Param": "AgentCurrentSite",
-          "Value": 0,
-          "VariableValue": "AgentBetterSite"
-        },
-        "RequiredParticipants": 1,
-        "IsAction": true
-      }
-    ]
+      },
+      "Rules": [
+        {
+          "RuleSet": 1,
+          "RuleLayer": 1,
+          "RulePositionNumber": 1,
+          "Id": "RS1_L1_R1",
+          "Antecedent": [
+            {
+              "Param": "AgentBetterSiteAvailable",
+              "Sign": "==",
+              "Value": true,
+              "ReferenceVariable": ""
+            }
+          ],
+          "Consequent": {
+            "Param": "AgentCurrentSite",
+            "Value": 0,
+            "VariableValue": "AgentBetterSite"
+          },
+          "RequiredParticipants": 1,
+          "IsAction": true
+        }
+      ],
+
+      "UseDoNothing": true
+    }
   },
   "InitialState": {
     "AgentsState": [
@@ -70,7 +74,7 @@
         ],
         "AssignedGoals": [ "PG1" ],
 
-        "ActivatedRulesOnFirstIteration": [  ],
+        "ActivatedRulesOnFirstIteration": [],
 
         "GoalState": {
           "PG1": {

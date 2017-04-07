@@ -7,8 +7,16 @@ using FileHelpers;
 namespace Common.Models
 {
     [DelimitedRecord(";")]
-    public class NodeOutput
+    public class NodeOutput: IHeader
     {
+        public string HeaderLine
+        {
+            get
+            {
+                return "\"ID\";Type";
+            }
+        }
+
         public int AgentId { get; set; }
 
         public string Type { get; set; }

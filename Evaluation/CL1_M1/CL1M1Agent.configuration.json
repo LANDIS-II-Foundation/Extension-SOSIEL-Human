@@ -1,52 +1,56 @@
 ﻿{
   "AgentConfiguration": {
-    "Variables": {
-      "AgentType": 1,
-      "AgentG1": 0.125
-    },
-    "Goals": [
-      {
-        "Name": "PG1",
-        "Tendency": "AboveMin",
-        "ReferenceVariable": "NeighborhoodSubtypeProportion"
-      }
-    ],
-    "SetSettings": {
-      "1": {
-        "AssociatedWith": [ "PG1" ],
-        "Layer": {
-          "1": {
-            "Modifiable": false
+    "Prototype1": {
+      "Variables": {
+        "AgentType": 1,
+        "AgentG1": 0.125
+      },
+      "Goals": [
+        {
+          "Name": "PG1",
+          "Tendency": "Maximize",
+          "ReferenceVariable": "NeighborhoodSubtypeProportion"
+        }
+      ],
+      "SetSettings": {
+        "1": {
+          "AssociatedWith": [ "PG1" ],
+          "Layer": {
+            "1": {
+              "Modifiable": false
+            }
           }
         }
-      }
-    },
-    "Rules": [
-      {
-        "RuleSet": 1,
-        "RuleLayer": 1,
-        "RulePositionNumber": 1,
-        "Id": "RS1_L1_R1",
-        "Antecedent": [
-          {
-            "Param": "NeighborhoodSubtypeProportion",
-            "Sign": "<",
-            "ReferenceVariable": "AgentG1"
+      },
+      "Rules": [
+        {
+          "RuleSet": 1,
+          "RuleLayer": 1,
+          "RulePositionNumber": 1,
+          "Id": "RS1_L1_R1",
+          "Antecedent": [
+            {
+              "Param": "NeighborhoodSubtypeProportion",
+              "Sign": "<",
+              "ReferenceVariable": "AgentG1"
+            },
+            {
+              "Param": "AgentBetterSiteAvailable",
+              "Sign": "==",
+              "Value": true
+            }
+          ],
+          "Consequent": {
+            "Param": "AgentCurrentSite",
+            "VariableValue": "AgentBetterSite"
           },
-          {
-            "Param": "AgentBetterSiteAvailable",
-            "Sign": "==",
-            "Value": true
-          }
-        ],
-        "Consequent": {
-          "Param": "AgentCurrentSite",
-          "VariableValue": "AgentBetterSite"
-        },
-        "RequiredParticipants": 1,
-        "IsAction": true
-      }
-    ]
+          "RequiredParticipants": 1,
+          "IsAction": true
+        }
+      ],
+
+      "UseDoNothing": true
+    }
   },
   "InitialState": {
     "AgentsState": [

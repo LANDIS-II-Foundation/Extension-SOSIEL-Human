@@ -19,7 +19,7 @@ namespace Common.Models
         {
             if(fieldValue is double)
             {
-                return string.Format("{0:0.000}", fieldValue);
+                return string.Format("\"{0:0.000}\"", fieldValue);
             }
 
             return fieldValue.ToString();

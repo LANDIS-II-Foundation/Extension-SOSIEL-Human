@@ -138,7 +138,7 @@ namespace Common.Helpers
 
             sf.IntervalFrequency = new int[10];
 
-            activeAgents.AsParallel()
+            activeAgents.Where(a => (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).AsParallel()
                 .Select(a =>
                 {
                     if ((int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
@@ -163,9 +163,20 @@ namespace Common.Helpers
 
 
 
-        public static void Save<T>(IEnumerable<T> data, string fileName) where T : class
+        public static void Save<T>(IList<T> data, string fileName) where T : class
         {
             DelimitedFileEngine<T> engine = new DelimitedFileEngine<T>();
+
+            if(data.Count > 0)
+            {
+                IHeader first = data.First() as IHeader;
+
+                if(first != null)
+                {
+                    engine.HeaderText = first.HeaderLine;
+                }
+                
+            }
 
             engine.WriteFile(fileName, data);
         }
@@ -187,13 +198,13 @@ namespace Common.Helpers
 
             aw.Avgs = activeAgents.GroupBy(a => a[Agent.VariablesUsedInCode.AgentSubtype])
                 .OrderBy(g => g.Key)
-                .Select(g => new AvgWellbeingItem { Type = EnumHelper.EnumValueAsString(g.Key), AvgValue = g.Average(a => a[Agent.VariablesUsedInCode.AgentSiteWellbeing]) }).ToArray();
+                .Select(g => new AvgWellbeingItem { Type = EnumHelper.EnumValueAsString(g.Key), AvgValue = g.Average(a => (double)a[Agent.VariablesUsedInCode.AgentSiteWellbeing]) }).ToArray();
 
             return aw;
         }
 
 
-        public static CommonPoolSubtypeFrequencyWithDisturbanceOutput CreateCommonPoolFrequencyWithDisturbanceRecord(IAgent[] activeAgents, int iteration, int subtype, int disturbance)
+        public static CommonPoolSubtypeFrequencyWithDisturbanceOutput CreateCommonPoolFrequencyWithDisturbanceRecord(IAgent[] activeAgents, int iteration, int subtype, double disturbance)
         {
             CommonPoolSubtypeFrequencyWithDisturbanceOutput record = (CommonPoolSubtypeFrequencyWithDisturbanceOutput)CreateCommonPoolFrequencyRecord(activeAgents, iteration, subtype);
 

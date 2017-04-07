@@ -36,7 +36,8 @@ namespace CL1_M3
                 ActionTakingEnabled = true,
                 RuleSelectionEnabled = true,
                 AgentRandomizationEnabled = true,
-                AgentsDeactivationEnabled = true
+                AgentsDeactivationEnabled = true,
+                AlgorithmStopIfAllAgentsSelectDoNothing = true
             };
         }
 
@@ -67,7 +68,7 @@ namespace CL1_M3
 
             _siteList = SiteList.Generate(numberOfAgents, _configuration.AlgorithmConfiguration.VacantProportion);
 
-            _agentList = AgentList.Generate2(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
+            _agentList = AgentList.Generate(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
@@ -143,10 +144,26 @@ namespace CL1_M3
             IAgent agent = activeAgents.First();
 
 
-            _subtypeProportionStatistic.Add(StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.Co));
+            SubtypeProportionOutput spo = StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.Co);
+            spo.Subtype = EnumHelper.EnumValueAsString(AgentSubtype.Co);
+            _subtypeProportionStatistic.Add(spo);
+
             _commonPoolSubtypeFrequency.Add(StatisticHelper.CreateCommonPoolFrequencyWithDisturbanceRecord(activeAgents, iteration, (int)AgentSubtype.Co, agent[Agent.VariablesUsedInCode.Disturbance]));
         }
 
+        protected override void AgentsDeactivation()
+        {
+            base.AgentsDeactivation();
+
+            _agentList.ActiveAgents.ForEach(a =>
+            {
+                if (a[Agent.VariablesUsedInCode.AgentSiteWellbeing] <= 0)
+                {
+                    a[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
+                    a[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
+                }
+            });
+        }
 
         private double CalculateAgentSiteWellbeing(IAgent agent)
         {
@@ -201,7 +218,11 @@ namespace CL1_M3
                     vacantSites.Add(currentSite);
                     vacantSites.Remove(selectedSite);
                     isAnyAgentMove = true;
-                };
+                }
+                else
+                {
+                    agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = false;
+                }
             });
 
             if (isAnyAgentMove == false)

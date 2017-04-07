@@ -85,6 +85,11 @@ namespace Common.Algorithm
 
                 int contributionsAmount = poolOfParticipants.Sum(a => (int)a[Agent.VariablesUsedInCode.AgentC]);
 
+                if(contributionsAmount == 0)
+                {
+
+                }
+
                 List<IAgent> vector = new List<IAgent>(100);
 
                 poolOfParticipants.ForEach(a =>
@@ -93,6 +98,11 @@ namespace Common.Algorithm
 
                     for (int i = 0; i < count; i++) { vector.Add(a); }
                 });
+
+                if(vector.Count != 100)
+                {
+
+                }
 
                 T prototype = vector.RandomizeOne() as T;
 
@@ -127,6 +137,8 @@ namespace Common.Algorithm
         {
             for (int i = 1; i <= _algorithmConfiguration.NumberOfIterations; i++)
             {
+                Console.WriteLine($"Starting {i} iteration");
+
                 IAgent[] orderedAgents = _agentList.ActiveAgents.Randomize(_processConfiguration.AgentRandomizationEnabled).ToArray();
                 var agentGroups = orderedAgents.GroupBy(a => a[Agent.VariablesUsedInCode.AgentType]).ToArray();
 
@@ -146,9 +158,9 @@ namespace Common.Algorithm
 
                 Dictionary<IAgent, Goal[]> rankedGoals = new Dictionary<IAgent, Goal[]>(_agentList.Agents.Count);
 
-                _agentList.Agents.Cast<IAgent>().ForEach(a =>
+                _agentList.Agents.ForEach(a =>
                 {
-                    rankedGoals.Add(a, null);
+                    rankedGoals.Add(a, a.Goals.ToArray());
 
                     if (i > 1)
                         currentIteration.Add(a, priorIteration[a].CreateForNextIteration());
@@ -180,7 +192,7 @@ namespace Common.Algorithm
                                         {
                                             foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                                             {
-                                                if (layer.Key.LayerSettings.Modifiable || (!layer.Key.LayerSettings.Modifiable && layer.Any(r=>r.IsModifiable)))
+                                                if (layer.Key.LayerSettings.Modifiable || (!layer.Key.LayerSettings.Modifiable && layer.Any(r => r.IsModifiable)))
                                                 {
                                                     Rule[] matchedPriorPeriodHeuristics = priorIteration[agent]
                                                             .Matched.Where(h => h.Layer == layer.Key).ToArray();
@@ -282,11 +294,19 @@ namespace Common.Algorithm
                     }
                 }
 
+                if (_processConfiguration.AlgorithmStopIfAllAgentsSelectDoNothing && i > 1)
+                {
+                    if (currentIteration.SelectMany(kvp => kvp.Value.Activated).All(r => r.IsAction == false))
+                    {
+                        algorithmStoppage = true;
+                    }
+                }
+
                 PostIterationCalculations(i, orderedAgents);
 
                 PostIterationStatistic(i);
 
-                if (_processConfiguration.AgentsDeactivationEnabled)
+                if (_processConfiguration.AgentsDeactivationEnabled && i > 1)
                 {
                     AgentsDeactivation();
                 }

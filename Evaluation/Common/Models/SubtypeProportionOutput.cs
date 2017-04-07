@@ -9,8 +9,19 @@ using FileHelpers;
 namespace Common.Models
 {
     [DelimitedRecord(";")]
-    public class SubtypeProportionOutput
+    public class SubtypeProportionOutput: IHeader
     {
+        public string HeaderLine
+        {
+            get
+            {
+                return $"Iteration;{Subtype}_Proportion";
+            }
+        }
+
+        [FieldHidden]
+        public string Subtype;
+
         [FieldOrder(0)]
         public int Iteration { get; set; }
 

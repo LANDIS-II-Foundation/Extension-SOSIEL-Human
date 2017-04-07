@@ -66,7 +66,7 @@ namespace CL2_M9
         {
             numberOfAgents = _configuration.InitialState.AgentsState.Sum(astate => astate.NumberOfAgents);
 
-            _agentList = AgentList.Generate2(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState);
+            _agentList = AgentList.Generate(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()

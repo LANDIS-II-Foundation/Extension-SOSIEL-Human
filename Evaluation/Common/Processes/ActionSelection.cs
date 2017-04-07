@@ -147,7 +147,7 @@ namespace Common.Processes
             ruleForActivating = null;
 
             agentState = iterationState.Value[agent];
-            AgentState priorPeriod = iterationState.Previous.Value[agent];
+            AgentState priorPeriod = iterationState.Previous?.Value[agent];
 
             //if (rankedGoals == null)
             //{
