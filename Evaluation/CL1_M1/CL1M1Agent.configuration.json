@@ -3,7 +3,7 @@
     "Prototype1": {
       "Variables": {
         "AgentType": 1,
-        "AgentG1": 0.125
+        "AgentG1": 0.5
       },
       "Goals": [
         {
@@ -56,7 +56,7 @@
     "AgentsState": [
       {
         "PrototypeOfAgent": "Prototype1",
-        "NumberOfAgents": 1000,
+        "NumberOfAgents": 10,
 
         "PrivateVariables": {
           "AgentStatus": "active",

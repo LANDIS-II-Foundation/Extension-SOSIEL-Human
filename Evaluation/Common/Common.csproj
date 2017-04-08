@@ -96,6 +96,7 @@
     <Compile Include="Models\AvgWellbeingOutput.cs" />
     <Compile Include="Models\CommonPoolSubtypeFrequencyOutput.cs" />
     <Compile Include="Models\CommonPoolSubtypeFrequencyWithDisturbanceOutput.cs" />
+    <Compile Include="Models\DebugAgentsPositionOutput.cs" />
     <Compile Include="Models\EdgeOutput.cs" />
     <Compile Include="Models\EdgeOutputComparer.cs" />
     <Compile Include="Models\IHeader.cs" />

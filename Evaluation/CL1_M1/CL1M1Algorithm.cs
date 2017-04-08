@@ -24,6 +24,7 @@ namespace CL1_M1
 
         //statistics
         List<SubtypeProportionOutput> _subtypeProportionStatistic;
+        List<DebugAgentsPositionOutput> _debugSiteOutput;
 
         public static ProcessConfiguration GetProcessConfiguration()
         {
@@ -42,6 +43,7 @@ namespace CL1_M1
 
             //statistics
             _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
+            _debugSiteOutput = new List<DebugAgentsPositionOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
 
             _outputFolder = @"Output\CL1_M1";
 
@@ -80,6 +82,8 @@ namespace CL1_M1
             StatisticHelper.SaveState(_outputFolder, "final", _agentList.ActiveAgents, _siteList);
 
             StatisticHelper.Save(_subtypeProportionStatistic, $@"{_outputFolder}\subtype_proportion_statistic.csv");
+
+            StatisticHelper.Save(_debugSiteOutput, $@"{_outputFolder}\debug.csv");
         }
 
         protected override void PreIterationCalculations(int iteration, IAgent[] orderedAgents)
@@ -128,6 +132,8 @@ namespace CL1_M1
             SubtypeProportionOutput spo = StatisticHelper.CreateNeighbourhoodSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.TypeA);
             spo.Subtype = EnumHelper.EnumValueAsString(AgentSubtype.TypeA);
             _subtypeProportionStatistic.Add(spo);
+
+            _debugSiteOutput.Add(new DebugAgentsPositionOutput { Positions = $"{string.Join(Environment.NewLine, _siteList.Sites.Select(l => string.Join(";", l.Select(s => s.IsOccupied ? EnumHelper.EnumValueAsString(s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype]) : ""))).ToArray())}{Environment.NewLine}" });
         }
 
         private double CalculateSubtypeProportion(AgentSubtype subtype, Site centerSite)

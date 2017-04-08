@@ -218,8 +218,6 @@ namespace CL1_M5
         {
             List<Site> vacantSites = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied == false).ToList();
 
-            bool isAnyAgentMove = false;
-
             orderedAgents.ForEach(agent =>
             {
 
@@ -243,16 +241,12 @@ namespace CL1_M5
 
                     vacantSites.Add(currentSite);
                     vacantSites.Remove(selectedSite);
-                    isAnyAgentMove = true;
                 }
                 else
                 {
                     agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = false;
                 }
             });
-
-            if (isAnyAgentMove == false)
-                algorithmStoppage = true;
         }
     }
 }

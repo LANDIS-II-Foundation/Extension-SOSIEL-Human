@@ -65,44 +65,36 @@ namespace Common.Algorithm
 
         protected virtual void Reproduction(int minAgentNumber)
         {
-            List<IAgent> activeAgents = _agentList.Agents.Cast<IAgent>()
-                .Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active" && _siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])
-                   .Where(s => s.IsOccupied).Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]) > 0).ToList();
+            IAgent[] activeAgents = _agentList.ActiveAgents;
 
-            if (activeAgents.Count == 0)
+            //Use a uniform distribution to select an agent, agent(i), with: (a) “active” status, (b) at least one neighbor, and (c) common_pool(i)_c(t) > 0.
+            List<IAgent> suitableAgents = activeAgents.Where(a => a[Agent.VariablesUsedInCode.AgentC] > 0 
+                || a.ConnectedAgents.Any(n=>n[Agent.VariablesUsedInCode.AgentStatus] == "active" && n[Agent.VariablesUsedInCode.AgentC] > 0)).ToList();
+
+            if (suitableAgents.Count == 0)
                 return;
 
-            int newAgentCount = minAgentNumber - activeAgents.Count;
+            int newAgentCount = minAgentNumber - activeAgents.Length;
 
             int lastAgentId = _agentList.Agents.Count + 1;
 
             while (newAgentCount > 0)
             {
-                IAgent targetAgent = activeAgents.RandomizeOne();
+                IAgent targetAgent = suitableAgents.RandomizeOne();
 
-                IAgent[] poolOfParticipants = _siteList.CommonPool((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite])
-                    .Where(s => s.IsOccupied).Select(s => s.OccupiedBy).ToArray();
+                List<IAgent> poolOfParticipants = targetAgent.ConnectedAgents.Where(a=> a[Agent.VariablesUsedInCode.AgentStatus] == "active").ToList();
+                poolOfParticipants.Add(targetAgent);
 
-                int contributionsAmount = poolOfParticipants.Sum(a => (int)a[Agent.VariablesUsedInCode.AgentC]);
-
-                if(contributionsAmount == 0)
-                {
-
-                }
+                double contributions = poolOfParticipants.Sum(a => (int)a[Agent.VariablesUsedInCode.AgentC]);
 
                 List<IAgent> vector = new List<IAgent>(100);
 
                 poolOfParticipants.ForEach(a =>
                 {
-                    int count = Convert.ToInt32(Math.Round(a[Agent.VariablesUsedInCode.AgentC] / (double)contributionsAmount * 100, MidpointRounding.AwayFromZero));
+                    int count = Convert.ToInt32(Math.Round(a[Agent.VariablesUsedInCode.AgentC] / contributions * 100, MidpointRounding.AwayFromZero));
 
                     for (int i = 0; i < count; i++) { vector.Add(a); }
                 });
-
-                if(vector.Count != 100)
-                {
-
-                }
 
                 T prototype = vector.RandomizeOne() as T;
 
@@ -119,7 +111,7 @@ namespace Common.Algorithm
                 newAgentCount--;
 
                 _agentList.Agents.Add(replica);
-                activeAgents.Add(replica);
+                suitableAgents.Add(replica);
 
                 _iterations.ForEach(iteration =>
                 {
@@ -158,7 +150,7 @@ namespace Common.Algorithm
 
                 Dictionary<IAgent, Goal[]> rankedGoals = new Dictionary<IAgent, Goal[]>(_agentList.Agents.Count);
 
-                _agentList.Agents.ForEach(a =>
+                orderedAgents.ForEach(a =>
                 {
                     rankedGoals.Add(a, a.Goals.ToArray());
 
