@@ -81,6 +81,8 @@ namespace Common.Entities
                 {
                     Site selectedSite = availableSites.RandomizeOne();
 
+                    selectedSite.IsOccupationChanged = true;
+
                     selectedSite.OccupiedBy = agent;
 
                     agent[Agent.VariablesUsedInCode.AgentCurrentSite] = selectedSite;

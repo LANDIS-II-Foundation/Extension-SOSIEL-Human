@@ -23,5 +23,15 @@ namespace Common.Entities
         public bool RecalculateMaxGoalValue { get; set; }
 
         public bool RankingEnabled { get; set; } = true;
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj) || ((Goal)obj).Name == Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return 0;
+        }
     }
 }

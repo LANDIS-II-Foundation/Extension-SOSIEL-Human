@@ -4,9 +4,10 @@ using System.Linq;
 
 namespace Common.Entities
 {
+    using Environments;
+
     public class Rule
     {
-        
         public RuleLayer Layer { get; set; }
 
         public int RuleSet { get; set; }
@@ -19,13 +20,13 @@ namespace Common.Entities
 
         public RuleConsequent Consequent { get; set; }
 
-        public int FreshnessStatus { get; set; }
-
         public bool IsAction { get;  set; }
         
         public bool IsModifiable { get; set; }
 
         public int RequiredParticipants { get;  set; }
+
+        
 
         public bool IsCollectiveAction
         {
@@ -91,17 +92,28 @@ namespace Common.Entities
             agent[Consequent.Param] = value;
         }
         
-        internal static Rule Create(RuleAntecedentPart[] antecedent, RuleConsequent consequent)
+        public static Rule Create(RuleAntecedentPart[] antecedent, RuleConsequent consequent)
         {
-            Rule newHeuristic = new Rule();
+            Rule newRule = new Rule();
 
-            newHeuristic.Antecedent = antecedent;
-            newHeuristic.Consequent = consequent;
-            newHeuristic.FreshnessStatus = 0;
-            newHeuristic.IsAction = true;
+            newRule.Antecedent = antecedent;
+            newRule.Consequent = consequent;
+            newRule.IsAction = true;
 
-            return newHeuristic;
+            return newRule;
         }
-        
+
+        public Rule Copy()
+        {
+            Rule rule = new Rule();
+
+            rule.Antecedent = Antecedent;
+            rule.Consequent = Consequent;
+            rule.IsAction = IsAction;
+            rule.IsModifiable = IsModifiable;
+            rule.RequiredParticipants = RequiredParticipants;
+
+            return rule;
+        }
     }
 }

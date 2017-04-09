@@ -66,9 +66,9 @@ namespace CL3_M10
 
         protected override void InitializeAgents()
         {
-            numberOfAgents = _configuration.InitialState.AgentsState.Sum(astate => astate.NumberOfAgents);
+            _numberOfAgents = _configuration.InitialState.AgentsState.Sum(astate => astate.NumberOfAgents);
 
-            _agentList = AgentList.Generate(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState);
+            _agentList = AgentList.Generate(_numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()

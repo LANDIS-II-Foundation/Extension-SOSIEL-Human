@@ -73,11 +73,11 @@ namespace CL4_M11
 
         protected override void InitializeAgents()
         {
-            numberOfAgents = _configuration.InitialState.AgentsState.Sum(astate => astate.NumberOfAgents);
+            _numberOfAgents = _configuration.InitialState.AgentsState.Sum(astate => astate.NumberOfAgents);
 
-            _siteList = SiteList.Generate(numberOfAgents, _configuration.AlgorithmConfiguration.VacantProportion);
+            _siteList = SiteList.Generate(_numberOfAgents, _configuration.AlgorithmConfiguration.VacantProportion);
 
-            _agentList = AgentList.Generate(numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
+            _agentList = AgentList.Generate(_numberOfAgents, _configuration.AgentConfiguration, _configuration.InitialState, _siteList);
         }
 
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
@@ -124,7 +124,7 @@ namespace CL4_M11
             {
                 Site currentSite = a[Agent.VariablesUsedInCode.AgentCurrentSite];
 
-                a.ConnectedAgents = _siteList.AdjacentSites(currentSite).Where(s => s.IsOccupied)
+                a.ConnectedAgents = _siteList.AdjacentSites(currentSite).Where(s => s.IsOccupied && s != agent[Agent.VariablesUsedInCode.AgentCurrentSite])
                     .Select(s => s.OccupiedBy).ToList();
 
                 a[Agent.VariablesUsedInCode.AgentSubtype] = a[Agent.VariablesUsedInCode.AgentC] > 0 ? AgentSubtype.Co : AgentSubtype.NonCo;

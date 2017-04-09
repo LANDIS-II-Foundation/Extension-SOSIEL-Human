@@ -7,7 +7,7 @@ namespace Common.Entities
 {
     using Enums;
 
-    public class Site: IEquatable<Site> 
+    public class Site : IEquatable<Site>
     {
         public SiteType Type { get; set; }
 
@@ -21,6 +21,8 @@ namespace Common.Entities
 
         public IAgent OccupiedBy { get; set; }
 
+        public SiteList SiteList { get; set; }
+
         public bool IsOccupied
         {
             get
@@ -28,6 +30,8 @@ namespace Common.Entities
                 return OccupiedBy == null ? false : true;
             }
         }
+
+        public bool IsOccupationChanged { get; set; } 
 
         //public bool IsAdjacent(Site target)
         //{

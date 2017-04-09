@@ -212,5 +212,10 @@ namespace Common.Helpers
 
             return record;
         }
+
+        public static DebugAgentsPositionOutput CreateDebugAgentsPositionRecord(SiteList siteList, int iteration)
+        {
+            return new DebugAgentsPositionOutput { Positions = $"{iteration} iteration;{Environment.NewLine}{string.Join(Environment.NewLine, siteList.Sites.Select(l => string.Join(";", l.Select(s => s.IsOccupied ? $"Id:{s.OccupiedBy.Id}, {EnumHelper.EnumValueAsString(s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype])}" : ""))).ToArray())}{Environment.NewLine}" };
+        }
     }
 }

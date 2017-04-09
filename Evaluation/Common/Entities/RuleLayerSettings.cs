@@ -48,7 +48,9 @@ namespace Common.Entities
             get
             {
                 return ConsequentValueInterval[1];
-            }
+            } 
         }
+
+        public string PreliminaryСalculations { get; set; }
     }
 }

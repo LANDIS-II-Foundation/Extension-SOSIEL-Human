@@ -28,16 +28,17 @@ namespace Common.Entities
             rules.ForEach(r => Add(r));
         }
 
+        //todo
         void CheckAndRemove()
         {
-            if (Rules.Count == LayerSettings.MaxNumberOfRules)
-            {
-                Rule oldestRule = Rules.OrderByDescending(h => h.FreshnessStatus).First(h => h.IsAction == true);
-                oldestRule.Layer = null;
-                //Set.UnassignRule(oldestRules);
+            //if (Rules.Count == LayerSettings.MaxNumberOfRules)
+            //{
+            //    Rule oldestRule = Rules.OrderByDescending(h => h.FreshnessStatus).First(h => h.IsAction == true);
+            //    oldestRule.Layer = null;
+            //    //Set.UnassignRule(oldestRules);
 
-                Rules.Remove(oldestRule);
-            }
+            //    Rules.Remove(oldestRule);
+            //}
         }
 
         public void Add(Rule Rule)

@@ -19,9 +19,11 @@
       "SetSettings": {
         "1": {
           "AssociatedWith": [ "PG1" ],
+          "IsSequential": true,
           "Layer": {
             "1": {
-              "Modifiable": false
+              "Modifiable": false,
+              "PreliminaryСalculations": "BetterSite"
             }
           }
         }
@@ -58,7 +60,7 @@
     "AgentsState": [
       {
         "PrototypeOfAgent": "Prototype1",
-        "NumberOfAgents": 1000,
+        "NumberOfAgents": 100,
 
         "PrivateVariables": {
           "AgentStatus": "active",

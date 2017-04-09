@@ -11,10 +11,21 @@ namespace Common.Processes
     {
         public void Execute(IAgent agent, AgentState state)
         {
-            state.Activated.OrderBy(r => r.Layer.Set).ThenBy(r => r.Layer).ForEach(r =>
+            //Sequential set apply earlier than simultaneous. Ones apply after AS process
+            state.Activated.OrderBy(r => r.Layer.Set).ThenBy(r => r.Layer).Where(r=>r.Layer.Set.IsSequential == false).ForEach(r =>
                {
                    r.Apply(agent);
                });
         }
+
+        public void ExecuteForSpecificRuleSet(IAgent agent, AgentState state, RuleSet set)
+        {
+            //single actions only 
+            state.Activated.Where(r => r.Layer.Set == set && r.IsCollectiveAction == false).OrderBy(r => r.Layer).ForEach(r =>
+              {
+                  r.Apply(agent);
+              });
+        }
+
     }
 }

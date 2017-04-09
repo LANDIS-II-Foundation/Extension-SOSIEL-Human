@@ -134,9 +134,7 @@ namespace Common.Processes
                 {
                     agent.AssignedRules.Add(rule);
 
-                    //check goals will be equal
                     agentStates[agent].AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(agentStates[currentAgent].AnticipationInfluence[rule]));
-
                 }
             }
         }

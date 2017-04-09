@@ -125,6 +125,7 @@ namespace Common.Entities
                 for (int j = startIndex; j < size; j++)
                 {
                     Site newSite = CreateSite(j, i, startIndex, size - 1);
+                    newSite.SiteList = siteList;
 
                     siteList.Sites[i][j] = newSite;
 

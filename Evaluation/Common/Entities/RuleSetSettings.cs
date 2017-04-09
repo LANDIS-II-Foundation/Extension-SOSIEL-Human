@@ -10,6 +10,8 @@ namespace Common.Entities
     {
         public string[] AssociatedWith { get; set; }
 
+        public bool IsSequential { get; set; }
+
         public Dictionary<string, RuleLayerSettings> Layer { get; set; }
     }
 }

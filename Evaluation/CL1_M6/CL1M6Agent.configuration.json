@@ -20,9 +20,11 @@
       "SetSettings": {
         "1": {
           "AssociatedWith": [ "PG1" ],
+          "IsSequential": true,
           "Layer": {
             "1": {
-              "Modifiable": false
+              "Modifiable": false,
+              "PreliminaryСalculations": "BetterSite"
             }
           }
         }

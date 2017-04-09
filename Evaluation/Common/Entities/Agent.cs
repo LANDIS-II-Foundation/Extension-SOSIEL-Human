@@ -168,7 +168,7 @@ namespace Common.Entities
 
             _mentalProto = Rules.GroupBy(r => r.RuleSet).OrderBy(g => g.Key).Select(g =>
                    new RuleSet(g.Key, Goals.Where(goal => SetSettings[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray(),
-                       g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2 => new RuleLayer(SetSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
+                       g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2 => new RuleLayer(SetSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)), SetSettings[g.Key.ToString()].IsSequential)).ToList();
 
             if (UseDoNothing)
                 AddDoNothingRules();
@@ -205,6 +205,8 @@ namespace Common.Entities
                 {
                     Site newSite = (Site)newValue;
                     newSite.OccupiedBy = this;
+                    newSite.IsOccupationChanged = true;
+                    newSite.SiteList.AdjacentSites(newSite).ForEach(s => s.IsOccupationChanged = true);
                 }
             }
         }
@@ -214,7 +216,10 @@ namespace Common.Entities
             if (variable == VariablesUsedInCode.AgentCurrentSite)
             {
                 Site oldSite = (Site)oldValue;
+                
                 oldSite.OccupiedBy = null;
+                oldSite.IsOccupationChanged = true;
+                oldSite.SiteList.AdjacentSites(oldSite).ForEach(s => s.IsOccupationChanged = true);
             }
         }
 

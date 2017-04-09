@@ -39,11 +39,15 @@ namespace Common.Processes
                 foreach (IAgent connectedAgent in agent.ConnectedAgents)
                 {
                     foreach (Rule rule in confidentAgents[connectedAgent]
-                        .Where(r => r.Layer.Set.AssociatedWith.Any(g => iterationState[agent].GoalsState.Any(kvp => kvp.Key == g))))
+                        .Where(r => r.Layer.Set.AssociatedWith.Any(g => iterationState[agent].GoalsState.Any(kvp => kvp.Key.Name == g.Name))))
                     {
                         if (agent.AssignedRules.Any(r => r != rule))
                         {
                             agent.AssignedRules.Add(rule);
+
+                            AgentState agentState = iterationState[agent];
+
+                            agentState.AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(iterationState[connectedAgent].AnticipationInfluence[rule]));
                         }
                     }
                 }

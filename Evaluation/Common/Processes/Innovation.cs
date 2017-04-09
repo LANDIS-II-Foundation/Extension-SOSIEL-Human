@@ -87,7 +87,7 @@ namespace Common.Processes
 
 
                 #region Generating antecedent
-                List<RuleAntecedentPart> antecedentsList = new List<RuleAntecedentPart>(priorPeriodRule.Antecedent.Length);
+                List<RuleAntecedentPart> antecedentList = new List<RuleAntecedentPart>(priorPeriodRule.Antecedent.Length);
 
                 foreach (RuleAntecedentPart antecedent in priorPeriodRule.Antecedent)
                 {
@@ -95,11 +95,18 @@ namespace Common.Processes
 
                     RuleAntecedentPart newAntecedent = RuleAntecedentPart.Renew(antecedent, newConst);
 
-                    antecedentsList.Add(newAntecedent);
+                    antecedentList.Add(newAntecedent);
                 }
                 #endregion
 
-                Rule generatedRule = Rule.Create(antecedentsList.ToArray(), consequent);
+                AgentState agentState = currentIteration[agent];
+
+                Rule generatedRule = priorPeriodRule.Copy();
+                generatedRule.Antecedent = antecedentList.ToArray();
+                generatedRule.Consequent = consequent;
+
+
+                agentState.AnticipationInfluence.Add(generatedRule, new Dictionary<Goal, double>(agentState.AnticipationInfluence[priorPeriodRule]));
 
                 layer.Add(generatedRule);
 

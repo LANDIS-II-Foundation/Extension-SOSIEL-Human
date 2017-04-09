@@ -10,6 +10,7 @@ namespace Common.Algorithm
     using Entities;
     using Helpers;
     using Processes;
+    using Exceptions;
 
     public abstract class SosielAlgorithm<T> where T : class, ICloneableAgent<T>
     {
@@ -17,20 +18,23 @@ namespace Common.Algorithm
 
         ProcessConfiguration _processConfiguration;
 
-        protected bool algorithmStoppage = false;
-        protected int numberOfAgents = 0;
+        protected bool _algorithmStoppage = false;
+        protected int _numberOfAgents = 0;
         protected SiteList _siteList;
         protected AgentList _agentList;
         protected LinkedList<Dictionary<IAgent, AgentState>> _iterations = new LinkedList<Dictionary<IAgent, AgentState>>();
+        protected Dictionary<string, Action<IAgent>> _preliminaryCalculations = new Dictionary<string, Action<IAgent>>();
 
         //processes
-        AnticipatoryLearning al = new AnticipatoryLearning();
-        CounterfactualThinking ct = new CounterfactualThinking();
-        Innovation it = new Innovation();
-        SocialLearning sl = new SocialLearning();
-        ActionSelection acts = new ActionSelection();
-        ActionTaking at = new ActionTaking();
+        AnticipatoryLearning _al = new AnticipatoryLearning();
+        CounterfactualThinking _ct = new CounterfactualThinking();
+        Innovation _it = new Innovation();
+        SocialLearning _sl = new SocialLearning();
+        ActionSelection _acts = new ActionSelection();
+        ActionTaking _at = new ActionTaking();
 
+
+        
 
         public SosielAlgorithm(AlgorithmConfiguration algorithmConfiguration, ProcessConfiguration processConfiguration)
         {
@@ -167,7 +171,7 @@ namespace Common.Algorithm
                         foreach (IAgent agent in agentGroup)
                         {
                             //Anticipatory Learning Process
-                            rankedGoals[agent] = al.Execute(agent, _iterations.Last);
+                            rankedGoals[agent] = _al.Execute(agent, _iterations.Last);
 
                             if (_processConfiguration.CounterfactualThinkingEnabled == true)
                             {
@@ -192,13 +196,13 @@ namespace Common.Algorithm
                                                     bool? CTResult = null;
 
                                                     if (matchedPriorPeriodHeuristics.Length >= 2)
-                                                        CTResult = ct.Execute(agent, _iterations.Last, selectedGoal, matchedPriorPeriodHeuristics, layer.Key);
+                                                        CTResult = _ct.Execute(agent, _iterations.Last, selectedGoal, matchedPriorPeriodHeuristics, layer.Key);
 
 
                                                     if (_processConfiguration.InnovationEnabled == true)
                                                     {
                                                         if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
-                                                            it.Execute(agent, _iterations.Last, selectedGoal, layer.Key);
+                                                            _it.Execute(agent, _iterations.Last, selectedGoal, layer.Key);
                                                     }
                                                 }
                                             }
@@ -222,12 +226,12 @@ namespace Common.Algorithm
                             {
                                 foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                                 {
-                                    sl.ExecuteSelection(agent, _iterations.Last.Previous.Value[agent], rankedGoals[agent], layer.Key);
+                                    _sl.ExecuteSelection(agent, _iterations.Last.Previous.Value[agent], rankedGoals[agent], layer.Key);
                                 }
                             }
                         }
 
-                        sl.ExecuteLearning(agentGroup.ToArray(), _iterations.Last.Previous.Value);
+                        _sl.ExecuteLearning(agentGroup.ToArray(), _iterations.Last.Previous.Value);
                     }
 
                 }
@@ -239,14 +243,37 @@ namespace Common.Algorithm
                     {
                         foreach (IAgent agent in agentGroup)
                         {
+
                             foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                             {
                                 foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                                 {
-                                    acts.ExecutePartI(agent, _iterations.Last, rankedGoals[agent], layer.ToArray());
+                                    string preliminaryCalculationsMethodName = layer.Key.LayerSettings.PreliminaryСalculations;
+
+                                    if (string.IsNullOrEmpty(preliminaryCalculationsMethodName) == false)
+                                    {
+                                        try
+                                        {
+                                            Action<IAgent> method = _preliminaryCalculations[preliminaryCalculationsMethodName];
+
+                                            method(agent);
+                                        }
+                                        catch (KeyNotFoundException)
+                                        {
+                                            throw new AlgorithmException($"Preliminary calculation: {preliminaryCalculationsMethodName} hasn't implemented in current model");
+                                        }
+                                    }
+
+                                    _acts.ExecutePartI(agent, _iterations.Last, rankedGoals[agent], layer.ToArray());
+                                }
+
+                                if (set.Key.IsSequential)
+                                {
+                                    _at.ExecuteForSpecificRuleSet(agent, currentIteration[agent], set.Key);
+
+                                    PostIterationCalculations(i, orderedAgents);
                                 }
                             }
-
                         }
                     }
 
@@ -263,7 +290,7 @@ namespace Common.Algorithm
                                 {
                                     foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                                     {
-                                        acts.ExecutePartII(agent, _iterations.Last, rankedGoals[agent], layer.ToArray(), _agentList.Agents.Count);
+                                        _acts.ExecutePartII(agent, _iterations.Last, rankedGoals[agent], layer.ToArray(), _agentList.Agents.Count);
                                     }
                                 }
                             }
@@ -278,7 +305,7 @@ namespace Common.Algorithm
                     {
                         foreach (IAgent agent in agentGroup)
                         {
-                            at.Execute(agent, currentIteration[agent]);
+                            _at.Execute(agent, currentIteration[agent]);
 
                             //if (periods.Last.Value.IsOverconsumption)
                             //    return periods;
@@ -290,7 +317,7 @@ namespace Common.Algorithm
                 {
                     if (currentIteration.SelectMany(kvp => kvp.Value.Activated).All(r => r.IsAction == false))
                     {
-                        algorithmStoppage = true;
+                        _algorithmStoppage = true;
                     }
                 }
 
@@ -305,10 +332,10 @@ namespace Common.Algorithm
 
                 if (_processConfiguration.ReproductionEnabled)
                 {
-                    Reproduction(numberOfAgents);
+                    Reproduction(_numberOfAgents);
                 }
 
-                if (algorithmStoppage || _agentList.ActiveAgents.Length == 0)
+                if (_algorithmStoppage || _agentList.ActiveAgents.Length == 0)
                     break;
             }
         }
