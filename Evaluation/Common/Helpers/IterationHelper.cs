@@ -23,13 +23,11 @@ namespace Common.Helpers
 
                 Dictionary<Rule, Dictionary<Goal, double>> ai = new Dictionary<Rule, Dictionary<Goal, double>>();
 
-                AgentStateConfiguration stateConfiguration = configuration.AgentsState.Single(st => st.PrototypeOfAgent == a.PrototypeName);
-
                 a.AssignedRules.ForEach(r =>
                 {
                     Dictionary<string, double> source;
 
-                    stateConfiguration.AnticipatedInfluenceState.TryGetValue(r.Id, out source);
+                    a.InitialStateConfiguration.AnticipatedInfluenceState.TryGetValue(r.Id, out source);
 
                     Dictionary<Goal, double> inner = new Dictionary<Goal, double>();
 
@@ -47,7 +45,7 @@ namespace Common.Helpers
                 {
                     int unadjustedProportion = 10;
 
-                    var goalsForRanking = a.Goals.Join(stateConfiguration.AssignedGoals, g => g.Name, gs => gs, (g, gs) => new { g, gs }).ToArray();
+                    var goalsForRanking = a.Goals.Join(a.InitialStateConfiguration.AssignedGoals, g => g.Name, gs => gs, (g, gs) => new { g, gs }).ToArray();
 
                     int numberOfRankingGoals = goalsForRanking.Count(o => o.g.RankingEnabled);
 
@@ -76,7 +74,7 @@ namespace Common.Helpers
                 }
                 else
                 {
-                    stateConfiguration.GoalState.ForEach(gs =>
+                    a.InitialStateConfiguration.GoalState.ForEach(gs =>
                     {
                         Goal goal = a.Goals.First(g => g.Name == gs.Key);
 
@@ -98,7 +96,7 @@ namespace Common.Helpers
                 }
                 else
                 {
-                    Rule[] firstIterationsRule = stateConfiguration.ActivatedRulesOnFirstIteration.Select(rId => a.AssignedRules.First(ar => ar.Id == rId)).ToArray();
+                    Rule[] firstIterationsRule = a.InitialStateConfiguration.ActivatedRulesOnFirstIteration.Select(rId => a.AssignedRules.First(ar => ar.Id == rId)).ToArray();
 
                     agentState.Matched.AddRange(firstIterationsRule);
                     agentState.Activated.AddRange(firstIterationsRule);

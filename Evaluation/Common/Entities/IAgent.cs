@@ -19,6 +19,8 @@ namespace Common.Entities
 
         IEnumerable<Rule> MentalModelRules { get; }
 
+        AgentStateConfiguration InitialStateConfiguration { get; set; }
+
         void GenerateCustomParams();
 
         void SetToCommon(string key, dynamic value);

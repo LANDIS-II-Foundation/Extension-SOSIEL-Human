@@ -26,7 +26,7 @@ namespace CL2_M8
 
 
         //statistics
-        List<AgentNumericValuesOutput> _agentContributions;
+        List<AgentNumericValuesOutput> _variableStatistic;
 
 
 
@@ -46,7 +46,7 @@ namespace CL2_M8
             _configuration = configuration;
 
             //statistics
-            _agentContributions = new List<AgentNumericValuesOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
+            _variableStatistic = new List<AgentNumericValuesOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
 
             _outputFolder = @"Output\CL2_M8";
 
@@ -80,7 +80,7 @@ namespace CL2_M8
 
         protected override void AfterAlgorithmExecuted()
         {
-            StatisticHelper.Save(_agentContributions, $@"{_outputFolder}\agent_contributions_statistic.csv");
+            StatisticHelper.Save(_variableStatistic, $@"{_outputFolder}\variable_statistic.csv");
         }
 
         protected override void PreIterationCalculations(int iteration, IAgent[] orderedAgents)
@@ -97,7 +97,7 @@ namespace CL2_M8
             IAgent agent = _agentList.Agents.First();
 
             agent.SetToCommon(Agent.VariablesUsedInCode.CommonPoolC, _agentList.CalculateCommonC());
-            agent.SetToCommon(Agent.VariablesUsedInCode.CommonPoolSize, _agentList.Agents);
+            agent.SetToCommon(Agent.VariablesUsedInCode.CommonPoolSize, _agentList.Agents.Count);
 
             agent.SetToCommon(Agent.VariablesUsedInCode.PoolWellbeing, CalculatePoolWellbeing(agent));
 
@@ -113,13 +113,13 @@ namespace CL2_M8
 
             IAgent[] activeAgents = _agentList.ActiveAgents;
 
-            _agentContributions.Add(StatisticHelper.CreateAgentValuesRecord(activeAgents, iteration, Agent.VariablesUsedInCode.AgentC));
+            _variableStatistic.Add(StatisticHelper.CreateAgentValuesRecord(activeAgents, iteration, Agent.VariablesUsedInCode.AgentC));
         }
 
 
         private double CalculateAgentWellbeing(IAgent agent)
         {
-            return agent[Agent.VariablesUsedInCode.AgentE] - agent[Agent.VariablesUsedInCode.AgentC]
+            return agent[Agent.VariablesUsedInCode.Endowment] - agent[Agent.VariablesUsedInCode.AgentC]
                 + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * agent[Agent.VariablesUsedInCode.CommonPoolC] / (double)agent[Agent.VariablesUsedInCode.CommonPoolSize];
         }
 

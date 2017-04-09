@@ -48,6 +48,7 @@ namespace Common.Entities
                 //call before clonning agents
                 prototype.AssignRules(astate.AssignedRules);
                 prototype.PrototypeName = astate.PrototypeOfAgent;
+                prototype.InitialStateConfiguration = astate;
 
                 astate.PrivateVariables.ForEach(kvp =>
                 {

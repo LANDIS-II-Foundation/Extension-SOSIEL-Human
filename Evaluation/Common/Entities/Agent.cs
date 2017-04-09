@@ -91,6 +91,7 @@ namespace Common.Entities
 
         public List<IAgent> ConnectedAgents { get; set; }
 
+        public AgentStateConfiguration InitialStateConfiguration { get; set; }
 
         public IEnumerable<Rule> MentalModelRules
         {
@@ -239,6 +240,7 @@ namespace Common.Entities
             agent.AssignedRules = new List<Rule>(AssignedRules);
             agent.ConnectedAgents = new List<IAgent>();
             agent.UseDoNothing = UseDoNothing;
+            agent.InitialStateConfiguration = InitialStateConfiguration;
 
             if (agent.Variables.ContainsKey(VariablesUsedInCode.AgentCurrentSite))
                 agent.Variables.Remove(VariablesUsedInCode.AgentCurrentSite);

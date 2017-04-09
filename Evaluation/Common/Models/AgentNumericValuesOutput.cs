@@ -12,25 +12,37 @@ namespace Common.Models
     {
         public string Name { get; set; }
 
+        public bool IsFirstVariable { get; set; }
+
         public dynamic[] Values { get; set; }
 
 
         public override string ToString()
         {
-            return string.Format("{0}: {1}", Name, string.Join(";", Values.Select(v => v.ToString("0.000"))));
+            return $"{(IsFirstVariable ? "" : ";")}{Name};{string.Join(";", Values.Select(v => v.ToString("0.000")))}{Environment.NewLine}";
         }
     }
 
     [DelimitedRecord(";")]
-    public class AgentNumericValuesOutput
+    public class AgentNumericValuesOutput : IHeader
     {
         [FieldOrder(0)]
         public int Iteration { get; set; }
+
+        public string HeaderLine
+        {
+            get
+            {
+                NumericValuesItem first = Values.FirstOrDefault();
+
+                return $"Iteration;Variable;{(first?.Values != null ? string.Join(";", Enumerable.Range(1, first.Values.Length).Select(n => $"Agent{n}")) : "")}";
+            }
+        }
 
 
         //todo: replace on property
         [FieldOrder(1)]
         [FieldConverter(typeof(ToStringConverter))]
-        public List<NumericValuesItem> Values;
+        public NumericValuesItem[] Values;
     }
 }

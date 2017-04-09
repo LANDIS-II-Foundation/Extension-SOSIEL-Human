@@ -51,10 +51,10 @@ namespace Common.Helpers
 
         public static AgentNumericValuesOutput CreateAgentValuesRecord(IAgent[] activeAgents, int iteration, params string[] variableNames)
         {
-            List<NumericValuesItem> valueItems = variableNames.Select(v =>
+            NumericValuesItem[] valueItems = variableNames.Select((v,i) =>
             {
-                return new NumericValuesItem { Name = v, Values = activeAgents.Select(a => a[v]).ToArray() };
-            }).ToList();
+                return new NumericValuesItem { Name = v, Values = activeAgents.OrderBy(a=>a.Id).Select(a => a[v]).ToArray(), IsFirstVariable = i == 0 };
+            }).ToArray();
 
             return new AgentNumericValuesOutput { Iteration = iteration, Values = valueItems };
         }
