@@ -7,6 +7,7 @@ namespace Common.Processes
     using Entities;
     using Randoms;
     using Helpers;
+    using Enums;
 
 
     public class ActionSelection : VolatileProcess
@@ -187,14 +188,14 @@ namespace Common.Processes
             {
                 ShareCollectiveAction(agent, ruleForActivating, iterationState.Value);
             }
-            
+
 
             agentState.Activated.Add(ruleForActivating);
             agentState.Matched.AddRange(matchedRules);
         }
 
         public void ExecutePartII(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> iterationState,
-            Goal[] rankedGoals, Rule[] processedRules, int numberOfAgents)
+            Goal[] rankedGoals, Rule[] processedRules, IAgent[] activeAgents)
         {
             AgentState agentState = iterationState.Value[agent];
 
@@ -204,25 +205,38 @@ namespace Common.Processes
 
             if (selectedRule.IsCollectiveAction)
             {
-                int numberOfInvolvedAgents = agent.ConnectedAgents.Count(a => iterationState.Value[a].Activated.Single(r => r.Layer == layer) == selectedRule);
+                int numberOfInvolvedAgents = 0;
 
                 int requiredParticipants = selectedRule.RequiredParticipants;
 
-
-                // Value 0 means all agents who participate in algorithm
-                if (requiredParticipants == 0)
+                if (agent.SocialNetwork == SocialNetworkType.SN1 || agent.SocialNetwork == SocialNetworkType.SN2 || agent.SocialNetwork == SocialNetworkType.SN3)
                 {
-                    requiredParticipants = numberOfAgents;
+                    numberOfInvolvedAgents = activeAgents.Where(a => a != agent).Count(a => iterationState.Value[a].Activated.Single(r => r.Layer == layer) == selectedRule);
+
+                    if (requiredParticipants == 0)
+                    {
+                        requiredParticipants = activeAgents.Length - 1;
+                    }
+                }
+
+                if (agent.SocialNetwork == SocialNetworkType.CommonPool)
+                {
+                    numberOfInvolvedAgents = agent.ConnectedAgents.Count(a => iterationState.Value[a].Activated.Single(r => r.Layer == layer) == selectedRule);
+
+                    if (requiredParticipants == 0)
+                    {
+                        requiredParticipants = agent.ConnectedAgents.Count;
+                    }
                 }
 
 
 
-                if (numberOfInvolvedAgents < requiredParticipants - 1)
+                if (numberOfInvolvedAgents < requiredParticipants)
                 {
                     agentState.BlockedRules.Add(selectedRule);
 
                     agentState.Activated.Remove(selectedRule);
-                    
+
                     ExecutePartI(agent, iterationState, rankedGoals, processedRules);
                 }
             }

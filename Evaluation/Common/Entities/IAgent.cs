@@ -3,6 +3,7 @@
 namespace Common.Entities
 {
     using Configuration;
+    using Enums;
 
     public interface IAgent
     {
@@ -20,6 +21,8 @@ namespace Common.Entities
         IEnumerable<Rule> MentalModelRules { get; }
 
         AgentStateConfiguration InitialStateConfiguration { get; set; }
+
+        SocialNetworkType SocialNetwork { get; set; }
 
         void GenerateCustomParams();
 

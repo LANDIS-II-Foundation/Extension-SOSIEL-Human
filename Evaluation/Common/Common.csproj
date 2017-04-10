@@ -82,7 +82,7 @@
     <Compile Include="Entities\SiteList.cs" />
     <Compile Include="Entities\Site.cs" />
     <Compile Include="Enums\SiteType.cs" />
-    <Compile Include="Enums\SocialNetworkTypes.cs" />
+    <Compile Include="Enums\SocialNetworkType.cs" />
     <Compile Include="Environments\ICloneable.cs" />
     <Compile Include="Exceptions\AlgorithmException.cs" />
     <Compile Include="Exceptions\ConfigVariableException.cs" />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Enums
 {
-    public enum SocialNetworkTypes
+    public enum SocialNetworkType
     {
         None,
         SN1,

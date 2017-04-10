@@ -10,10 +10,10 @@ namespace Common.Configuration
 
     public class AlgorithmConfiguration
     {
-        public Model Model { get;  set; }
+        public Model Model { get; set; }
 
-        public int NumberOfIterations { get;  set; }
+        public int NumberOfIterations { get; set; }
 
-        public double VacantProportion { get;  set; }
+        public double VacantProportion { get; set; }
     }
 }

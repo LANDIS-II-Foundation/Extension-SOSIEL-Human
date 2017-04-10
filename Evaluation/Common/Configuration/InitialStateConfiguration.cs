@@ -10,7 +10,7 @@ namespace Common.Configuration
 
     public class InitialStateConfiguration
     {
-        public SocialNetworkTypes SocialNetwork { get; set; }
+        public SocialNetworkType SocialNetwork { get; set; }
 
         public bool GenerateGoalImportance { get; set; }
 

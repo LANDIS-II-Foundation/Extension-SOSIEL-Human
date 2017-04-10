@@ -278,7 +278,7 @@ namespace Common.Algorithm
                     }
 
 
-                    if (_processConfiguration.RuleSelectionPart2Enabled)
+                    if (_processConfiguration.RuleSelectionPart2Enabled && i > 1)
                     {
                         //4th round: AS part II
                         foreach (var agentGroup in agentGroups)
@@ -290,7 +290,7 @@ namespace Common.Algorithm
                                 {
                                     foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                                     {
-                                        _acts.ExecutePartII(agent, _iterations.Last, rankedGoals[agent], layer.ToArray(), _agentList.Agents.Count);
+                                        _acts.ExecutePartII(agent, _iterations.Last, rankedGoals[agent], layer.ToArray(), orderedAgents);
                                     }
                                 }
                             }

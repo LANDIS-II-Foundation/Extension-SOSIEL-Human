@@ -86,7 +86,7 @@ namespace Common.Helpers
 
                 if (configuration.RandomlySelectRule)
                 {
-                    a.AssignedRules.GroupBy(r => new { r.RuleSet, r.RuleLayer }).ForEach(g =>
+                    a.AssignedRules.Where(r=>r.IsAction).GroupBy(r => new { r.RuleSet, r.RuleLayer }).ForEach(g =>
                      {
                          Rule selectedRule = g.RandomizeOne();
 

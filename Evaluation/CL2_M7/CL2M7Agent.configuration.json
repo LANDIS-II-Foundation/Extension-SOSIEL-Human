@@ -206,7 +206,8 @@
 
         "GoalState": {
           "PG1": {
-            "Proportion": 1
+            "Importance": 1,
+            "Value": 15
           }
         }
       }

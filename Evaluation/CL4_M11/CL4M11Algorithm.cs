@@ -34,18 +34,19 @@ namespace CL4_M11
         public static ProcessConfiguration GetProcessConfiguration()
         {
             return new ProcessConfiguration
-                {
-                    ActionTakingEnabled = true,
-                    AnticipatoryLearningEnabled = true,
-                    RuleSelectionEnabled = true,
-                    RuleSelectionPart2Enabled = true,
-                    SocialLearningEnabled = true,
-                    CounterfactualThinkingEnabled = true,
-                    InnovationEnabled = true,
-                    ReproductionEnabled = true,
-                    AgentRandomizationEnabled = true,
-                    AgentsDeactivationEnabled = true
-                };
+            {
+                ActionTakingEnabled = true,
+                AnticipatoryLearningEnabled = true,
+                RuleSelectionEnabled = true,
+                RuleSelectionPart2Enabled = true,
+                SocialLearningEnabled = true,
+                CounterfactualThinkingEnabled = true,
+                InnovationEnabled = true,
+                ReproductionEnabled = true,
+                AgentRandomizationEnabled = true,
+                AgentsDeactivationEnabled = true,
+                AlgorithmStopIfAllAgentsSelectDoNothing = true
+            };
         }
 
         public CL4M11Algorithm(Configuration<CL4M11Agent> configuration) : base(configuration.AlgorithmConfiguration, GetProcessConfiguration())
@@ -57,11 +58,13 @@ namespace CL4_M11
             _commonPoolFrequencyStatistic = new List<CommonPoolSubtypeFrequencyOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
             _valuesOutput = new List<CommonValuesOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
 
-            
+
             _outputFolder = @"Output\CL4_M11";
 
             if (Directory.Exists(_outputFolder) == false)
                 Directory.CreateDirectory(_outputFolder);
+
+            _preliminaryCalculations.Add("BetterSite", new Action<IAgent>(LookingForBetterSite));
         }
 
         public string Run()
@@ -107,16 +110,16 @@ namespace CL4_M11
         {
             base.PreIterationCalculations(iteration, orderedAgents);
 
-            _agentList.Agents.First().SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
+            IAgent agent = orderedAgents.First();
 
-            LookingForBetterSites(orderedAgents);
+            agent.SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
         }
 
         protected override void PostIterationCalculations(int iteration, IAgent[] orderedAgents)
         {
             base.PostIterationCalculations(iteration, orderedAgents);
 
-            IAgent agent = _agentList.Agents.First();
+            IAgent agent = orderedAgents.First();
 
             UpdateEndowment();
 
@@ -124,36 +127,33 @@ namespace CL4_M11
             {
                 Site currentSite = a[Agent.VariablesUsedInCode.AgentCurrentSite];
 
-                a.ConnectedAgents = _siteList.AdjacentSites(currentSite).Where(s => s.IsOccupied && s != agent[Agent.VariablesUsedInCode.AgentCurrentSite])
-                    .Select(s => s.OccupiedBy).ToList();
+                if (currentSite.IsOccupationChanged)
+                {
+                    a.ConnectedAgents = _siteList.AdjacentSites(currentSite).Where(s => s.IsOccupied && s != agent[Agent.VariablesUsedInCode.AgentCurrentSite])
+                        .Select(s => s.OccupiedBy).ToList();
+
+                    a[Agent.VariablesUsedInCode.NeighborhoodSize] = currentSite.GroupSize;
+                    a[Agent.VariablesUsedInCode.NeighborhoodVacantSites] = currentSite.GroupSize - a.ConnectedAgents.Count;
+                    
+                    a[Agent.VariablesUsedInCode.CommonPoolSize] = a[Agent.VariablesUsedInCode.NeighborhoodSize] + 1 - a[Agent.VariablesUsedInCode.NeighborhoodVacantSites];
+                }
 
                 a[Agent.VariablesUsedInCode.AgentSubtype] = a[Agent.VariablesUsedInCode.AgentC] > 0 ? AgentSubtype.Co : AgentSubtype.NonCo;
 
-
-                a[Agent.VariablesUsedInCode.NeighborhoodSize] = currentSite.GroupSize;
-                a[Agent.VariablesUsedInCode.NeighborhoodVacantSites] = currentSite.GroupSize - a.ConnectedAgents.Count;
-
-
                 a[Agent.VariablesUsedInCode.CommonPoolUnalike] = a.ConnectedAgents.Count(a2 => a2[Agent.VariablesUsedInCode.AgentSubtype] != a[Agent.VariablesUsedInCode.AgentSubtype]);
-                a[Agent.VariablesUsedInCode.CommonPoolSize] = a[Agent.VariablesUsedInCode.NeighborhoodSize] + 1 - a[Agent.VariablesUsedInCode.NeighborhoodVacantSites];
-
                 a[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion] = (a[Agent.VariablesUsedInCode.CommonPoolSize] - a[Agent.VariablesUsedInCode.CommonPoolUnalike]) / (double)a[Agent.VariablesUsedInCode.CommonPoolSize];
 
                 a[Agent.VariablesUsedInCode.CommonPoolC] = a.ConnectedAgents.Sum(a2 => a2[Agent.VariablesUsedInCode.AgentC]) + a[Agent.VariablesUsedInCode.AgentC];
-
-                
 
                 a[Agent.VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentSiteWellbeing(a);
 
                 a[Agent.VariablesUsedInCode.PoolWellbeing] = CalculatePoolWellbeing(a);
 
                 a[Agent.VariablesUsedInCode.AgentSavings] = a[Agent.VariablesUsedInCode.AgentE] - a[Agent.VariablesUsedInCode.AgentC];
+
+                a[Agent.VariablesUsedInCode.MaxPoolWellbeing] = a[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * a[Agent.VariablesUsedInCode.Endowment] / a[Agent.VariablesUsedInCode.CommonPoolSize];
             });
-
-
-
         }
-
 
         protected override void AgentsDeactivation()
         {
@@ -161,7 +161,7 @@ namespace CL4_M11
 
             _agentList.ActiveAgents.ForEach(a =>
             {
-                if(a[Agent.VariablesUsedInCode.AgentSiteWellbeing] <= 0)
+                if (a[Agent.VariablesUsedInCode.AgentSiteWellbeing] <= 0)
                 {
                     a[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
                     a[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
@@ -197,7 +197,7 @@ namespace CL4_M11
 
         private double CalculateAgentSiteWellbeing(IAgent agent)
         {
-            int commonPoolC = agent.ConnectedAgents.Sum(a=>a[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
+            int commonPoolC = agent.ConnectedAgents.Sum(a => a[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
 
             return agent[Agent.VariablesUsedInCode.AgentE] - agent[Agent.VariablesUsedInCode.AgentC]
                 + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)agent.ConnectedAgents.Count + 1);
@@ -220,39 +220,35 @@ namespace CL4_M11
             return agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)agent.ConnectedAgents.Count + 1);
         }
 
-        private void LookingForBetterSites(IAgent[] orderedAgent)
+        private void LookingForBetterSite(IAgent agent)
         {
             List<Site> vacantSites = _siteList.AsSiteEnumerable().Where(s => s.IsOccupied == false).ToList();
 
-            orderedAgent.ForEach(agent =>
+            Site[] betterSites = vacantSites.AsParallel()
+                    .Select(site => new
+                    {
+                        site,
+                        Wellbeing = CalculateAgentSiteWellbeing(agent, site)
+                    })
+                    .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing]).AsSequential()
+                    .GroupBy(obj => obj.Wellbeing).OrderByDescending(obj => obj.Key)
+                    .Take(1).SelectMany(g => g.Select(o => o.site)).ToArray();
+
+            if (betterSites.Length > 0)
             {
+                agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = true;
 
-                Site[] betterSites = vacantSites.AsParallel()
-                        .Select(site => new
-                        {
-                            site,
-                            Wellbeing = CalculateAgentSiteWellbeing(agent, site)
-                        })
-                        .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing]).AsSequential()
-                        .GroupBy(obj => obj.Wellbeing).OrderByDescending(obj => obj.Key)
-                        .Take(1).SelectMany(g => g.Select(o => o.site)).ToArray();
+                Site currentSite = agent[Agent.VariablesUsedInCode.AgentCurrentSite];
+                Site selectedSite = betterSites.RandomizeOne();
+                agent[Agent.VariablesUsedInCode.AgentBetterSite] = selectedSite;
 
-                if (betterSites.Length > 0)
-                {
-                    agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = true;
-
-                    Site currentSite = agent[Agent.VariablesUsedInCode.AgentCurrentSite];
-                    Site selectedSite = betterSites.RandomizeOne();
-                    agent[Agent.VariablesUsedInCode.AgentBetterSite] = selectedSite;
-
-                    vacantSites.Add(currentSite);
-                    vacantSites.Remove(selectedSite);
-                }
-                else
-                {
-                    agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = false;
-                }
-            });
+                vacantSites.Add(currentSite);
+                vacantSites.Remove(selectedSite);
+            }
+            else
+            {
+                agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = false;
+            }
         }
 
         private void UpdateEndowment()

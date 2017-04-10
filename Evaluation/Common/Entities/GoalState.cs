@@ -28,7 +28,7 @@ namespace Common.Entities
 
         public double Importance { get; set; }
 
-        public double AdjustedProportion { get; set; }
+        public double AdjustedImportance { get; set; }
         
         public bool Confidence { get; set; }
 

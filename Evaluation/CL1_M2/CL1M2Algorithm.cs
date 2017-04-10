@@ -106,7 +106,7 @@ namespace CL1_M2
         {
             base.PostIterationCalculations(iteration, orderedAgents);
 
-            IAgent agent = _agentList.Agents.First();
+            IAgent agent = orderedAgents.First();
 
 
             orderedAgents.AsParallel().ForAll(a =>

@@ -11,10 +11,10 @@ using CL1_M4;
 using CL1_M5;
 using CL1_M6;
 using CL2_M7;
-//using CL2_M8;
-//using CL2_M9;
-//using CL3_M10;
-//using CL4_M11;
+using CL2_M8;
+using CL2_M9;
+using CL3_M10;
+using CL4_M11;
 
 using Common.Algorithm;
 using Common.Configuration;
@@ -107,35 +107,35 @@ namespace Factory
                         return new CL2M7Algorithm(config);
                     }
 
-                //case Model.M8:
-                //    {
-                //        Configuration<CL2M8Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M8Agent>());
+                case Model.M8:
+                    {
+                        Configuration<CL2M8Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M8Agent>());
 
-                //        return new CL2M8Algorithm(config);
-                //    }
+                        return new CL2M8Algorithm(config);
+                    }
 
-                //case Model.M9:
-                //    {
-                //        Configuration<CL2M9Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M9Agent>());
+                case Model.M9:
+                    {
+                        Configuration<CL2M9Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL2M9Agent>());
 
-                //        return new CL2M9Algorithm(config);
-                //    }
+                        return new CL2M9Algorithm(config);
+                    }
 
-                //case Model.M10:
-                //    {
-                //        Configuration<CL3M10Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL3M10Agent>());
+                case Model.M10:
+                    {
+                        Configuration<CL3M10Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL3M10Agent>());
 
-                //        return new CL3M10Algorithm(config);
+                        return new CL3M10Algorithm(config);
 
-                //    }
+                    }
 
-                //case Model.M11:
-                //    {
-                //        Configuration<CL4M11Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL4M11Agent>());
+                case Model.M11:
+                    {
+                        Configuration<CL4M11Agent> config = JoinConfigs(algorithmConfig, ReadModelConfig<CL4M11Agent>());
 
-                //        return new CL4M11Algorithm(config);
+                        return new CL4M11Algorithm(config);
 
-                //    }
+                    }
 
 
                 default:

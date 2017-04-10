@@ -92,7 +92,7 @@ namespace CL1_M1
         {
             base.PreIterationCalculations(iteration, orderedAgents);
 
-            IAgent agent = _agentList.Agents.First();
+            IAgent agent = orderedAgents.First();
 
             agent.SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
         }
@@ -101,7 +101,7 @@ namespace CL1_M1
         {
             base.PostIterationCalculations(iteration, orderedAgents);
 
-            IAgent agent = _agentList.Agents.First();
+            IAgent agent = orderedAgents.First();
 
 
             orderedAgents.AsParallel().ForAll(a =>

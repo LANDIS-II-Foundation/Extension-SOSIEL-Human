@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace Common.Entities
 {
+    using Common.Enums;
     using Configuration;
     using Exceptions;
     using Helpers;
@@ -77,6 +78,8 @@ namespace Common.Entities
             public const string P = "P";
             public const string R = "R";
             public const string TotalEndowment = "TotalE";
+
+            public const string MaxPoolWellbeing = "MaxPoolWellbeing";
         }
 
         public int Id { get; set; }
@@ -92,6 +95,8 @@ namespace Common.Entities
         public List<IAgent> ConnectedAgents { get; set; }
 
         public AgentStateConfiguration InitialStateConfiguration { get; set; }
+
+        public SocialNetworkType SocialNetwork { get; set; }
 
         public IEnumerable<Rule> MentalModelRules
         {
@@ -116,6 +121,7 @@ namespace Common.Entities
         private List<Rule> Rules;
 
         private List<RuleSet> _mentalProto;
+
 
         [JsonProperty]
         private bool UseDoNothing;
@@ -241,6 +247,7 @@ namespace Common.Entities
             agent.ConnectedAgents = new List<IAgent>();
             agent.UseDoNothing = UseDoNothing;
             agent.InitialStateConfiguration = InitialStateConfiguration;
+            agent.SocialNetwork = SocialNetwork;
 
             if (agent.Variables.ContainsKey(VariablesUsedInCode.AgentCurrentSite))
                 agent.Variables.Remove(VariablesUsedInCode.AgentCurrentSite);

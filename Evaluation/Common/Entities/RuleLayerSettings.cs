@@ -34,21 +34,33 @@ namespace Common.Entities
             }
         }
 
+        public string MinConsequentReference { get; set; }
 
-        public int MinValue
+        public string MaxConsequentreference { get; set; }
+
+
+        public int MinValue(IAgent agent)
         {
-            get
+            if(string.IsNullOrEmpty(MinConsequentReference) == false)
+            {
+                return agent[MinConsequentReference];
+            }
+            else
             {
                 return ConsequentValueInterval[0];
             }
         }
 
-        public int MaxValue
+        public int MaxValue(IAgent agent)
         {
-            get
+            if (string.IsNullOrEmpty(MaxConsequentreference) == false)
+            {
+                return agent[MaxConsequentreference];
+            }
+            else
             {
                 return ConsequentValueInterval[1];
-            } 
+            }
         }
 
         public string PreliminaryСalculations { get; set; }

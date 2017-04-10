@@ -88,14 +88,16 @@ namespace CL2_M9
         {
             base.PreIterationCalculations(iteration, orderedAgents);
 
-            _agentList.Agents.First().SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
+            IAgent agent = orderedAgents.First();
+
+            agent.SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
         }
 
         protected override void PostIterationCalculations(int iteration, IAgent[] orderedAgents)
         {
             base.PostIterationCalculations(iteration, orderedAgents);
 
-            IAgent agent = _agentList.Agents.First();
+            IAgent agent = orderedAgents.First();
 
             agent.SetToCommon(Agent.VariablesUsedInCode.CommonPoolC, _agentList.CalculateCommonC());
             agent.SetToCommon(Agent.VariablesUsedInCode.CommonPoolSize, _agentList.Agents.Count);

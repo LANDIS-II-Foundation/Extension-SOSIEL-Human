@@ -15,8 +15,8 @@
           "ReferenceVariable": "PoolWellbeing",
           "FocalValue": 15,
           "MaxGoalValue": 15,
-          "ChangeFocalValueOnPrevious": false,
-          "RecalculateMaxGoalValue": true
+          "MaxGoalValueReference": "MaxPoolWellbeing"
+
         },
         {
           "Name": "PG2",
@@ -24,16 +24,13 @@
           "ReferenceVariable": "AgentSavings",
           "FocalValue": 15,
           "MaxGoalValue": 23.5,
-          "ChangeFocalValueOnPrevious": false,
-          "RecalculateMaxGoalValue": true
+          "MaxGoalValueReference": "E"
         },
         {
           "Name": "PG3",
           "Tendency": "Maximize",
           "ReferenceVariable": "AgentSiteWellbeing",
           "FocalValue": 15,
-          "MaxGoalValue": 23.5,
-          "ChangeFocalValueOnPrevious": false,
           "RankingEnabled": false
         }
       ],
@@ -41,6 +38,7 @@
       "SetSettings": {
         "1": {
           "AssociatedWith": [ "PG3" ],
+          "IsSequential": true,
           "Layer": {
             "1": {
               "PreliminaryСalculations": "BetterSite",

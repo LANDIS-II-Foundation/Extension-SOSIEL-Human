@@ -15,7 +15,7 @@ namespace Common.Processes
         GoalState currentGoalState;
 
 
-        IEnumerable<Goal> SortByProportion(Dictionary<Goal, GoalState> goals)
+        IEnumerable<Goal> SortByProportion(IAgent agent, Dictionary<Goal, GoalState> goals)
         {
             var importantGoals = goals.Where(kvp => kvp.Value.Importance > 0).ToArray();
 
@@ -25,7 +25,7 @@ namespace Common.Processes
             if (noConfidenceGoals.Length > 0)
             {
                 var noConfidenceProportions = noConfidenceGoals.Select(kvp =>
-                    new { Proportion = kvp.Value.Importance * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / kvp.Key.MaxGoalValue), Goal = kvp.Key }).ToArray();
+                    new { Proportion = kvp.Value.Importance * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / (string.IsNullOrEmpty(kvp.Key.MaxGoalValueReference) ? kvp.Key.MaxGoalValue : (double)agent[kvp.Key.MaxGoalValueReference])), Goal = kvp.Key }).ToArray();
 
                 double totalNoConfidenctUnadjustedProportions = noConfidenceGoals.Sum(kvp => kvp.Value.Importance);
 
@@ -43,7 +43,7 @@ namespace Common.Processes
 
                 Enumerable.Concat(noConfidenceProportions, confidenceProportions).ForEach(p =>
                 {
-                    goals[p.Goal].AdjustedProportion = p.Proportion;
+                    goals[p.Goal].AdjustedImportance = p.Proportion;
 
                 });
 
@@ -52,7 +52,7 @@ namespace Common.Processes
             {
                 goals.ForEach(kvp =>
                 {
-                    kvp.Value.AdjustedProportion = kvp.Value.Importance;
+                    kvp.Value.AdjustedImportance = kvp.Value.Importance;
                 });
             }
 
@@ -61,7 +61,7 @@ namespace Common.Processes
 
             goals.ForEach(kvp =>
             {
-                int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.AdjustedProportion * 100));
+                int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.AdjustedImportance * 100));
 
                 for (int i = 0; i < numberOfInsertions; i++) { vector.Add(kvp.Key); }
             });
@@ -195,7 +195,7 @@ namespace Common.Processes
                 SpecificLogic(goal.Tendency);
             }
 
-            return SortByProportion(currentIterationAgentState.GoalsState).ToArray();
+            return SortByProportion(agent, currentIterationAgentState.GoalsState).ToArray();
         }
     }
 }

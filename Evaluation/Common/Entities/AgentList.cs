@@ -49,6 +49,7 @@ namespace Common.Entities
                 prototype.AssignRules(astate.AssignedRules);
                 prototype.PrototypeName = astate.PrototypeOfAgent;
                 prototype.InitialStateConfiguration = astate;
+                prototype.SocialNetwork = initialState.SocialNetwork;
 
                 astate.PrivateVariables.ForEach(kvp =>
                 {
@@ -68,7 +69,7 @@ namespace Common.Entities
             });
 
 
-            if (initialState.SocialNetwork != SocialNetworkTypes.None)
+            if (initialState.SocialNetwork != SocialNetworkType.None)
             {
                 InitializeSocialNetwork(initialState.SocialNetwork, agentList);
             }
@@ -95,14 +96,14 @@ namespace Common.Entities
             return agentList;
         }
 
-        private static void InitializeSocialNetwork(SocialNetworkTypes socialNetwork, AgentList agentList)
+        private static void InitializeSocialNetwork(SocialNetworkType socialNetwork, AgentList agentList)
         {
             List<IAgent> agents = agentList.Agents.Cast<IAgent>().ToList();
 
 
             switch (socialNetwork)
             {
-                case SocialNetworkTypes.SN1:
+                case SocialNetworkType.SN1:
                     {
 
                         agents.ForEach(a =>
@@ -114,7 +115,7 @@ namespace Common.Entities
                         break;
                     }
 
-                case SocialNetworkTypes.SN2:
+                case SocialNetworkType.SN2:
                     {
                         Queue<IAgent> queue = new Queue<IAgent>(agents);
 
@@ -152,7 +153,7 @@ namespace Common.Entities
                         break;
                     }
 
-                case SocialNetworkTypes.SN3:
+                case SocialNetworkType.SN3:
                     {
                         IAgent vertex = agents[0];
 

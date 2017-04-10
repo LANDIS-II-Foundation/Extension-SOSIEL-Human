@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Common.Entities
 {
+    using Enums;
+
     public class ProcessConfiguration
     {
         public bool AgentRandomizationEnabled { get; set; }

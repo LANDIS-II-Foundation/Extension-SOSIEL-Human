@@ -35,8 +35,8 @@ namespace Common.Processes
                 GoalState selectedGoalState = lastIteration.Value[agent].GoalsState[selectedGoal];
 
                 #region Generating consequent
-                double min = parameters.MinValue;
-                double max = parameters.MaxValue;
+                double min = parameters.MinValue(agent);
+                double max = parameters.MaxValue(agent);
 
                 double consequentValue = priorPeriodRule.Consequent.Value;
 
