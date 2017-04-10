@@ -43,6 +43,7 @@
           "AssociatedWith": [ "PG3" ],
           "Layer": {
             "1": {
+              "PreliminaryСalculations": "BetterSite",
               "Modifiable": false
             }
           }
@@ -53,7 +54,9 @@
             "1": {
               "Modifiable": false,
               "MaxNumberOfRules": 15,
-              "ConsequentValueInterval": [ 0, 100 ],
+              "ConsequentValueInterval": [ 0, 0 ],
+              "MinConsequentReference": "",
+              "MaxConsequentreference": "AgentE",
               "ConsequentRelationshipSign": {
                 "PG1": "+",
                 "PG2": "-"
@@ -67,7 +70,9 @@
             "1": {
               "Modifiable": true,
               "MaxNumberOfRules": 15,
-              "ConsequentValueInterval": [ 0, 100 ],
+              "ConsequentValueInterval": [ 0, 0 ],
+              "MinConsequentReference": "",
+              "MaxConsequentreference": "E",
               "ConsequentRelationshipSign": {
                 "PG1": "+",
                 "PG2": "+"
@@ -162,7 +167,7 @@
   },
   "InitialState": {
     "SocialNetwork": 4,
-    "GenerateGoalProportions": true,
+    "GenerateGoalImportance": true,
 
     "AgentsState": [
       {

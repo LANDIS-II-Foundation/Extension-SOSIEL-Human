@@ -12,7 +12,7 @@ namespace Common.Configuration
     {
         public SocialNetworkTypes SocialNetwork { get; set; }
 
-        public bool GenerateGoalProportions { get; set; }
+        public bool GenerateGoalImportance { get; set; }
 
         public bool RandomlySelectRule { get; set; }
 

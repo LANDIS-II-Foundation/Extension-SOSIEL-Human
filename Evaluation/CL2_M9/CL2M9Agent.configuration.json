@@ -267,7 +267,7 @@
   },
   "InitialState": {
     "SocialNetwork": 2,
-    "GenerateGoalProportions": true,
+    "GenerateGoalImportance": true,
     "RandomlySelectRule": true,
 
     "AgentsState": [
@@ -345,7 +345,7 @@
         ],
         "AssignedGoals": [ "PG1", "PG2" ],
 
-        "ActivatedRulesOnFirstIteration": [  ]
+        "ActivatedRulesOnFirstIteration": []
       },
       {
         "PrototypeOfAgent": "Prototype1",
@@ -416,7 +416,7 @@
         ],
         "AssignedGoals": [ "PG1", "PG2" ],
 
-        "ActivatedRulesOnFirstIteration": [ ]
+        "ActivatedRulesOnFirstIteration": []
       }
     ]
   }

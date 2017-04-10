@@ -41,7 +41,7 @@ namespace Common.Helpers
 
                 agentState.AnticipationInfluence = ai;
 
-                if (configuration.GenerateGoalProportions)
+                if (configuration.GenerateGoalImportance)
                 {
                     int unadjustedProportion = 10;
 
@@ -78,7 +78,7 @@ namespace Common.Helpers
                     {
                         Goal goal = a.Goals.First(g => g.Name == gs.Key);
 
-                        GoalState goalState = new GoalState(0, goal.FocalValue, gs.Value.Proportion);
+                        GoalState goalState = new GoalState(0, goal.FocalValue, gs.Value.Importance);
 
                         agentState.GoalsState.Add(goal, goalState);
                     });

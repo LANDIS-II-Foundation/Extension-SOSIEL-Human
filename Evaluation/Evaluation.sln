@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{50A0DC05-47BD-455A-B32E-CA2C9FC924FB}"
 EndProject
@@ -98,18 +98,19 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_UseGlobalSettings = False
-		BuildVersion_StartDate = 2017/3/6
-		BuildVersion_UpdateAssemblyVersion = True
-		BuildVersion_UpdateFileVersion = True
-		BuildVersion_BuildAction = Both
-		BuildVersion_ConfigurationName = 
 		BuildVersion_BuildVersioningStyle = None.None.None.None
+		BuildVersion_ConfigurationName = 
+		BuildVersion_BuildAction = Both
+		BuildVersion_UpdateFileVersion = True
+		BuildVersion_UpdateAssemblyVersion = True
+		BuildVersion_StartDate = 2017/3/6
+		BuildVersion_UseGlobalSettings = False
 	EndGlobalSection
 	GlobalSection(AutomaticVersions) = postSolution
 		PrimaryVersionType.Release|Any CPU = AssemblyVersionAttribute
-		UpdateAssemblyVersion.Release|Any CPU = False
+		UpdateAssemblyVersion.Release|Any CPU = True
 		UpdateAssemblyFileVersion.Release|Any CPU = False
 		UpdateAssemblyInfoVersion.Release|Any CPU = False
+		AssemblyVersionSettings.Release|Any CPU = None.None.Increment.DeltaDayStamp
 	EndGlobalSection
 EndGlobal

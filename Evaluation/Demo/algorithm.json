@@ -1,6 +1,6 @@
 ﻿{
   "AlgorithmConfiguration": {
-    "Model": 7,
+    "Model": 8,
     "NumberOfIterations": 100,
     "VacantProportion": 1
   }

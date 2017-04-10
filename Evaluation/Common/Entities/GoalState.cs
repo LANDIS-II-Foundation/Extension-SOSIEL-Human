@@ -26,7 +26,7 @@ namespace Common.Entities
         public double AnticipatedInfluenceValue { get; set; }
 
 
-        public double Proportion { get; set; }
+        public double Importance { get; set; }
 
         public double AdjustedProportion { get; set; }
         
@@ -35,17 +35,17 @@ namespace Common.Entities
         public AnticipatedDirection AnticipatedDirection { get; set; }
 
 
-        public GoalState(double value, double focalValue, double proportion)
+        public GoalState(double value, double focalValue, double importance)
         {
             Value = value;
             FocalValue = focalValue;
-            Proportion = proportion;
+            Importance = importance;
             Confidence = true;
         }
 
         public GoalState CreateForNextIteration()
         {
-            return new GoalState(Value, FocalValue, Proportion);
+            return new GoalState(Value, FocalValue, Importance);
         }
 
     }

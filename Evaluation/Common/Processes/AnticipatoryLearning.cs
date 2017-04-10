@@ -17,7 +17,7 @@ namespace Common.Processes
 
         IEnumerable<Goal> SortByProportion(Dictionary<Goal, GoalState> goals)
         {
-            var importantGoals = goals.Where(kvp => kvp.Value.Proportion > 0).ToArray();
+            var importantGoals = goals.Where(kvp => kvp.Value.Importance > 0).ToArray();
 
             var noConfidenceGoals = importantGoals.Where(kvp => kvp.Value.Confidence == false).ToArray();
 
@@ -25,16 +25,16 @@ namespace Common.Processes
             if (noConfidenceGoals.Length > 0)
             {
                 var noConfidenceProportions = noConfidenceGoals.Select(kvp =>
-                    new { Proportion = kvp.Value.Proportion * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / kvp.Key.MaxGoalValue), Goal = kvp.Key }).ToArray();
+                    new { Proportion = kvp.Value.Importance * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / kvp.Key.MaxGoalValue), Goal = kvp.Key }).ToArray();
 
-                double totalNoConfidenctUnadjustedProportions = noConfidenceGoals.Sum(kvp => kvp.Value.Proportion);
+                double totalNoConfidenctUnadjustedProportions = noConfidenceGoals.Sum(kvp => kvp.Value.Importance);
 
                 double totalNoConfidenceAdjustedProportions = noConfidenceProportions.Sum(p => p.Proportion);
 
                 var confidenceGoals = goals.Where(kvp => kvp.Value.Confidence == true).ToArray();
 
                 var confidenceProportions = confidenceGoals.Select(kvp =>
-                    new { Proportion = kvp.Value.Proportion * (1 - totalNoConfidenceAdjustedProportions) / totalNoConfidenctUnadjustedProportions, Goal = kvp.Key }).ToArray();
+                    new { Proportion = kvp.Value.Importance * (1 - totalNoConfidenceAdjustedProportions) / totalNoConfidenctUnadjustedProportions, Goal = kvp.Key }).ToArray();
 
 
 
@@ -52,7 +52,7 @@ namespace Common.Processes
             {
                 goals.ForEach(kvp =>
                 {
-                    kvp.Value.AdjustedProportion = kvp.Value.Proportion;
+                    kvp.Value.AdjustedProportion = kvp.Value.Importance;
                 });
             }
 
@@ -77,7 +77,7 @@ namespace Common.Processes
                 yield return nextGoal;
             }
 
-            Goal[] otherGoals = goals.Where(kvp => kvp.Value.Proportion == 0)
+            Goal[] otherGoals = goals.Where(kvp => kvp.Value.Importance == 0)
                 .OrderByDescending(kvp => kvp.Key.RankingEnabled).Select(kvp=>kvp.Key).ToArray();
 
             foreach (Goal goal in otherGoals)

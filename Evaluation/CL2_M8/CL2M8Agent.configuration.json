@@ -247,7 +247,7 @@
     }
   },
   "InitialState": {
-    "GenerateGoalProportions": true,
+    "GenerateGoalImportance": true,
     "RandomlySelectRule": true,
 
     "AgentsState": [

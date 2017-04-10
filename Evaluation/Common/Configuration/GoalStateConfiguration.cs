@@ -8,7 +8,7 @@ namespace Common.Configuration
 {
     public class GoalStateConfiguration
     {
-        public double Proportion { get; set; }
+        public double Importance { get; set; }
 
         public double Value { get; set; }
     }
