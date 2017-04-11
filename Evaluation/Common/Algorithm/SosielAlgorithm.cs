@@ -72,8 +72,8 @@ namespace Common.Algorithm
             IAgent[] activeAgents = _agentList.ActiveAgents;
 
             //Use a uniform distribution to select an agent, agent(i), with: (a) “active” status, (b) at least one neighbor, and (c) common_pool(i)_c(t) > 0.
-            List<IAgent> suitableAgents = activeAgents.Where(a => a[Agent.VariablesUsedInCode.AgentC] > 0 
-                || a.ConnectedAgents.Any(n=>n[Agent.VariablesUsedInCode.AgentStatus] == "active" && n[Agent.VariablesUsedInCode.AgentC] > 0)).ToList();
+            List<IAgent> suitableAgents = activeAgents.Where(a => a[VariablesUsedInCode.AgentC] > 0 
+                || a.ConnectedAgents.Any(n=>n[VariablesUsedInCode.AgentStatus] == "active" && n[VariablesUsedInCode.AgentC] > 0)).ToList();
 
             if (suitableAgents.Count == 0)
                 return;
@@ -86,16 +86,16 @@ namespace Common.Algorithm
             {
                 IAgent targetAgent = suitableAgents.RandomizeOne();
 
-                List<IAgent> poolOfParticipants = targetAgent.ConnectedAgents.Where(a=> a[Agent.VariablesUsedInCode.AgentStatus] == "active").ToList();
+                List<IAgent> poolOfParticipants = targetAgent.ConnectedAgents.Where(a=> a[VariablesUsedInCode.AgentStatus] == "active").ToList();
                 poolOfParticipants.Add(targetAgent);
 
-                double contributions = poolOfParticipants.Sum(a => (int)a[Agent.VariablesUsedInCode.AgentC]);
+                double contributions = poolOfParticipants.Sum(a => (int)a[VariablesUsedInCode.AgentC]);
 
                 List<IAgent> vector = new List<IAgent>(100);
 
                 poolOfParticipants.ForEach(a =>
                 {
-                    int count = Convert.ToInt32(Math.Round(a[Agent.VariablesUsedInCode.AgentC] / contributions * 100, MidpointRounding.AwayFromZero));
+                    int count = Convert.ToInt32(Math.Round(a[VariablesUsedInCode.AgentC] / contributions * 100, MidpointRounding.AwayFromZero));
 
                     for (int i = 0; i < count; i++) { vector.Add(a); }
                 });
@@ -108,9 +108,9 @@ namespace Common.Algorithm
 
                 lastAgentId++;
 
-                Site targetSite = _siteList.TakeClosestEmptySites((Site)targetAgent[Agent.VariablesUsedInCode.AgentCurrentSite]).RandomizeOne();
+                Site targetSite = _siteList.TakeClosestEmptySites((Site)targetAgent[VariablesUsedInCode.AgentCurrentSite]).RandomizeOne();
 
-                replica[Agent.VariablesUsedInCode.AgentCurrentSite] = targetSite;
+                replica[VariablesUsedInCode.AgentCurrentSite] = targetSite;
 
                 newAgentCount--;
 
@@ -136,7 +136,7 @@ namespace Common.Algorithm
                 Console.WriteLine($"Starting {i} iteration");
 
                 IAgent[] orderedAgents = _agentList.ActiveAgents.Randomize(_processConfiguration.AgentRandomizationEnabled).ToArray();
-                var agentGroups = orderedAgents.GroupBy(a => a[Agent.VariablesUsedInCode.AgentType]).ToArray();
+                var agentGroups = orderedAgents.GroupBy(a => a[VariablesUsedInCode.AgentType]).ToArray();
 
                 PreIterationCalculations(i, orderedAgents);
                 PreIterationStatistic(i);
@@ -226,7 +226,7 @@ namespace Common.Algorithm
                             {
                                 foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                                 {
-                                    _sl.ExecuteSelection(agent, _iterations.Last.Previous.Value[agent], rankedGoals[agent], layer.Key);
+                                    _sl.ExecuteSelection(agent, currentIteration[agent], priorIteration[agent], layer.Key);
                                 }
                             }
                         }
@@ -337,7 +337,20 @@ namespace Common.Algorithm
 
                 if (_algorithmStoppage || _agentList.ActiveAgents.Length == 0)
                     break;
+
+                Maintenance();
             }
+        }
+
+        private void Maintenance()
+        {
+            _agentList.ActiveAgents.ForEach(a =>
+            {
+                a.RuleActivationFreshness.Keys.ToArray().ForEach(k=>
+                {
+                    a.RuleActivationFreshness[k] += 1;
+                });
+            });
         }
 
         protected void ExecuteAlgorithm()

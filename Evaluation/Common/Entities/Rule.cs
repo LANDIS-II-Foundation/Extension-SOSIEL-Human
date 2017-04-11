@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Common.Entities
 {
-    using Environments;
+    using Helpers;
 
     public class Rule
     {
@@ -72,24 +72,27 @@ namespace Common.Entities
             
             if(Consequent.SavePrevious)
             {
-                string key = $"{Agent.VariablesUsedInCode.PreviousPrefix}_{Consequent.Param}";
+                string key = $"{VariablesUsedInCode.PreviousPrefix}_{Consequent.Param}";
 
                 agent[key] = agent[Consequent.Param];
 
                 if(Consequent.CopyToCommon)
                 {
-                    agent.SetToCommon($"{Agent.VariablesUsedInCode.AgentPrefix}_{agent.Id}_{key}", agent[Consequent.Param]);
+                    agent.SetToCommon($"{VariablesUsedInCode.AgentPrefix}_{agent.Id}_{key}", agent[Consequent.Param]);
                 }
             }
 
             if(Consequent.CopyToCommon)
             {
-                string key = $"{Agent.VariablesUsedInCode.AgentPrefix}_{agent.Id}_{Consequent.Param}";
+                string key = $"{VariablesUsedInCode.AgentPrefix}_{agent.Id}_{Consequent.Param}";
 
                 agent.SetToCommon(key, value);
             }
 
             agent[Consequent.Param] = value;
+
+
+            agent.RuleActivationFreshness[this] = 0;
         }
         
         public static Rule Create(RuleAntecedentPart[] antecedent, RuleConsequent consequent)

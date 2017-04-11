@@ -24,10 +24,14 @@ namespace Common.Entities
 
         SocialNetworkType SocialNetwork { get; set; }
 
+        Dictionary<Rule, int> RuleActivationFreshness { get; set; }
+
         void GenerateCustomParams();
 
         void SetToCommon(string key, dynamic value);
 
-        void AssignRules(IEnumerable<string> assignedRules);
+        void AssignInitialRules(IEnumerable<string> assignedRules);
+
+        void AssignNewRule(Rule newRule);
     }
 }

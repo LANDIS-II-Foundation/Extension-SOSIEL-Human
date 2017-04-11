@@ -90,7 +90,7 @@ namespace CL2_M9
 
             IAgent agent = orderedAgents.First();
 
-            agent.SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
+            agent.SetToCommon(VariablesUsedInCode.Iteration, iteration);
         }
 
         protected override void PostIterationCalculations(int iteration, IAgent[] orderedAgents)
@@ -99,14 +99,14 @@ namespace CL2_M9
 
             IAgent agent = orderedAgents.First();
 
-            agent.SetToCommon(Agent.VariablesUsedInCode.CommonPoolC, _agentList.CalculateCommonC());
-            agent.SetToCommon(Agent.VariablesUsedInCode.CommonPoolSize, _agentList.Agents.Count);
+            agent.SetToCommon(VariablesUsedInCode.CommonPoolC, _agentList.CalculateCommonC());
+            agent.SetToCommon(VariablesUsedInCode.CommonPoolSize, _agentList.Agents.Count);
 
-            agent.SetToCommon(Agent.VariablesUsedInCode.PoolWellbeing, CalculatePoolWellbeing(agent));
+            agent.SetToCommon(VariablesUsedInCode.PoolWellbeing, CalculatePoolWellbeing(agent));
 
             orderedAgents.AsParallel().ForAll(a =>
             {
-                a[Agent.VariablesUsedInCode.AgentWellbeing] = CalculateAgentWellbeing(a);
+                a[VariablesUsedInCode.AgentWellbeing] = CalculateAgentWellbeing(a);
             });
         }
 
@@ -116,19 +116,19 @@ namespace CL2_M9
 
             IAgent[] activeAgents = _agentList.ActiveAgents;
 
-            _variableStatistic.Add(StatisticHelper.CreateAgentValuesRecord(activeAgents, iteration, Agent.VariablesUsedInCode.AgentC));
+            _variableStatistic.Add(StatisticHelper.CreateAgentValuesRecord(activeAgents, iteration, VariablesUsedInCode.AgentC));
         }
 
 
         private double CalculateAgentWellbeing(IAgent agent)
         {
-            return agent[Agent.VariablesUsedInCode.Endowment] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * agent[Agent.VariablesUsedInCode.CommonPoolC] / (double)agent[Agent.VariablesUsedInCode.CommonPoolSize];
+            return agent[VariablesUsedInCode.Endowment] - agent[VariablesUsedInCode.AgentC]
+                + agent[VariablesUsedInCode.MagnitudeOfExternalities] * agent[VariablesUsedInCode.CommonPoolC] / (double)agent[VariablesUsedInCode.CommonPoolSize];
         }
 
         private double CalculatePoolWellbeing(IAgent agent)
         {
-            return agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * agent[Agent.VariablesUsedInCode.CommonPoolC] / (double)agent[Agent.VariablesUsedInCode.CommonPoolSize];
+            return agent[VariablesUsedInCode.MagnitudeOfExternalities] * agent[VariablesUsedInCode.CommonPoolC] / (double)agent[VariablesUsedInCode.CommonPoolSize];
         }
     }
 }

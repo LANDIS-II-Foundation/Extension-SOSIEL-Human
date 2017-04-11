@@ -110,7 +110,7 @@ namespace Common.Processes
 
                 layer.Add(generatedRule);
 
-                agent.AssignedRules.Add(generatedRule);
+                agent.AssignNewRule(generatedRule);
 
                 if (layer.Set.Layers.Count > 1)
                     //set consequent to actor's variables for next layers

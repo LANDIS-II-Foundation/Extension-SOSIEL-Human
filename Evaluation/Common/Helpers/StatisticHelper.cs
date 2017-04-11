@@ -20,7 +20,7 @@ namespace Common.Helpers
                 .Select(a => new NodeOutput
                 {
                     AgentId = a.Id,
-                    Type = EnumHelper.EnumValueAsString(a[Agent.VariablesUsedInCode.AgentSubtype])
+                    Type = EnumHelper.EnumValueAsString(a[VariablesUsedInCode.AgentSubtype])
                 })
                 .ToArray())
                 .ContinueWith(data =>
@@ -30,7 +30,7 @@ namespace Common.Helpers
 
             Task edgeTask = Task.Factory.StartNew(
                 () => activeAgents
-                .SelectMany(a => siteList.AdjacentSites((Site)a[Agent.VariablesUsedInCode.AgentCurrentSite])
+                .SelectMany(a => siteList.AdjacentSites((Site)a[VariablesUsedInCode.AgentCurrentSite])
                 .Where(s => s.IsOccupied)
                 .Select(s => new EdgeOutput
                 {
@@ -51,9 +51,9 @@ namespace Common.Helpers
 
         public static AgentNumericValuesOutput CreateAgentValuesRecord(IAgent[] activeAgents, int iteration, params string[] variableNames)
         {
-            NumericValuesItem[] valueItems = variableNames.Select((v,i) =>
+            NumericValuesItem[] valueItems = variableNames.Select((v, i) =>
             {
-                return new NumericValuesItem { Name = v, Values = activeAgents.OrderBy(a=>a.Id).Select(a => a[v]).ToArray(), IsFirstVariable = i == 0 };
+                return new NumericValuesItem { Name = v, Values = activeAgents.OrderBy(a => a.Id).Select(a => a[v]).ToArray(), IsFirstVariable = i == 0, IsLastVariable = i == variableNames.Length - 1 };
             }).ToArray();
 
             return new AgentNumericValuesOutput { Iteration = iteration, Values = valueItems };
@@ -84,7 +84,7 @@ namespace Common.Helpers
 
         public static SubtypeProportionOutput CreateCommonPoolSubtypeProportionRecord(IAgent[] activeAgents, int iteration, int subtype)
         {
-            IAgent[] suitableAgents = activeAgents.Where(a => (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).ToArray();
+            IAgent[] suitableAgents = activeAgents.Where(a => (int)a[VariablesUsedInCode.AgentSubtype] == subtype).ToArray();
 
             double proportion = 0;
 
@@ -92,13 +92,13 @@ namespace Common.Helpers
             {
                 proportion = suitableAgents.Average(a =>
                 {
-                    if ((int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
+                    if ((int)a[VariablesUsedInCode.AgentSubtype] == subtype)
                     {
-                        return (double)a[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion];
+                        return (double)a[VariablesUsedInCode.CommonPoolSubtupeProportion];
                     }
                     else
                     {
-                        return a.ConnectedAgents.Count(a2 => (int)a2[Agent.VariablesUsedInCode.AgentSubtype] == subtype) / (double)a[Agent.VariablesUsedInCode.CommonPoolSize];
+                        return a.ConnectedAgents.Count(a2 => (int)a2[VariablesUsedInCode.AgentSubtype] == subtype) / (double)a[VariablesUsedInCode.CommonPoolSize];
                     }
                 });
             }
@@ -109,7 +109,7 @@ namespace Common.Helpers
 
         public static SubtypeProportionOutput CreateNeighbourhoodSubtypeProportionRecord(IAgent[] activeAgents, int iteration, int subtype)
         {
-            IAgent[] suitableAgents = activeAgents.Where(a => (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).ToArray();
+            IAgent[] suitableAgents = activeAgents.Where(a => (int)a[VariablesUsedInCode.AgentSubtype] == subtype).ToArray();
 
             double proportion = 0;
 
@@ -117,13 +117,13 @@ namespace Common.Helpers
             {
                 proportion = suitableAgents.Average(a =>
                 {
-                    if ((int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
+                    if ((int)a[VariablesUsedInCode.AgentSubtype] == subtype)
                     {
-                        return (double)a[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion];
+                        return (double)a[VariablesUsedInCode.NeighborhoodSubtypeProportion];
                     }
                     else
                     {
-                        return a.ConnectedAgents.Count(a2 => (int)a2[Agent.VariablesUsedInCode.AgentSubtype] == subtype) / (double)a[Agent.VariablesUsedInCode.NeighborhoodSize];
+                        return a.ConnectedAgents.Count(a2 => (int)a2[VariablesUsedInCode.AgentSubtype] == subtype) / (double)a[VariablesUsedInCode.NeighborhoodSize];
                     }
                 });
             }
@@ -138,16 +138,16 @@ namespace Common.Helpers
 
             sf.IntervalFrequency = new int[10];
 
-            activeAgents.Where(a => (int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype).AsParallel()
+            activeAgents.Where(a => (int)a[VariablesUsedInCode.AgentSubtype] == subtype).AsParallel()
                 .Select(a =>
                 {
-                    if ((int)a[Agent.VariablesUsedInCode.AgentSubtype] == subtype)
+                    if ((int)a[VariablesUsedInCode.AgentSubtype] == subtype)
                     {
-                        return (double)a[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion];
+                        return (double)a[VariablesUsedInCode.CommonPoolSubtupeProportion];
                     }
                     else
                     {
-                        return a.ConnectedAgents.Count(a2 => (int)a2[Agent.VariablesUsedInCode.AgentSubtype] == subtype) / (double)a[Agent.VariablesUsedInCode.CommonPoolSize];
+                        return a.ConnectedAgents.Count(a2 => (int)a2[VariablesUsedInCode.AgentSubtype] == subtype) / (double)a[VariablesUsedInCode.CommonPoolSize];
                     }
                 })
                 .Select(v => new { Interval = Math.Round(v, 1, MidpointRounding.AwayFromZero), Value = v }).AsSequential()
@@ -167,15 +167,15 @@ namespace Common.Helpers
         {
             DelimitedFileEngine<T> engine = new DelimitedFileEngine<T>();
 
-            if(data.Count > 0)
+            if (data.Count > 0)
             {
                 IHeader first = data.First() as IHeader;
 
-                if(first != null)
+                if (first != null)
                 {
                     engine.HeaderText = first.HeaderLine;
                 }
-                
+
             }
 
             engine.WriteFile(fileName, data);
@@ -188,7 +188,7 @@ namespace Common.Helpers
             {
                 Iteration = iteration,
                 RuleFrequencies = activeAgents.First().MentalModelRules.Select(r => new RuleFrequenceItem
-                    { RuleId = r.Id, Frequence = activeAgents.Count(a => a.AssignedRules.Contains(r)) }).ToArray()
+                { RuleId = r.Id, Frequence = activeAgents.Count(a => a.AssignedRules.Contains(r)) }).ToArray()
             };
         }
 
@@ -196,9 +196,9 @@ namespace Common.Helpers
         {
             AvgWellbeingOutput aw = new AvgWellbeingOutput { Iteration = iteration };
 
-            aw.Avgs = activeAgents.GroupBy(a => a[Agent.VariablesUsedInCode.AgentSubtype])
+            aw.Avgs = activeAgents.GroupBy(a => a[VariablesUsedInCode.AgentSubtype])
                 .OrderBy(g => g.Key)
-                .Select(g => new AvgWellbeingItem { Type = EnumHelper.EnumValueAsString(g.Key), AvgValue = g.Average(a => (double)a[Agent.VariablesUsedInCode.AgentSiteWellbeing]) }).ToArray();
+                .Select(g => new AvgWellbeingItem { Type = EnumHelper.EnumValueAsString(g.Key), AvgValue = g.Average(a => (double)a[VariablesUsedInCode.AgentSiteWellbeing]) }).ToArray();
 
             return aw;
         }
@@ -215,7 +215,7 @@ namespace Common.Helpers
 
         public static DebugAgentsPositionOutput CreateDebugAgentsPositionRecord(SiteList siteList, int iteration)
         {
-            return new DebugAgentsPositionOutput { Positions = $"{iteration} iteration;{Environment.NewLine}{string.Join(Environment.NewLine, siteList.Sites.Select(l => string.Join(";", l.Select(s => s.IsOccupied ? $"Id:{s.OccupiedBy.Id}, {EnumHelper.EnumValueAsString(s.OccupiedBy[Agent.VariablesUsedInCode.AgentSubtype])}" : ""))).ToArray())}{Environment.NewLine}" };
+            return new DebugAgentsPositionOutput { Positions = $"{iteration} iteration;{Environment.NewLine}{string.Join(Environment.NewLine, siteList.Sites.Select(l => string.Join(";", l.Select(s => s.IsOccupied ? $"Id:{s.OccupiedBy.Id}, {EnumHelper.EnumValueAsString(s.OccupiedBy[VariablesUsedInCode.AgentSubtype])}" : ""))).ToArray())}{Environment.NewLine}" };
         }
     }
 }

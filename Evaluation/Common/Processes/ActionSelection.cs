@@ -5,7 +5,6 @@ using System.Linq;
 namespace Common.Processes
 {
     using Entities;
-    using Randoms;
     using Helpers;
     using Enums;
 
@@ -102,38 +101,13 @@ namespace Common.Processes
             }
         }
 
-        //IEnumerable<Goal> RankGoal(AgentState state)
-        //{
-        //    int numberOfGoal = state.GoalsState.Count;
-
-        //    List<Goal> vector = new List<Goal>(100);
-
-        //    state.GoalsState.ForEach(kvp =>
-        //    {
-        //        int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.Proportion * 100));
-
-        //        for (int i = 0; i < numberOfInsertions; i++) { vector.Add(kvp.Key); }
-        //    });
-
-        //    for (int i = 0; i < numberOfGoal; i++)
-        //    {
-        //        Goal nextGoal = vector.RandomizeOne();
-
-        //        vector.RemoveAll(o => o == nextGoal);
-
-        //        yield return nextGoal;
-        //    }
-        //}
-
-
-
         void ShareCollectiveAction(IAgent currentAgent, Rule rule, Dictionary<IAgent, AgentState> agentStates)
         {
             foreach (IAgent agent in currentAgent.ConnectedAgents)
             {
                 if (agent.AssignedRules.Contains(rule) == false)
                 {
-                    agent.AssignedRules.Add(rule);
+                    agent.AssignNewRule(rule);
 
                     agentStates[agent].AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(agentStates[currentAgent].AnticipationInfluence[rule]));
                 }
@@ -148,12 +122,7 @@ namespace Common.Processes
             agentState = iterationState.Value[agent];
             AgentState priorPeriod = iterationState.Previous?.Value[agent];
 
-            //if (rankedGoals == null)
-            //{
-            //    rankedGoals = RankGoal(agentState).ToArray();
-            //}
-
-
+            
 
             processedGoal = rankedGoals.First(g => processedRules.First().Layer.Set.AssociatedWith.Contains(g));
             goalState = agentState.GoalsState[processedGoal];
@@ -176,9 +145,6 @@ namespace Common.Processes
             }
             else
                 ruleForActivating = matchedRules[0];
-
-            //activatedHeuristic.FreshnessStatus = 0;
-
 
             if (processedRules.First().Layer.Set.Layers.Count > 1)
                 ruleForActivating.Apply(agent);

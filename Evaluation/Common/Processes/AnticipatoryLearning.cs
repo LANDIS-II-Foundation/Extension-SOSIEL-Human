@@ -36,11 +36,6 @@ namespace Common.Processes
                 var confidenceProportions = confidenceGoals.Select(kvp =>
                     new { Proportion = kvp.Value.Importance * (1 - totalNoConfidenceAdjustedProportions) / totalNoConfidenctUnadjustedProportions, Goal = kvp.Key }).ToArray();
 
-
-
-                var temp = Enumerable.Concat(noConfidenceProportions, confidenceProportions).Sum(o => o.Proportion);
-
-
                 Enumerable.Concat(noConfidenceProportions, confidenceProportions).ForEach(p =>
                 {
                     goals[p.Goal].AdjustedImportance = p.Proportion;

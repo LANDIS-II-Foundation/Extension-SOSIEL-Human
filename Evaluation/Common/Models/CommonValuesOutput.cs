@@ -17,16 +17,24 @@ namespace Common.Models
 
         public override string ToString()
         {
-            return string.Format("{0}: {1:0.000}", Name, Value);
+            return $"{Name};{Value.ToString("0.000")}";
         }
     }
 
     [DelimitedRecord(";")]
-    public class CommonValuesOutput
+    public class CommonValuesOutput: IHeader
     {
+        public string HeaderLine
+        {
+            get
+            {
+                return "Iteration;Variable;Value";
+            }
+        }
+
+
         [FieldOrder(0)]
         public int Iteration { get; set; }
-
 
         //todo: replace on property
         [FieldOrder(1)]

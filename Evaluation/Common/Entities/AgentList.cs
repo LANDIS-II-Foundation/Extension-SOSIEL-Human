@@ -19,7 +19,7 @@ namespace Common.Entities
         {
             get
             {
-                return Agents.Where(a => a[Agent.VariablesUsedInCode.AgentStatus] == "active").ToArray();
+                return Agents.Where(a => a[VariablesUsedInCode.AgentStatus] == "active").ToArray();
             }
         }
 
@@ -29,7 +29,7 @@ namespace Common.Entities
 
         public int CalculateCommonC()
         {
-            return Agents.Sum(a => a[Agent.VariablesUsedInCode.AgentC]);
+            return Agents.Sum(a => a[VariablesUsedInCode.AgentC]);
         }
 
         public static AgentList Generate<T>(int agentNumber, Dictionary<string, T> prototypes, InitialStateConfiguration initialState, SiteList siteList = null)
@@ -46,7 +46,7 @@ namespace Common.Entities
                 T prototype = prototypes[astate.PrototypeOfAgent];
 
                 //call before clonning agents
-                prototype.AssignRules(astate.AssignedRules);
+                prototype.AssignInitialRules(astate.AssignedRules);
                 prototype.PrototypeName = astate.PrototypeOfAgent;
                 prototype.InitialStateConfiguration = astate;
                 prototype.SocialNetwork = initialState.SocialNetwork;
@@ -87,7 +87,7 @@ namespace Common.Entities
 
                     selectedSite.OccupiedBy = agent;
 
-                    agent[Agent.VariablesUsedInCode.AgentCurrentSite] = selectedSite;
+                    agent[VariablesUsedInCode.AgentCurrentSite] = selectedSite;
 
                     availableSites.Remove(selectedSite);
                 });

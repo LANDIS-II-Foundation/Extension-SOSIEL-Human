@@ -27,7 +27,8 @@
           "AssociatedWith": [ "PG1", "PG2" ],
           "Layer": {
             "1": {
-              "Modifiable": false
+              "Modifiable": false,
+              "MaxNumberOfRules": 10
             }
           }
         }

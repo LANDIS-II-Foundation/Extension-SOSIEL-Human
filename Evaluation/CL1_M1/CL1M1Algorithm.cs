@@ -94,7 +94,7 @@ namespace CL1_M1
 
             IAgent agent = orderedAgents.First();
 
-            agent.SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
+            agent.SetToCommon(VariablesUsedInCode.Iteration, iteration);
         }
 
         protected override void PostIterationCalculations(int iteration, IAgent[] orderedAgents)
@@ -106,19 +106,19 @@ namespace CL1_M1
 
             orderedAgents.AsParallel().ForAll(a =>
             {
-                Site currentSite = a[Agent.VariablesUsedInCode.AgentCurrentSite];
+                Site currentSite = a[VariablesUsedInCode.AgentCurrentSite];
 
                 if (currentSite.IsOccupationChanged)
                 {
                     a.ConnectedAgents = _siteList.AdjacentSites(currentSite).Where(s => s.IsOccupied)
                         .Select(s => s.OccupiedBy).ToList();
 
-                    a[Agent.VariablesUsedInCode.NeighborhoodSize] = currentSite.GroupSize;
-                    a[Agent.VariablesUsedInCode.NeighborhoodVacantSites] = currentSite.GroupSize - a.ConnectedAgents.Count;
-                    a[Agent.VariablesUsedInCode.NeighborhoodUnalike] = a[Agent.VariablesUsedInCode.CommonPoolUnalike] = a.ConnectedAgents.Count(a2 => a2[Agent.VariablesUsedInCode.AgentSubtype] != a[Agent.VariablesUsedInCode.AgentSubtype]);
+                    a[VariablesUsedInCode.NeighborhoodSize] = currentSite.GroupSize;
+                    a[VariablesUsedInCode.NeighborhoodVacantSites] = currentSite.GroupSize - a.ConnectedAgents.Count;
+                    a[VariablesUsedInCode.NeighborhoodUnalike] = a[VariablesUsedInCode.CommonPoolUnalike] = a.ConnectedAgents.Count(a2 => a2[VariablesUsedInCode.AgentSubtype] != a[VariablesUsedInCode.AgentSubtype]);
 
-                    a[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion] = (a[Agent.VariablesUsedInCode.NeighborhoodSize] -
-                        a[Agent.VariablesUsedInCode.NeighborhoodVacantSites] - a[Agent.VariablesUsedInCode.NeighborhoodUnalike]) / (double)a[Agent.VariablesUsedInCode.NeighborhoodSize];
+                    a[VariablesUsedInCode.NeighborhoodSubtypeProportion] = (a[VariablesUsedInCode.NeighborhoodSize] -
+                        a[VariablesUsedInCode.NeighborhoodVacantSites] - a[VariablesUsedInCode.NeighborhoodUnalike]) / (double)a[VariablesUsedInCode.NeighborhoodSize];
 
                     currentSite.IsOccupationChanged = false;
                 }
@@ -137,14 +137,18 @@ namespace CL1_M1
             spo.Subtype = EnumHelper.EnumValueAsString(AgentSubtype.TypeA);
             _subtypeProportionStatistic.Add(spo);
 
+
+            StatisticHelper.SaveState(_outputFolder, iteration.ToString(), _agentList.ActiveAgents, _siteList);
+
+
             _debugSiteOutput.Add(StatisticHelper.CreateDebugAgentsPositionRecord(_siteList, iteration));
         }
 
         private double CalculateSubtypeProportion(IAgent agent, Site centerSite)
         {
-            IAgent[] neighbours = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied && s != agent[Agent.VariablesUsedInCode.AgentCurrentSite]).Select(s => s.OccupiedBy).ToArray();
+            IAgent[] neighbours = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied && s != agent[VariablesUsedInCode.AgentCurrentSite]).Select(s => s.OccupiedBy).ToArray();
 
-            return neighbours.Count(a => a[Agent.VariablesUsedInCode.AgentSubtype] == agent[Agent.VariablesUsedInCode.AgentSubtype]) / (double)centerSite.GroupSize;
+            return neighbours.Count(a => a[VariablesUsedInCode.AgentSubtype] == agent[VariablesUsedInCode.AgentSubtype]) / (double)centerSite.GroupSize;
         }
 
         private void LookingForBetterSite(IAgent agent)
@@ -157,13 +161,13 @@ namespace CL1_M1
                         site,
                         Proportion = CalculateSubtypeProportion(agent, site)
                     })
-                    .Where(obj => obj.Proportion > agent[Agent.VariablesUsedInCode.NeighborhoodSubtypeProportion]).AsSequential()
+                    .Where(obj => obj.Proportion > agent[VariablesUsedInCode.NeighborhoodSubtypeProportion]).AsSequential()
                     .GroupBy(obj => obj.Proportion).OrderByDescending(obj => obj.Key)
                     .Take(1).SelectMany(g => g.Select(o => o.site))
                     .Select(site => new
                     {
                         site,
-                        Proximity = site.DistanceToAnotherSite(agent[Agent.VariablesUsedInCode.AgentCurrentSite])
+                        Proximity = site.DistanceToAnotherSite(agent[VariablesUsedInCode.AgentCurrentSite])
                     })
                     .GroupBy(obj => obj.Proximity).OrderBy(g => g.Key)
                     .Take(1).SelectMany(g => g.Select(o => o.site))
@@ -172,15 +176,15 @@ namespace CL1_M1
 
             if (betterSites.Length > 0)
             {
-                agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = true;
+                agent[VariablesUsedInCode.AgentBetterSiteAvailable] = true;
 
-                Site currentSite = agent[Agent.VariablesUsedInCode.AgentCurrentSite];
+                Site currentSite = agent[VariablesUsedInCode.AgentCurrentSite];
                 Site selectedSite = betterSites.RandomizeOne();
-                agent[Agent.VariablesUsedInCode.AgentBetterSite] = selectedSite;
+                agent[VariablesUsedInCode.AgentBetterSite] = selectedSite;
             }
             else
             {
-                agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = false;
+                agent[VariablesUsedInCode.AgentBetterSiteAvailable] = false;
             }
 
         }

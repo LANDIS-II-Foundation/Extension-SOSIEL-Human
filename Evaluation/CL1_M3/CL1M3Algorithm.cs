@@ -101,9 +101,9 @@ namespace CL1_M3
 
             IAgent agent = orderedAgents.First();
 
-            agent.SetToCommon(Agent.VariablesUsedInCode.Iteration, iteration);
+            agent.SetToCommon(VariablesUsedInCode.Iteration, iteration);
 
-            agent.SetToCommon(Agent.VariablesUsedInCode.Disturbance, agent[Agent.VariablesUsedInCode.Disturbance] + agent[Agent.VariablesUsedInCode.DisturbanceIncrement]);
+            agent.SetToCommon(VariablesUsedInCode.Disturbance, agent[VariablesUsedInCode.Disturbance] + agent[VariablesUsedInCode.DisturbanceIncrement]);
         }
 
         protected override void PostIterationCalculations(int iteration, IAgent[] orderedAgents)
@@ -115,7 +115,7 @@ namespace CL1_M3
 
             orderedAgents.AsParallel().ForAll(a =>
             {
-                Site currentSite = a[Agent.VariablesUsedInCode.AgentCurrentSite];
+                Site currentSite = a[VariablesUsedInCode.AgentCurrentSite];
 
                 if (currentSite.IsOccupationChanged)
                 {
@@ -123,20 +123,20 @@ namespace CL1_M3
                         .Select(s => s.OccupiedBy).ToList();
 
 
-                    a[Agent.VariablesUsedInCode.NeighborhoodSize] = currentSite.GroupSize;
-                    a[Agent.VariablesUsedInCode.NeighborhoodVacantSites] = currentSite.GroupSize - a.ConnectedAgents.Count;
+                    a[VariablesUsedInCode.NeighborhoodSize] = currentSite.GroupSize;
+                    a[VariablesUsedInCode.NeighborhoodVacantSites] = currentSite.GroupSize - a.ConnectedAgents.Count;
 
 
-                    a[Agent.VariablesUsedInCode.CommonPoolUnalike] = a.ConnectedAgents.Count(a2 => a2[Agent.VariablesUsedInCode.AgentSubtype] != a[Agent.VariablesUsedInCode.AgentSubtype]);
-                    a[Agent.VariablesUsedInCode.CommonPoolSize] = a[Agent.VariablesUsedInCode.NeighborhoodSize] + 1 - a[Agent.VariablesUsedInCode.NeighborhoodVacantSites];
+                    a[VariablesUsedInCode.CommonPoolUnalike] = a.ConnectedAgents.Count(a2 => a2[VariablesUsedInCode.AgentSubtype] != a[VariablesUsedInCode.AgentSubtype]);
+                    a[VariablesUsedInCode.CommonPoolSize] = a[VariablesUsedInCode.NeighborhoodSize] + 1 - a[VariablesUsedInCode.NeighborhoodVacantSites];
 
-                    a[Agent.VariablesUsedInCode.CommonPoolSubtupeProportion] = (a[Agent.VariablesUsedInCode.CommonPoolSize] - a[Agent.VariablesUsedInCode.CommonPoolUnalike]) / (double)a[Agent.VariablesUsedInCode.CommonPoolSize];
+                    a[VariablesUsedInCode.CommonPoolSubtupeProportion] = (a[VariablesUsedInCode.CommonPoolSize] - a[VariablesUsedInCode.CommonPoolUnalike]) / (double)a[VariablesUsedInCode.CommonPoolSize];
 
-                    a[Agent.VariablesUsedInCode.CommonPoolC] = a.ConnectedAgents.Sum(a2 => a2[Agent.VariablesUsedInCode.AgentC]) + a[Agent.VariablesUsedInCode.AgentC];
+                    a[VariablesUsedInCode.CommonPoolC] = a.ConnectedAgents.Sum(a2 => a2[VariablesUsedInCode.AgentC]) + a[VariablesUsedInCode.AgentC];
                 }
 
 
-                a[Agent.VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentSiteWellbeing(a);
+                a[VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentSiteWellbeing(a);
 
             });
         }
@@ -153,7 +153,10 @@ namespace CL1_M3
             spo.Subtype = EnumHelper.EnumValueAsString(AgentSubtype.Co);
             _subtypeProportionStatistic.Add(spo);
 
-            _commonPoolSubtypeFrequency.Add(StatisticHelper.CreateCommonPoolFrequencyWithDisturbanceRecord(activeAgents, iteration, (int)AgentSubtype.Co, agent[Agent.VariablesUsedInCode.Disturbance]));
+            _commonPoolSubtypeFrequency.Add(StatisticHelper.CreateCommonPoolFrequencyWithDisturbanceRecord(activeAgents, iteration, (int)AgentSubtype.Co, agent[VariablesUsedInCode.Disturbance]));
+
+
+            StatisticHelper.SaveState(_outputFolder, iteration.ToString(), _agentList.ActiveAgents, _siteList);
 
             _debugSiteOutput.Add(StatisticHelper.CreateDebugAgentsPositionRecord(_siteList, iteration));
         }
@@ -164,33 +167,33 @@ namespace CL1_M3
 
             _agentList.ActiveAgents.ForEach(a =>
             {
-                if (a[Agent.VariablesUsedInCode.AgentSiteWellbeing] <= 0)
+                if (a[VariablesUsedInCode.AgentSiteWellbeing] <= 0)
                 {
-                    a[Agent.VariablesUsedInCode.AgentStatus] = "inactive";
-                    a[Agent.VariablesUsedInCode.AgentCurrentSite] = null;
+                    a[VariablesUsedInCode.AgentStatus] = "inactive";
+                    a[VariablesUsedInCode.AgentCurrentSite] = null;
                 }
             });
         }
 
         private double CalculateAgentSiteWellbeing(IAgent agent)
         {
-            Site currentSite = agent[Agent.VariablesUsedInCode.AgentCurrentSite];
+            Site currentSite = agent[VariablesUsedInCode.AgentCurrentSite];
 
-            double wellbeing = agent[Agent.VariablesUsedInCode.Endowment] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * agent[Agent.VariablesUsedInCode.CommonPoolC] / (double)agent[Agent.VariablesUsedInCode.CommonPoolSize] - agent[Agent.VariablesUsedInCode.Disturbance];
+            double wellbeing = agent[VariablesUsedInCode.Endowment] - agent[VariablesUsedInCode.AgentC]
+                + agent[VariablesUsedInCode.MagnitudeOfExternalities] * agent[VariablesUsedInCode.CommonPoolC] / (double)agent[VariablesUsedInCode.CommonPoolSize] - agent[VariablesUsedInCode.Disturbance];
 
             return wellbeing;
         }
 
         private double CalculateAgentSiteWellbeing(IAgent agent, Site centerSite)
         {
-            var commonPool = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied && s != agent[Agent.VariablesUsedInCode.AgentCurrentSite]).ToArray();
+            var commonPool = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied && s != agent[VariablesUsedInCode.AgentCurrentSite]).ToArray();
 
-            int commonPoolC = commonPool.Sum(s => s.OccupiedBy[Agent.VariablesUsedInCode.AgentC]) + agent[Agent.VariablesUsedInCode.AgentC];
+            int commonPoolC = commonPool.Sum(s => s.OccupiedBy[VariablesUsedInCode.AgentC]) + agent[VariablesUsedInCode.AgentC];
 
 
-            double wellbeing = agent[Agent.VariablesUsedInCode.Endowment] - agent[Agent.VariablesUsedInCode.AgentC]
-                + agent[Agent.VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)commonPool.Length + 1) - agent[Agent.VariablesUsedInCode.Disturbance];
+            double wellbeing = agent[VariablesUsedInCode.Endowment] - agent[VariablesUsedInCode.AgentC]
+                + agent[VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)commonPool.Length + 1) - agent[VariablesUsedInCode.Disturbance];
 
             return wellbeing;
         }
@@ -205,21 +208,21 @@ namespace CL1_M3
                         site,
                         Wellbeing = CalculateAgentSiteWellbeing(agent, site)
                     })
-                    .Where(obj => obj.Wellbeing > agent[Agent.VariablesUsedInCode.AgentSiteWellbeing]).AsSequential()
+                    .Where(obj => obj.Wellbeing > agent[VariablesUsedInCode.AgentSiteWellbeing]).AsSequential()
                     .GroupBy(obj => obj.Wellbeing).OrderByDescending(obj => obj.Key)
                     .Take(1).SelectMany(g => g.Select(o => o.site)).ToArray();
 
             if (betterSites.Length > 0)
             {
-                agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = true;
+                agent[VariablesUsedInCode.AgentBetterSiteAvailable] = true;
 
-                Site currentSite = agent[Agent.VariablesUsedInCode.AgentCurrentSite];
+                Site currentSite = agent[VariablesUsedInCode.AgentCurrentSite];
                 Site selectedSite = betterSites.RandomizeOne();
-                agent[Agent.VariablesUsedInCode.AgentBetterSite] = selectedSite;
+                agent[VariablesUsedInCode.AgentBetterSite] = selectedSite;
             }
             else
             {
-                agent[Agent.VariablesUsedInCode.AgentBetterSiteAvailable] = false;
+                agent[VariablesUsedInCode.AgentBetterSiteAvailable] = false;
             }
         }
     }

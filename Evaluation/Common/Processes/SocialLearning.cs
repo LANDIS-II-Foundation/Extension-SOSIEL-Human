@@ -5,25 +5,20 @@ using System.Linq;
 
 namespace Common.Processes
 {
-    using Enums;
     using Entities;
-    using Models;
-    using Helpers;
+
 
 
     public class SocialLearning
     {
         Dictionary<IAgent, List<Rule>> confidentAgents = new Dictionary<IAgent, List<Rule>>();
 
-        public void ExecuteSelection(IAgent agent, AgentState agentState,
-            Goal[] rankedGoals, RuleLayer layer)
+        public void ExecuteSelection(IAgent agent, AgentState agentState, AgentState previousAgentState,
+            RuleLayer layer)
         {
-            GoalState associatedGoalState = agentState.GoalsState[rankedGoals.First(g => layer.Set.AssociatedWith.Contains(g))];
-
-
-            if (associatedGoalState.Confidence)
+            if (layer.Set.AssociatedWith.All(g=> agentState.GoalsState[g].Confidence == true))
             {
-                Rule activatedRule = agentState.Activated.Single(h => h.Layer == layer);
+                Rule activatedRule = previousAgentState.Activated.Single(h => h.Layer == layer);
 
                 if (confidentAgents.ContainsKey(agent))
                     confidentAgents[agent].Add(activatedRule);
@@ -38,16 +33,18 @@ namespace Common.Processes
             {
                 foreach (IAgent connectedAgent in agent.ConnectedAgents)
                 {
-                    foreach (Rule rule in confidentAgents[connectedAgent]
-                        .Where(r => r.Layer.Set.AssociatedWith.Any(g => iterationState[agent].GoalsState.Any(kvp => kvp.Key.Name == g.Name))))
+                    if(confidentAgents.ContainsKey(connectedAgent))
                     {
-                        if (agent.AssignedRules.Any(r => r != rule))
+                        foreach (Rule rule in confidentAgents[connectedAgent])
                         {
-                            agent.AssignedRules.Add(rule);
+                            if (agent.AssignedRules.Any(r=>r.Layer == rule.Layer) && agent.AssignedRules.Any(r => r != rule))
+                            {
+                                agent.AssignNewRule(rule);
 
-                            AgentState agentState = iterationState[agent];
+                                AgentState agentState = iterationState[agent];
 
-                            agentState.AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(iterationState[connectedAgent].AnticipationInfluence[rule]));
+                                agentState.AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(iterationState[connectedAgent].AnticipationInfluence[rule]));
+                            }
                         }
                     }
                 }

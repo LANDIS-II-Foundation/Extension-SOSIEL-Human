@@ -13,13 +13,14 @@ namespace Common.Models
         public string Name { get; set; }
 
         public bool IsFirstVariable { get; set; }
+        public bool IsLastVariable { get; set; }
 
         public dynamic[] Values { get; set; }
 
 
         public override string ToString()
         {
-            return $"{(IsFirstVariable ? "" : ";")}{Name};{string.Join(";", Values.Select(v => v.ToString("0.000")))}{Environment.NewLine}";
+            return $"{(IsFirstVariable ? "" : ";")}{Name};{string.Join(";", Values.Select(v => v.ToString("0.000")))}{(IsLastVariable ? "" : Environment.NewLine)}";
         }
     }
 

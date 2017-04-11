@@ -17,15 +17,26 @@ namespace Common.Models
 
         public override string ToString()
         {
-            return $"{RuleId}: {Frequence}";
+            return Frequence.ToString();
         }
     }
 
     [DelimitedRecord(";")]
-    public class RuleFrequenciesOutput
+    public class RuleFrequenciesOutput:IHeader
     {
+        public string HeaderLine
+        {
+            get
+            {
+                return $"Iteration;{(RuleFrequencies != null ? string.Join(";", RuleFrequencies.Select(i=>i.RuleId)) : "")}";
+
+            }
+        }
+
         [FieldOrder(0)]
         public int Iteration { get; set; }
+
+        
 
         [FieldOrder(1)]
         [FieldConverter(typeof(ToStringConverter))]
