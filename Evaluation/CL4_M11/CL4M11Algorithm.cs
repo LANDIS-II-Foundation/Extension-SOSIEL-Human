@@ -148,7 +148,7 @@ namespace CL4_M11
                 a[VariablesUsedInCode.CommonPoolUnalike] = a.ConnectedAgents.Count(a2 => a2[VariablesUsedInCode.AgentSubtype] != a[VariablesUsedInCode.AgentSubtype]);
                 a[VariablesUsedInCode.CommonPoolSubtupeProportion] = (a[VariablesUsedInCode.CommonPoolSize] - a[VariablesUsedInCode.CommonPoolUnalike]) / (double)a[VariablesUsedInCode.CommonPoolSize];
 
-                a[VariablesUsedInCode.CommonPoolC] = a.ConnectedAgents.Sum(a2 => a2[VariablesUsedInCode.AgentC]) + a[VariablesUsedInCode.AgentC];
+                a[VariablesUsedInCode.CommonPoolC] = a.ConnectedAgents.Sum(a2 => (int)a2[VariablesUsedInCode.AgentC]) + a[VariablesUsedInCode.AgentC];
 
                 a[VariablesUsedInCode.AgentSiteWellbeing] = CalculateAgentSiteWellbeing(a);
 

@@ -58,7 +58,7 @@
     "AgentsState": [
       {
         "PrototypeOfAgent": "Prototype1",
-        "NumberOfAgents": 10,
+        "NumberOfAgents": 100,
 
         "PrivateVariables": {
           "AgentStatus": "active",

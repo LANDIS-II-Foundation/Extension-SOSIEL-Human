@@ -109,7 +109,15 @@ namespace Common.Processes
                 {
                     agent.AssignNewRule(rule);
 
-                    agentStates[agent].AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(agentStates[currentAgent].AnticipationInfluence[rule]));
+                    if (agentStates[agent].AnticipationInfluence.ContainsKey(rule))
+                    {
+                        agentStates[agent].AnticipationInfluence[rule] = new Dictionary<Goal, double>(agentStates[currentAgent].AnticipationInfluence[rule]);
+
+                    }
+                    else
+                    {
+                        agentStates[agent].AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(agentStates[currentAgent].AnticipationInfluence[rule]));
+                    }
                 }
             }
         }
@@ -122,7 +130,7 @@ namespace Common.Processes
             agentState = iterationState.Value[agent];
             AgentState priorPeriod = iterationState.Previous?.Value[agent];
 
-            
+
 
             processedGoal = rankedGoals.First(g => processedRules.First().Layer.Set.AssociatedWith.Contains(g));
             goalState = agentState.GoalsState[processedGoal];

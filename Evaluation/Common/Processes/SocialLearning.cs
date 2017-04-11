@@ -46,7 +46,15 @@ namespace Common.Processes
 
                                 AgentState agentState = iterationState[agent];
 
-                                agentState.AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(iterationState[connectedAgent].AnticipationInfluence[rule]));
+                                if(agentState.AnticipationInfluence.ContainsKey(rule))
+                                {
+                                    agentState.AnticipationInfluence[rule] = new Dictionary<Goal, double>(iterationState[connectedAgent].AnticipationInfluence[rule]);
+                                }
+                                else
+                                {
+                                    agentState.AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(iterationState[connectedAgent].AnticipationInfluence[rule]));
+                                }
+
                             }
                         }
                     }
