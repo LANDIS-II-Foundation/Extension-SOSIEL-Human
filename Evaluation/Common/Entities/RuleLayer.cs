@@ -6,7 +6,7 @@ namespace Common.Entities
 {
     using Helpers;   
 
-    public class RuleLayer
+    public class RuleLayer:IComparable<RuleLayer>
     {
         int RuleIndexer = 0;
         public int PositionNumber { get; set; }
@@ -35,6 +35,11 @@ namespace Common.Entities
             Rule.Layer = this;
 
             Rules.Add(Rule);
+        }
+
+        public int CompareTo(RuleLayer other)
+        {
+            return this == other ? 0 : other.PositionNumber > PositionNumber ? -1 : 1;
         }
     }
 }

@@ -20,6 +20,8 @@ namespace Common.Entities
 
         public bool ChangeFocalValueOnPrevious { get; set; }
 
+        public string FocalValueReference { get; set; }
+
         public string MaxGoalValueReference { get; set; }
 
         public bool RankingEnabled { get; set; } = true;

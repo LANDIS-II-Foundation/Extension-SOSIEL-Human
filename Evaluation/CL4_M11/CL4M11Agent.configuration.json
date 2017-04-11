@@ -3,7 +3,7 @@
     "Prototype1": {
       "Variables": {
         "AgentType": 1,
-        "E": 10000,
+        "E": 100,
         "M": 1.5,
         "P": 2,
         "R": 2
@@ -15,6 +15,7 @@
           "ReferenceVariable": "PoolWellbeing",
           "FocalValue": 15,
           "MaxGoalValue": 15,
+          "FocalValueReference": "",
           "MaxGoalValueReference": "MaxPoolWellbeing"
 
         },
@@ -24,11 +25,12 @@
           "ReferenceVariable": "AgentSavings",
           "FocalValue": 15,
           "MaxGoalValue": 23.5,
+          "FocalValueReference": "",
           "MaxGoalValueReference": "E"
         },
         {
           "Name": "PG3",
-          "Tendency": "Maximize",
+          "Tendency": "AboveMin",
           "ReferenceVariable": "AgentSiteWellbeing",
           "FocalValue": 15,
           "RankingEnabled": false
@@ -54,7 +56,7 @@
               "MaxNumberOfRules": 15,
               "ConsequentValueInterval": [ 0, 0 ],
               "MinConsequentReference": "",
-              "MaxConsequentreference": "AgentE",
+              "MaxConsequentReference": "AgentE",
               "ConsequentRelationshipSign": {
                 "PG1": "+",
                 "PG2": "-"
@@ -70,7 +72,7 @@
               "MaxNumberOfRules": 15,
               "ConsequentValueInterval": [ 0, 0 ],
               "MinConsequentReference": "",
-              "MaxConsequentreference": "E",
+              "MaxConsequentReference": "E",
               "ConsequentRelationshipSign": {
                 "PG1": "+",
                 "PG2": "+"
@@ -134,7 +136,7 @@
           ],
           "Consequent": {
             "Param": "AgentC",
-            "ReferenceVariable": "AgentE"
+            "VariableValue": "AgentE"
           },
           "RequiredParticipants": 0,
           "IsAction": true
@@ -170,7 +172,7 @@
     "AgentsState": [
       {
         "PrototypeOfAgent": "Prototype1",
-        "NumberOfAgents": 1000,
+        "NumberOfAgents": 10,
 
         "PrivateVariables": {
           "AgentStatus": "active"

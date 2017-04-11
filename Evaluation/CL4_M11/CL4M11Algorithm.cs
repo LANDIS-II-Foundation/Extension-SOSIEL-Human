@@ -113,6 +113,11 @@ namespace CL4_M11
             IAgent agent = orderedAgents.First();
 
             agent.SetToCommon(VariablesUsedInCode.Iteration, iteration);
+
+            if(iteration > 1)
+            {
+                UpdateEndowment();
+            }
         }
 
         protected override void PostIterationCalculations(int iteration, IAgent[] orderedAgents)
@@ -121,7 +126,7 @@ namespace CL4_M11
 
             IAgent agent = orderedAgents.First();
 
-            UpdateEndowment();
+            
 
             orderedAgents.AsParallel().ForAll(a =>
             {
@@ -134,7 +139,7 @@ namespace CL4_M11
 
                     a[VariablesUsedInCode.NeighborhoodSize] = currentSite.GroupSize;
                     a[VariablesUsedInCode.NeighborhoodVacantSites] = currentSite.GroupSize - a.ConnectedAgents.Count;
-                    
+
                     a[VariablesUsedInCode.CommonPoolSize] = a[VariablesUsedInCode.NeighborhoodSize] + 1 - a[VariablesUsedInCode.NeighborhoodVacantSites];
                 }
 
@@ -255,13 +260,18 @@ namespace CL4_M11
         {
             IAgent agent = _agentList.Agents.First();
 
-            int totalE = _agentList.Agents.Where(a => a[VariablesUsedInCode.AgentStatus] == "active")
-                .Sum(a => (int)a[VariablesUsedInCode.AgentE]);
-
-            //E(t) == ( r ^ p ) * ( E(t-1) – total_e(t-1) )
-            int endowment = Math.Pow(agent[VariablesUsedInCode.R], agent[VariablesUsedInCode.P]) * (agent[VariablesUsedInCode.Endowment] - agent[VariablesUsedInCode.TotalEndowment]);
+            int totalE = _agentList.ActiveAgents.Sum(a => (int)a[VariablesUsedInCode.AgentE]);
 
             agent.SetToCommon(VariablesUsedInCode.TotalEndowment, totalE);
+
+            //E(t) == ( r ^ p ) * ( E(t-1) – total_e(t-1) )
+            int endowment = Convert.ToInt32(Math.Pow(agent[VariablesUsedInCode.R], agent[VariablesUsedInCode.P]) * (agent[VariablesUsedInCode.Endowment] - agent[VariablesUsedInCode.TotalEndowment]));
+
+            if(endowment < 0)
+            {
+
+            }
+
             agent.SetToCommon(VariablesUsedInCode.Endowment, endowment);
         }
 

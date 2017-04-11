@@ -24,7 +24,7 @@ namespace CL1_M1
 
         //statistics
         List<SubtypeProportionOutput> _subtypeProportionStatistic;
-        List<DebugAgentsPositionOutput> _debugSiteOutput;
+        //List<DebugAgentsPositionOutput> _debugSiteOutput;
 
         public static ProcessConfiguration GetProcessConfiguration()
         {
@@ -43,7 +43,7 @@ namespace CL1_M1
 
             //statistics
             _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
-            _debugSiteOutput = new List<DebugAgentsPositionOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
+            //_debugSiteOutput = new List<DebugAgentsPositionOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
 
             _outputFolder = @"Output\CL1_M1";
 
@@ -85,7 +85,7 @@ namespace CL1_M1
 
             StatisticHelper.Save(_subtypeProportionStatistic, $@"{_outputFolder}\subtype_proportion_statistic.csv");
 
-            StatisticHelper.Save(_debugSiteOutput, $@"{_outputFolder}\debug.csv");
+            //StatisticHelper.Save(_debugSiteOutput, $@"{_outputFolder}\debug.csv");
         }
 
         protected override void PreIterationCalculations(int iteration, IAgent[] orderedAgents)
@@ -141,7 +141,7 @@ namespace CL1_M1
             StatisticHelper.SaveState(_outputFolder, iteration.ToString(), _agentList.ActiveAgents, _siteList);
 
 
-            _debugSiteOutput.Add(StatisticHelper.CreateDebugAgentsPositionRecord(_siteList, iteration));
+            //_debugSiteOutput.Add(StatisticHelper.CreateDebugAgentsPositionRecord(_siteList, iteration));
         }
 
         private double CalculateSubtypeProportion(IAgent agent, Site centerSite)

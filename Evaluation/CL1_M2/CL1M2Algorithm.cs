@@ -27,7 +27,7 @@ namespace CL1_M2
         //statistics
         List<SubtypeProportionOutput> _subtypeProportionStatistic;
         List<AvgWellbeingOutput> _averageWellbeing;
-        List<DebugAgentsPositionOutput> _debugSiteOutput;
+        //List<DebugAgentsPositionOutput> _debugSiteOutput;
 
         public static ProcessConfiguration GetProcessConfiguration()
         {
@@ -47,7 +47,7 @@ namespace CL1_M2
             //statistics
             _subtypeProportionStatistic = new List<SubtypeProportionOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
             _averageWellbeing = new List<AvgWellbeingOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
-            _debugSiteOutput = new List<DebugAgentsPositionOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
+            //_debugSiteOutput = new List<DebugAgentsPositionOutput>(_configuration.AlgorithmConfiguration.NumberOfIterations);
 
             _outputFolder = @"Output\CL1_M2";
 
@@ -90,7 +90,7 @@ namespace CL1_M2
             StatisticHelper.Save(_subtypeProportionStatistic, $@"{_outputFolder}\subtype_proportion_statistic.csv");
             StatisticHelper.Save(_averageWellbeing, $@"{_outputFolder}\subtype_wellbeing_statistic.csv");
 
-            StatisticHelper.Save(_debugSiteOutput, $@"{_outputFolder}\debug.csv");
+            //StatisticHelper.Save(_debugSiteOutput, $@"{_outputFolder}\debug.csv");
         }
 
         protected override void PreIterationCalculations(int iteration, IAgent[] orderedAgents)
@@ -150,7 +150,7 @@ namespace CL1_M2
 
             StatisticHelper.SaveState(_outputFolder, iteration.ToString(), _agentList.ActiveAgents, _siteList);
 
-            _debugSiteOutput.Add(StatisticHelper.CreateDebugAgentsPositionRecord(_siteList, iteration));
+            //_debugSiteOutput.Add(StatisticHelper.CreateDebugAgentsPositionRecord(_siteList, iteration));
         }
 
 

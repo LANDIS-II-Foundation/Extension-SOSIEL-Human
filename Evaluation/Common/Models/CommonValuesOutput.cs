@@ -17,7 +17,7 @@ namespace Common.Models
 
         public override string ToString()
         {
-            return $"{Name};{Value.ToString("0.000")}";
+            return $"{Value.ToString("0.000")}";
         }
     }
 
@@ -28,7 +28,7 @@ namespace Common.Models
         {
             get
             {
-                return "Iteration;Variable;Value";
+                return $"Iteration;{(Values != null ? string.Join(";", Values.Select(v=>v.Name)) : "")}";
             }
         }
 

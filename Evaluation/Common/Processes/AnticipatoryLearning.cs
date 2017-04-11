@@ -73,7 +73,7 @@ namespace Common.Processes
             }
 
             Goal[] otherGoals = goals.Where(kvp => kvp.Value.Importance == 0)
-                .OrderByDescending(kvp => kvp.Key.RankingEnabled).Select(kvp=>kvp.Key).ToArray();
+                .OrderByDescending(kvp => kvp.Key.RankingEnabled).Select(kvp => kvp.Key).ToArray();
 
             foreach (Goal goal in otherGoals)
             {
@@ -162,17 +162,20 @@ namespace Common.Processes
                 if (goal.ChangeFocalValueOnPrevious)
                     currentGoalState.FocalValue = previousIterationAgentState.GoalsState[goal].Value;
 
-                currentGoalState.DiffCurrentAndMin = currentGoalState.Value - currentGoalState.FocalValue;
+                double focal = string.IsNullOrEmpty(goal.FocalValueReference) ? currentGoalState.FocalValue : agent[goal.FocalValueReference];
 
-                //todo: check
-                currentGoalState.DiffPriorAndMin = prevGoalState.Value - currentGoalState.FocalValue;
+                currentGoalState.DiffCurrentAndMin = currentGoalState.Value - focal;
+
+                currentGoalState.DiffPriorAndMin = prevGoalState.Value - focal;
 
                 currentGoalState.DiffPriorAndCurrent = prevGoalState.Value - currentGoalState.Value;
 
 
-                currentGoalState.DiffPriorAndMax = prevGoalState.Value - goal.MaxGoalValue;
+                double goalMax = string.IsNullOrEmpty(goal.MaxGoalValueReference) ? goal.MaxGoalValue : agent[goal.MaxGoalValueReference];
 
-                currentGoalState.DiffCurrentAndMax = currentGoalState.Value - goal.MaxGoalValue;
+                currentGoalState.DiffPriorAndMax = prevGoalState.Value - goalMax;
+
+                currentGoalState.DiffCurrentAndMax = currentGoalState.Value - goalMax;
 
                 //goalState.Value contains prior Iteration value
                 currentGoalState.AnticipatedInfluenceValue = currentGoalState.Value - prevGoalState.Value;

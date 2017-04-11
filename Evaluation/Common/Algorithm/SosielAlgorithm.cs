@@ -330,7 +330,7 @@ namespace Common.Algorithm
                     AgentsDeactivation();
                 }
 
-                if (_processConfiguration.ReproductionEnabled)
+                if (_processConfiguration.ReproductionEnabled && i > 1)
                 {
                     Reproduction(_numberOfAgents);
                 }

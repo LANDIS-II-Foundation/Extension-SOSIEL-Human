@@ -36,7 +36,7 @@ namespace Common.Entities
 
         public string MinConsequentReference { get; set; }
 
-        public string MaxConsequentreference { get; set; }
+        public string MaxConsequentReference { get; set; }
 
 
         public int MinValue(IAgent agent)
@@ -53,9 +53,9 @@ namespace Common.Entities
 
         public int MaxValue(IAgent agent)
         {
-            if (string.IsNullOrEmpty(MaxConsequentreference) == false)
+            if (string.IsNullOrEmpty(MaxConsequentReference) == false)
             {
-                return agent[MaxConsequentreference];
+                return agent[MaxConsequentReference];
             }
             else
             {

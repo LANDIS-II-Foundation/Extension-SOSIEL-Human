@@ -8,7 +8,7 @@ namespace Common.Entities
 
     //public delegate void RemovingEventHandler(object sender, RuleEventArgs e);
 
-    public class RuleSet
+    public class RuleSet:IComparable<RuleSet>
     {
         int layerIndexer = 0;
 
@@ -47,9 +47,14 @@ namespace Common.Entities
         {
             return Layers.SelectMany(rl => rl.Rules);
         }
-             
 
-        
+        public int CompareTo(RuleSet other)
+        {
+            return this == other ? 0 : other.PositionNumber > PositionNumber ? -1 : 1;
+        }
+
+
+
 
         //public void UnassignRule(Rule Rule)
         //{

@@ -12,7 +12,7 @@ namespace Common.Processes
         public void Execute(IAgent agent, AgentState state)
         {
             //Sequential set apply earlier than simultaneous. Ones apply after AS process
-            state.Activated.OrderBy(r => r.Layer.Set).ThenBy(r => r.Layer).Where(r=>r.Layer.Set.IsSequential == false).ForEach(r =>
+            state.Activated.Where(r=>r.Layer.Set.IsSequential == false).OrderBy(r => r.Layer.Set).ThenBy(r => r.Layer).ForEach(r =>
                {
                    r.Apply(agent);
                });
