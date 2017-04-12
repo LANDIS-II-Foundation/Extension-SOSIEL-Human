@@ -128,21 +128,33 @@ namespace Common.Processes
 
         protected override void Maximize()
         {
-            if (currentGoalState.DiffCurrentAndMax < 0)
-            {
-                currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
-
-                currentGoalState.Confidence = false;
-            }
-            else if (currentGoalState.DiffCurrentAndMax == 0)
+            if(currentGoalState.DiffCurrentAndMax == 0)
             {
                 currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
                 currentGoalState.Confidence = true;
             }
             else
             {
-                throw new AlgorithmException("Unexpected value: DiffCurrentAndMax");
+                currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
+                currentGoalState.Confidence = false;
             }
+
+
+            //if (currentGoalState.DiffCurrentAndMax < 0)
+            //{
+            //    currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
+
+            //    currentGoalState.Confidence = false;
+            //}
+            //else if (currentGoalState.DiffCurrentAndMax == 0)
+            //{
+            //    currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
+            //    currentGoalState.Confidence = true;
+            //}
+            //else
+            //{
+            //    throw new AlgorithmException("Unexpected value: DiffCurrentAndMax");
+            //}
         }
 
         public Goal[] Execute(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration)

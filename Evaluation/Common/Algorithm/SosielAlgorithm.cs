@@ -271,6 +271,11 @@ namespace Common.Algorithm
                                 {
                                     _at.ExecuteForSpecificRuleSet(agent, currentIteration[agent], set.Key);
 
+                                    if (agent[VariablesUsedInCode.AgentCurrentSite] == null)
+                                    {
+
+                                    }
+
                                     PostIterationCalculations(i, orderedAgents);
                                 }
                             }

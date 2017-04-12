@@ -13,14 +13,14 @@ namespace Common.Helpers
 
     public static class StatisticHelper
     {
-        public static void SaveState(string outputFolder, string state, IAgent[] activeAgents, SiteList siteList)
+        public static void SaveState(string outputFolder, string state, IAgent[] activeAgents, bool showSubtypes = true)
         {
             Task nodeTask = Task.Factory.StartNew(
                 () => activeAgents
                 .Select(a => new NodeOutput
                 {
                     AgentId = a.Id,
-                    Type = EnumHelper.EnumValueAsString(a[VariablesUsedInCode.AgentSubtype])
+                    Type = showSubtypes ? EnumHelper.EnumValueAsString(a[VariablesUsedInCode.AgentSubtype]) : "-"
                 })
                 .ToArray())
                 .ContinueWith(data =>
@@ -28,23 +28,20 @@ namespace Common.Helpers
                     Save(data.Result, $@"{outputFolder}\nodes_{state}.csv");
                 });
 
+
             Task edgeTask = Task.Factory.StartNew(
                 () => activeAgents
-                .SelectMany(a => siteList.AdjacentSites((Site)a[VariablesUsedInCode.AgentCurrentSite])
-                .Where(s => s.IsOccupied)
-                .Select(s => new EdgeOutput
+                .SelectMany(a => a.ConnectedAgents.Select(a2 => new EdgeOutput
                 {
                     AgentId = a.Id,
-                    AdjacentAgentId = s.OccupiedBy.Id
-                }
-                ))
+                    AdjacentAgentId = a2.Id 
+                }))
                 .Distinct(new EdgeOutputComparer())
                 .ToArray())
                 .ContinueWith(data =>
                 {
                     Save(data.Result, $@"{outputFolder}\edges_{state}.csv");
                 });
-
 
             Task.WaitAll(nodeTask, edgeTask);
         }
@@ -61,7 +58,7 @@ namespace Common.Helpers
 
         public static CommonValuesOutput CreateCommonValuesRecord(IAgent[] activeAgents, int iteration, params string[] variableNames)
         {
-            List<ValueItem> valueItems = variableNames.Select(v =>
+            ValueItem[] valueItems = variableNames.Select(v =>
             {
                 double value = 0;
 
@@ -77,7 +74,7 @@ namespace Common.Helpers
                 }
 
                 return new ValueItem { Name = v, Value = value };
-            }).ToList();
+            }).ToArray();
 
             return new CommonValuesOutput { Iteration = iteration, Values = valueItems };
         }
@@ -161,6 +158,17 @@ namespace Common.Helpers
             return sf;
         }
 
+        public static void SaveInitialConditions(string outputFolder, IList<IAgent> activeAgents, params string[] variables)
+        {
+            List<InitialAgentVariables> records = activeAgents.Select(a => new InitialAgentVariables
+            {
+                ID = a.Id,
+                VariableItems = variables.OrderBy(v=>v).Select(v => new VariableItem { VariableName = v, Value = a[v] }).ToArray()
+            }).ToList();
+
+
+            Save(records, $@"{outputFolder}\initial_agent_variables.csv");
+        }
 
 
         public static void Save<T>(IList<T> data, string fileName) where T : class

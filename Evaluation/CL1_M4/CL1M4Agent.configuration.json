@@ -5,9 +5,9 @@
         "AgentType": 1,
         "E": 10,
         "P": 5,
-        "M": 1,
+        "M": 1.5,
         "Disturbance": 0,
-        "DisturbanceIncrement": 0.2
+        "DisturbanceIncrement": 1
       },
       "Goals": [
         {
@@ -59,7 +59,7 @@
     "AgentsState": [
       {
         "PrototypeOfAgent": "Prototype1",
-        "NumberOfAgents": 100,
+        "NumberOfAgents": 30,
 
         "PrivateVariables": {
           "AgentStatus": "active",

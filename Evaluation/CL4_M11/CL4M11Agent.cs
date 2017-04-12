@@ -41,6 +41,11 @@ namespace CL4_M11
                     PrivateVariables[key] = value;
 
                     PostSetValue(key, value);
+
+                    if(value != null && PrivateVariables[key] == null)
+                    {
+
+                    }
                 }
 
             }

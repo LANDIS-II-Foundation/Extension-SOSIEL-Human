@@ -267,7 +267,7 @@
     }
   },
   "InitialState": {
-    "SocialNetwork": 2,
+    "SocialNetwork": 1,
     "GenerateGoalImportance": true,
     "RandomlySelectRule": true,
 

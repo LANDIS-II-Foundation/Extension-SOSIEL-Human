@@ -39,6 +39,6 @@ namespace Common.Models
         //todo: replace on property
         [FieldOrder(1)]
         [FieldConverter(typeof(ToStringConverter))]
-        public List<ValueItem> Values;
+        public ValueItem[] Values;
     }
 }

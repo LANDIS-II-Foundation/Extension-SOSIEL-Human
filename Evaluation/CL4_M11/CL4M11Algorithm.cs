@@ -90,15 +90,15 @@ namespace CL4_M11
 
         protected override void AfterInitialization()
         {
-            StatisticHelper.SaveState(_outputFolder, "initial", _agentList.ActiveAgents, _siteList);
+            //StatisticHelper.SaveState(_outputFolder, "initial", _agentList.ActiveAgents, _siteList);
 
 
-            _subtypeProportionStatistic.Add(StatisticHelper.CreateCommonPoolSubtypeProportionRecord(_agentList.ActiveAgents, 0, (int)AgentSubtype.Co));
+            //_subtypeProportionStatistic.Add(StatisticHelper.CreateCommonPoolSubtypeProportionRecord(_agentList.ActiveAgents, 0, (int)AgentSubtype.Co));
         }
 
         protected override void AfterAlgorithmExecuted()
         {
-            StatisticHelper.SaveState(_outputFolder, "final", _agentList.ActiveAgents, _siteList);
+            //StatisticHelper.SaveState(_outputFolder, "final", _agentList.ActiveAgents, _siteList);
 
             StatisticHelper.Save(_subtypeProportionStatistic, $@"{_outputFolder}\subtype_proportion_statistic.csv");
             StatisticHelper.Save(_commonPoolFrequencyStatistic, $@"{_outputFolder}\common_pool_frequncy_statistic.csv");
@@ -193,16 +193,20 @@ namespace CL4_M11
                 $"AVG_{VariablesUsedInCode.AgentC}"
                 );
 
-            valuesRecord.Values.Add(new ValueItem { Name = "N", Value = activeAgents.Length });
+            List<ValueItem> temp = new List<ValueItem>(valuesRecord.Values);
+            temp.Add(new ValueItem { Name = "N", Value = activeAgents.Length });
 
 
+            valuesRecord.Values = temp.OrderBy(vi=>vi.Name).ToArray();
             _valuesOutput.Add(valuesRecord);
+
+            StatisticHelper.SaveState(_outputFolder, iteration.ToString(), _agentList.ActiveAgents);
         }
 
 
         private double CalculateAgentSiteWellbeing(IAgent agent)
         {
-            int commonPoolC = agent.ConnectedAgents.Sum(a => a[VariablesUsedInCode.AgentC]) + agent[VariablesUsedInCode.AgentC];
+            double commonPoolC = agent.ConnectedAgents.Sum(a => (double)a[VariablesUsedInCode.AgentC]) + agent[VariablesUsedInCode.AgentC];
 
             return agent[VariablesUsedInCode.AgentE] - agent[VariablesUsedInCode.AgentC]
                 + agent[VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)agent.ConnectedAgents.Count + 1);
@@ -212,7 +216,7 @@ namespace CL4_M11
         {
             var commonPool = _siteList.AdjacentSites(centerSite).Where(s => s.IsOccupied).ToArray();
 
-            int commonPoolC = commonPool.Sum(s => s.OccupiedBy[VariablesUsedInCode.AgentC]) + agent[VariablesUsedInCode.AgentC];
+            double commonPoolC = commonPool.Sum(s => (double)s.OccupiedBy[VariablesUsedInCode.AgentC]) + agent[VariablesUsedInCode.AgentC];
 
             return agent[VariablesUsedInCode.AgentE] - agent[VariablesUsedInCode.AgentC]
                 + agent[VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)commonPool.Length + 1);
@@ -220,7 +224,7 @@ namespace CL4_M11
 
         private double CalculatePoolWellbeing(IAgent agent)
         {
-            int commonPoolC = agent.ConnectedAgents.Sum(a => a[VariablesUsedInCode.AgentC]) + agent[VariablesUsedInCode.AgentC];
+            double commonPoolC = agent.ConnectedAgents.Sum(a => (double)a[VariablesUsedInCode.AgentC]) + agent[VariablesUsedInCode.AgentC];
 
             return agent[VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)agent.ConnectedAgents.Count + 1);
         }
@@ -269,7 +273,7 @@ namespace CL4_M11
 
             if(endowment < 0)
             {
-
+                endowment = 1;
             }
 
             agent.SetToCommon(VariablesUsedInCode.Endowment, endowment);

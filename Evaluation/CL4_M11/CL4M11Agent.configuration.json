@@ -97,7 +97,7 @@
           ],
           "Consequent": {
             "Param": "AgentCurrentSite",
-            "ReferenceVariable": "AgentBetterSite"
+            "VariableValue": "AgentBetterSite"
           },
           "RequiredParticipants": 1,
           "IsAction": true

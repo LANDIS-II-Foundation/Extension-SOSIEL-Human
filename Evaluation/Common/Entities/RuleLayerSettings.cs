@@ -43,7 +43,7 @@ namespace Common.Entities
         {
             if(string.IsNullOrEmpty(MinConsequentReference) == false)
             {
-                return agent[MinConsequentReference];
+                return (int)agent[MinConsequentReference];
             }
             else
             {
@@ -55,7 +55,7 @@ namespace Common.Entities
         {
             if (string.IsNullOrEmpty(MaxConsequentReference) == false)
             {
-                return agent[MaxConsequentReference];
+                return (int)agent[MaxConsequentReference];
             }
             else
             {
