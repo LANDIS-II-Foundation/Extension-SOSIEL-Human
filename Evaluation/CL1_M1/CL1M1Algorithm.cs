@@ -76,12 +76,12 @@ namespace CL1_M1
 
         protected override void AfterInitialization()
         {
-            //StatisticHelper.SaveState(_outputFolder, "initial", _agentList.ActiveAgents, _siteList);
+            //StatisticHelper.SaveState(_outputFolder, "initial", _agentList.ActiveAgents);
         }
 
         protected override void AfterAlgorithmExecuted()
         {
-            //StatisticHelper.SaveState(_outputFolder, "final", _agentList.ActiveAgents, _siteList);
+            StatisticHelper.SaveState(_outputFolder, "final", _agentList.ActiveAgents);
 
             StatisticHelper.Save(_subtypeProportionStatistic, $@"{_outputFolder}\subtype_proportion_statistic.csv");
 
@@ -137,8 +137,13 @@ namespace CL1_M1
             spo.Subtype = EnumHelper.EnumValueAsString(AgentSubtype.TypeA);
             _subtypeProportionStatistic.Add(spo);
 
+            if(iteration ==  1)
+            {
+                StatisticHelper.SaveState(_outputFolder, "initial", activeAgents);
+            }
 
-            StatisticHelper.SaveState(_outputFolder, iteration.ToString(), _agentList.ActiveAgents);
+
+            StatisticHelper.SaveState(_outputFolder, iteration.ToString(), activeAgents);
 
 
             //_debugSiteOutput.Add(StatisticHelper.CreateDebugAgentsPositionRecord(_siteList, iteration));

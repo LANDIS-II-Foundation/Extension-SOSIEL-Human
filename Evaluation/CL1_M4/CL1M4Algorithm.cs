@@ -88,7 +88,7 @@ namespace CL1_M4
 
         protected override void AfterAlgorithmExecuted()
         {
-            //StatisticHelper.SaveState(_outputFolder, "final", _agentList.ActiveAgents, _siteList);
+            StatisticHelper.SaveState(_outputFolder, "final", _agentList.ActiveAgents);
 
             StatisticHelper.Save(_subtypeProportionStatistic, $@"{_outputFolder}\subtype_proportion_statistic.csv");
             StatisticHelper.Save(_commonPoolSubtypeFrequency, $@"{_outputFolder}\common_pool_frequncy_statistic.csv");
@@ -156,7 +156,13 @@ namespace CL1_M4
 
             _commonPoolSubtypeFrequency.Add(StatisticHelper.CreateCommonPoolFrequencyWithDisturbanceRecord(activeAgents, iteration, (int)AgentSubtype.Co, agent[VariablesUsedInCode.Disturbance]));
 
-            StatisticHelper.SaveState(_outputFolder, iteration.ToString(), _agentList.ActiveAgents);
+
+            if (iteration == 1)
+            {
+                StatisticHelper.SaveState(_outputFolder, "initial", activeAgents);
+            }
+
+            StatisticHelper.SaveState(_outputFolder, iteration.ToString(), activeAgents);
 
             //_debugSiteOutput.Add(StatisticHelper.CreateDebugAgentsPositionRecord(_siteList, iteration));
         }
