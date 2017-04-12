@@ -180,13 +180,22 @@ namespace CL4_M11
 
             IAgent[] activeAgents = _agentList.ActiveAgents;
 
-            //subtype proportions
             SubtypeProportionOutput spo = StatisticHelper.CreateCommonPoolSubtypeProportionRecord(activeAgents, iteration, (int)AgentSubtype.Co);
             spo.Subtype = EnumHelper.EnumValueAsString(AgentSubtype.Co);
             _subtypeProportionStatistic.Add(spo);
-            //frequency
+
             _commonPoolFrequencyStatistic.Add(StatisticHelper.CreateCommonPoolFrequencyRecord(activeAgents, iteration, (int)AgentSubtype.Co));
-            //params
+            
+
+            StatisticHelper.SaveState(_outputFolder, iteration.ToString(), _agentList.ActiveAgents);
+        }
+
+        protected override void AfterDeactivation(int iteration)
+        {
+            base.AfterDeactivation(iteration);
+
+            IAgent[] activeAgents = _agentList.ActiveAgents;
+
             CommonValuesOutput valuesRecord = StatisticHelper.CreateCommonValuesRecord(activeAgents, iteration,
                 VariablesUsedInCode.Endowment,
                 $"AVG_{VariablesUsedInCode.AgentE}",
@@ -197,12 +206,9 @@ namespace CL4_M11
             temp.Add(new ValueItem { Name = "N", Value = activeAgents.Length });
 
 
-            valuesRecord.Values = temp.OrderBy(vi=>vi.Name).ToArray();
+            valuesRecord.Values = temp.OrderBy(vi => vi.Name).ToArray();
             _valuesOutput.Add(valuesRecord);
-
-            StatisticHelper.SaveState(_outputFolder, iteration.ToString(), _agentList.ActiveAgents);
         }
-
 
         private double CalculateAgentSiteWellbeing(IAgent agent)
         {

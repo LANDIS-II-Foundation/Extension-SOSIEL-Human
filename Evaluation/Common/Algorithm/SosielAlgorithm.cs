@@ -62,10 +62,11 @@ namespace Common.Algorithm
 
         protected virtual void PostIterationStatistic(int iteration) { }
 
-        protected virtual void AgentsDeactivation()
-        {
+        protected virtual void AgentsDeactivation() { }
 
-        }
+        protected virtual void AfterDeactivation(int iteration) { }
+
+
 
         protected virtual void Reproduction(int minAgentNumber)
         {
@@ -271,11 +272,6 @@ namespace Common.Algorithm
                                 {
                                     _at.ExecuteForSpecificRuleSet(agent, currentIteration[agent], set.Key);
 
-                                    if (agent[VariablesUsedInCode.AgentCurrentSite] == null)
-                                    {
-
-                                    }
-
                                     PostIterationCalculations(i, orderedAgents);
                                 }
                             }
@@ -334,6 +330,8 @@ namespace Common.Algorithm
                 {
                     AgentsDeactivation();
                 }
+
+                AfterDeactivation(i);
 
                 if (_processConfiguration.ReproductionEnabled && i > 1)
                 {
