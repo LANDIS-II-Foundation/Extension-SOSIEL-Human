@@ -13,14 +13,16 @@ namespace Common.Helpers
 
     public static class StatisticHelper
     {
-        public static void SaveState(string outputFolder, string state, IAgent[] activeAgents, bool showSubtypes = true)
+        public static void SaveState(string outputFolder, string state, IAgent[] activeAgents)
         {
             Task nodeTask = Task.Factory.StartNew(
                 () => activeAgents
                 .Select(a => new NodeOutput
                 {
                     AgentId = a.Id,
-                    Type = showSubtypes ? EnumHelper.EnumValueAsString(a[VariablesUsedInCode.AgentSubtype]) : "-"
+                    Type = a.ContainsVariable(VariablesUsedInCode.AgentSubtype) ? 
+                        (a[VariablesUsedInCode.AgentSubtype].GetType() == typeof(string) ? a[VariablesUsedInCode.AgentSubtype] : EnumHelper.EnumValueAsString(a[VariablesUsedInCode.AgentSubtype]) )
+                        : "-"
                 })
                 .ToArray())
                 .ContinueWith(data =>

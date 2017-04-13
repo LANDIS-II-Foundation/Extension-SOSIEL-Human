@@ -145,6 +145,11 @@ namespace Common.Entities
 
         }
 
+        public virtual bool ContainsVariable(string key)
+        {
+            return Variables.ContainsKey(key);
+        }
+
         protected virtual void PostSetValue(string variable, dynamic newValue)
         {
             if (variable == VariablesUsedInCode.AgentCurrentSite)
@@ -256,8 +261,9 @@ namespace Common.Entities
                 AssignedRules.Remove(ruleForRemoving);
 
                 RuleActivationFreshness.Remove(ruleForRemoving);
-            }
 
+                AssignNewRule(newRule);
+            }
         }
     }
 }

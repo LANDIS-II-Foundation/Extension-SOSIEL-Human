@@ -98,8 +98,10 @@ namespace Common.Entities
 
         private static void InitializeSocialNetwork(SocialNetworkType socialNetwork, AgentList agentList)
         {
-            List<IAgent> agents = agentList.Agents.Cast<IAgent>().ToList();
+            List<IAgent> agents = agentList.Agents.Randomize().ToList();
 
+            if (agents.First().AssignedRules.Any(r => r.IsCollectiveAction))
+                agents.Reverse();
 
             switch (socialNetwork)
             {
@@ -146,8 +148,11 @@ namespace Common.Entities
                                 queue.Clear();
                             }
 
+                            leafs.ForEach(a => a.ConnectedAgents.Add(vertex));
 
                             vertex.ConnectedAgents.AddRange(leafs);
+
+                            
                         }
 
                         break;
@@ -155,7 +160,7 @@ namespace Common.Entities
 
                 case SocialNetworkType.SN3:
                     {
-                        IAgent vertex = agents[0];
+                        IAgent vertex = agents.First();
 
                         agents.Remove(vertex);
 

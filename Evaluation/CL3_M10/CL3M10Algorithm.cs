@@ -78,7 +78,7 @@ namespace CL3_M10
 
         protected override void AfterInitialization()
         {
-            StatisticHelper.SaveState(_outputFolder, "initial", _agentList.ActiveAgents, false);
+            StatisticHelper.SaveState(_outputFolder, "initial", _agentList.ActiveAgents);
         }
 
         protected override void AfterAlgorithmExecuted()

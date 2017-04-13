@@ -29,7 +29,7 @@ namespace Common.Helpers
             return source[position];
         }
 
-        public static IEnumerable<T> RandomizeEnumeration<T>(this IEnumerable<T> original)
+        private static IEnumerable<T> RandomizeEnumeration<T>(this IEnumerable<T> original)
         {
             List<T> temp = new List<T>(original);
 

@@ -46,6 +46,11 @@ namespace CL2_M9
             }
         }
 
+        public override bool ContainsVariable(string key)
+        {
+            return PrivateVariables.ContainsKey(key) || base.ContainsVariable(key);
+        }
+
         public new CL2M9Agent Clone()
         {
             CL2M9Agent agent = (CL2M9Agent)base.Clone();

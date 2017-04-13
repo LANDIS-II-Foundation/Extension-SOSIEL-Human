@@ -44,6 +44,11 @@ namespace CL1_M5
             }
         }
 
+        public override bool ContainsVariable(string key)
+        {
+            return PrivateVariables.ContainsKey(key) || base.ContainsVariable(key);
+        }
+
         public new CL1M5Agent Clone()
         {
             CL1M5Agent agent = (CL1M5Agent)base.Clone();
@@ -61,7 +66,9 @@ namespace CL1_M5
         public new void GenerateCustomParams()
         {
             this[VariablesUsedInCode.AgentC] = LinearUniformRandom.GetInstance.Next(this[VariablesUsedInCode.Endowment] + 1);
-            this[VariablesUsedInCode.AgentP] = LinearUniformRandom.GetInstance.Next(this[VariablesUsedInCode.Endowment] + 1);
+            this[VariablesUsedInCode.AgentP] = 0;
+
+            //this[VariablesUsedInCode.AgentP] = LinearUniformRandom.GetInstance.Next(this[VariablesUsedInCode.Endowment] + 1);
 
             if (this[VariablesUsedInCode.AgentC] + this[VariablesUsedInCode.AgentP] == 0)
                 this[VariablesUsedInCode.AgentSubtype] = AgentSubtype.NonCo;

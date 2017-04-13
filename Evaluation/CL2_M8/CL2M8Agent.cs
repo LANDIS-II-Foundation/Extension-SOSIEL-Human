@@ -46,6 +46,11 @@ namespace CL2_M8
             }
         }
 
+        public override bool ContainsVariable(string key)
+        {
+            return PrivateVariables.ContainsKey(key) || base.ContainsVariable(key);
+        }
+
         public new CL2M8Agent Clone()
         {
             CL2M8Agent agent = (CL2M8Agent)base.Clone();

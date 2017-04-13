@@ -28,7 +28,7 @@
           "Layer": {
             "1": {
               "Modifiable": false,
-              "MaxNumberOfRules": 10
+              "MaxNumberOfRules": 7
             }
           }
         }
@@ -267,7 +267,7 @@
     }
   },
   "InitialState": {
-    "SocialNetwork": 2,
+    "SocialNetwork": 1,
     "GenerateGoalImportance": true,
     "RandomlySelectRule": true,
 
@@ -277,7 +277,8 @@
         "NumberOfAgents": 1,
 
         "PrivateVariables": {
-          "AgentStatus": "active"
+          "AgentStatus": "active",
+          "AgentSubtype": "initiator"
         },
 
         "AnticipatedInfluenceState": {
@@ -353,7 +354,8 @@
         "NumberOfAgents": 9,
 
         "PrivateVariables": {
-          "AgentStatus": "active"
+          "AgentStatus": "active",
+          "AgentSubtype": "other"
         },
 
         "AnticipatedInfluenceState": {

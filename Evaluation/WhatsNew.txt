@@ -1,0 +1,23 @@
+
+Evaluation 1.0.14.6313 2017-04-13
+
+New features:
+ - M8-M11. Changed algorithm for generating goal importance. Uniform distribution random changed to normal distribution
+ - M9-M10. Added agent subtype to node_initial.csv
+ - M9-M10. Agent "initiator" is not in center/top hierarchy now.
+ - M5. Removed punishment.
+
+ Fixed bugs:
+ - Fixed removing rule from mental model. 
+
+
+
+Evaluation 1.0.13.6312 2017-04-12
+
+New features:
+ - M11. Adaptive cycle statistic is collecting at the end of each iteration after deactivation but before reproduction now
+ - M5-M6. Create new output "initial_agent_variables.csv" which contains agent Id, agent_c, agent_p for each agent.
+
+Fixed:
+ - M1-M6, M11. Retrieve node/edge initial and final 
+  

@@ -43,34 +43,42 @@ namespace Common.Helpers
 
                 if (configuration.GenerateGoalImportance)
                 {
-                    int unadjustedProportion = 10;
+                    double unadjustedProportion = 1;
 
-                    var goalsForRanking = a.Goals.Join(a.InitialStateConfiguration.AssignedGoals, g => g.Name, gs => gs, (g, gs) => new { g, gs }).ToArray();
+                    var goals = a.Goals.Join(a.InitialStateConfiguration.AssignedGoals, g => g.Name, gs => gs, (g, gs) => new { g, gs }).ToArray();
 
-                    int numberOfRankingGoals = goalsForRanking.Count(o => o.g.RankingEnabled);
+                    int numberOfRankingGoals = goals.Count(o => o.g.RankingEnabled);
 
-                    goalsForRanking.OrderByDescending(o=>o.g.RankingEnabled).ForEach((o, i) =>
-                        {
-                            int proportion = unadjustedProportion;
+                    goals.OrderByDescending(o => o.g.RankingEnabled).ForEach((o, i) =>
+                          {
+                              double proportion = unadjustedProportion;
 
-                            if (o.g.RankingEnabled)
-                            {
-                                if (numberOfRankingGoals > 1 && i < numberOfRankingGoals - 1)
-                                {
-                                    proportion = LinearUniformRandom.GetInstance.Next(proportion + 1);
-                                }
+                              if (o.g.RankingEnabled)
+                              {
+                                  if (numberOfRankingGoals > 1 && i < numberOfRankingGoals - 1)
+                                  {
+                                      double d =  NormalDistributionRandom.GetInstance.Next();
 
-                                unadjustedProportion = unadjustedProportion - proportion;
-                            } 
-                            else
-                            {
-                                proportion = 0;
-                            }
+                                      if (d < 0)
+                                          d = 0;
 
-                            GoalState goalState = new GoalState(0, o.g.FocalValue, proportion * 0.1);
+                                      if (d > 1)
+                                          d = 1;
 
-                            agentState.GoalsState.Add(o.g, goalState);
-                        });
+                                      proportion = Math.Round(d, 1, MidpointRounding.AwayFromZero);
+                                  }
+
+                                  unadjustedProportion = Math.Round(unadjustedProportion - proportion, 1, MidpointRounding.AwayFromZero);
+                              }
+                              else
+                              {
+                                  proportion = 0;
+                              }
+
+                              GoalState goalState = new GoalState(0, o.g.FocalValue, proportion);
+
+                              agentState.GoalsState.Add(o.g, goalState);
+                          });
                 }
                 else
                 {
@@ -86,13 +94,13 @@ namespace Common.Helpers
 
                 if (configuration.RandomlySelectRule)
                 {
-                    a.AssignedRules.Where(r=>r.IsAction && r.IsCollectiveAction == false).GroupBy(r => new { r.RuleSet, r.RuleLayer }).ForEach(g =>
-                     {
-                         Rule selectedRule = g.RandomizeOne();
+                    a.AssignedRules.Where(r => r.IsAction && r.IsCollectiveAction == false).GroupBy(r => new { r.RuleSet, r.RuleLayer }).ForEach(g =>
+                       {
+                           Rule selectedRule = g.RandomizeOne();
 
-                         agentState.Matched.Add(selectedRule);
-                         agentState.Activated.Add(selectedRule);
-                     });
+                           agentState.Matched.Add(selectedRule);
+                           agentState.Activated.Add(selectedRule);
+                       });
                 }
                 else
                 {

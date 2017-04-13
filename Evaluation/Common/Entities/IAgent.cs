@@ -33,5 +33,7 @@ namespace Common.Entities
         void AssignInitialRules(IEnumerable<string> assignedRules);
 
         void AssignNewRule(Rule newRule);
+
+        bool ContainsVariable(string key);
     }
 }

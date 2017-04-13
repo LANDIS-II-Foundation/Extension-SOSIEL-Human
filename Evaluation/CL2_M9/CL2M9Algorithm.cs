@@ -76,7 +76,7 @@ namespace CL2_M9
 
         protected override void AfterInitialization()
         {
-            StatisticHelper.SaveState(_outputFolder, "initial", _agentList.ActiveAgents, false);
+            StatisticHelper.SaveState(_outputFolder, "initial", _agentList.ActiveAgents);
         }
 
         protected override void AfterAlgorithmExecuted()

@@ -198,13 +198,13 @@ namespace CL1_M5
             double wellbeing = agent[VariablesUsedInCode.Endowment] - agent[VariablesUsedInCode.AgentC]
                 + agent[VariablesUsedInCode.MagnitudeOfExternalities] * agent[VariablesUsedInCode.CommonPoolC] / (double)agent[VariablesUsedInCode.CommonPoolSize] - agent[VariablesUsedInCode.Disturbance];
 
-            double penalties = agent.ConnectedAgents.Sum(e => (double)(e[VariablesUsedInCode.AgentP] * (1 - agent[VariablesUsedInCode.AgentC] / (double)agent[VariablesUsedInCode.Endowment])));
+            //double penalties = agent.ConnectedAgents.Sum(e => (double)(e[VariablesUsedInCode.AgentP] * (1 - agent[VariablesUsedInCode.AgentC] / (double)agent[VariablesUsedInCode.Endowment])));
 
-            wellbeing -= penalties;
+            //wellbeing -= penalties;
 
-            double punishment = agent.ConnectedAgents.Sum(n => (double)(agent[VariablesUsedInCode.AgentP] * (1 - n[VariablesUsedInCode.AgentC] / (double)agent[VariablesUsedInCode.Endowment])));
+            //double punishment = agent.ConnectedAgents.Sum(n => (double)(agent[VariablesUsedInCode.AgentP] * (1 - n[VariablesUsedInCode.AgentC] / (double)agent[VariablesUsedInCode.Endowment])));
 
-            wellbeing -= punishment;
+            //wellbeing -= punishment;
 
 
             return wellbeing;
@@ -220,13 +220,13 @@ namespace CL1_M5
             double wellbeing = agent[VariablesUsedInCode.Endowment] - agent[VariablesUsedInCode.AgentC]
                 + agent[VariablesUsedInCode.MagnitudeOfExternalities] * commonPoolC / ((double)commonPool.Length + 1) - agent[VariablesUsedInCode.Disturbance];
 
-            double penalties = commonPool.Select(s => s.OccupiedBy).Sum(e => (double)(e[VariablesUsedInCode.AgentP] * (1 - agent[VariablesUsedInCode.AgentC] / (double)agent[VariablesUsedInCode.Endowment])));
+            //double penalties = commonPool.Select(s => s.OccupiedBy).Sum(e => (double)(e[VariablesUsedInCode.AgentP] * (1 - agent[VariablesUsedInCode.AgentC] / (double)agent[VariablesUsedInCode.Endowment])));
 
-            wellbeing -= penalties;
+            //wellbeing -= penalties;
 
-            double punishment = commonPool.Select(s => s.OccupiedBy).Sum(n => (double)(agent[VariablesUsedInCode.AgentP] * (1 - n[VariablesUsedInCode.AgentC] / (double)agent[VariablesUsedInCode.Endowment])));
+            //double punishment = commonPool.Select(s => s.OccupiedBy).Sum(n => (double)(agent[VariablesUsedInCode.AgentP] * (1 - n[VariablesUsedInCode.AgentC] / (double)agent[VariablesUsedInCode.Endowment])));
 
-            wellbeing -= punishment;
+            //wellbeing -= punishment;
 
 
             return wellbeing;

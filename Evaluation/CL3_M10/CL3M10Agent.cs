@@ -46,6 +46,11 @@ namespace CL3_M10
             }
         }
 
+        public override bool ContainsVariable(string key)
+        {
+            return PrivateVariables.ContainsKey(key) || base.ContainsVariable(key);
+        }
+
         public new CL3M10Agent Clone()
         {
             CL3M10Agent agent = (CL3M10Agent)base.Clone();

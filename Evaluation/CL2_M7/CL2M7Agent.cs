@@ -44,6 +44,11 @@ namespace CL2_M7
             }
         }
 
+        public override bool ContainsVariable(string key)
+        {
+            return PrivateVariables.ContainsKey(key) || base.ContainsVariable(key);
+        }
+
         public new CL2M7Agent Clone()
         {
             CL2M7Agent agent = (CL2M7Agent)base.Clone();

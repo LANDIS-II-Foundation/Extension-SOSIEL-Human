@@ -44,6 +44,11 @@ namespace CL1_M4
             }
         }
 
+        public override bool ContainsVariable(string key)
+        {
+            return PrivateVariables.ContainsKey(key) || base.ContainsVariable(key);
+        }
+
         public new CL1M4Agent Clone()
         {
             CL1M4Agent agent = (CL1M4Agent)base.Clone();
