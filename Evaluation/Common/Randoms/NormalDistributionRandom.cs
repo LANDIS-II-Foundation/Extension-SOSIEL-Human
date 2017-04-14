@@ -11,15 +11,15 @@ namespace Common.Randoms
         private static NormalDistributionRandom random;
 
         double _mean;
-        double _stndDeviation;
+        double _stdDev;
 
         public double Next()
         {
-            return Next(_mean, _stndDeviation);
+            return Next(_mean, _stdDev);
         }
 
 
-        public double Next(double mean, double stndDeviation)
+        public double Next(double mean, double stdDev)
         {
             Random r = LinearUniformRandom.GetInstance;
 
@@ -29,7 +29,7 @@ namespace Common.Randoms
             double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
 
 
-            return mean + stndDeviation * randStdNormal;
+            return mean + stdDev * randStdNormal;
         }
 
         public static NormalDistributionRandom GetInstance
@@ -43,10 +43,10 @@ namespace Common.Randoms
             }
         }
 
-        private NormalDistributionRandom(double mean, double stndDeviation)
+        private NormalDistributionRandom(double mean, double stdDev)
         {
             _mean = mean;
-            _stndDeviation = stndDeviation;
+            _stdDev = stdDev;
         }
 
     }

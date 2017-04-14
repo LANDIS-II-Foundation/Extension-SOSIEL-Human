@@ -11,7 +11,7 @@
     <AssemblyName>CL2_M7</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AssemblyVersion>1.0.15.6314</AssemblyVersion>
+    <AssemblyVersion>1.0.16.6314</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,7 +57,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CL2M7Agent.configuration - Copy.json">
+    <Content Include="CL2M7Agent.configuration - Original.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

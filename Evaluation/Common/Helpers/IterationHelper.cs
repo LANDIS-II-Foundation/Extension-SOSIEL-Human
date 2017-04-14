@@ -59,8 +59,8 @@ namespace Common.Helpers
                                   {
                                       double d;
 
-                                      if (agent.ContainsVariable(VariablesUsedInCode.Mean) && agent.ContainsVariable(VariablesUsedInCode.StndDeviation))
-                                          d = NormalDistributionRandom.GetInstance.Next(agent[VariablesUsedInCode.Mean], agent[VariablesUsedInCode.StndDeviation]);
+                                      if (agent.ContainsVariable(VariablesUsedInCode.Mean) && agent.ContainsVariable(VariablesUsedInCode.StdDev))
+                                          d = NormalDistributionRandom.GetInstance.Next(agent[VariablesUsedInCode.Mean], agent[VariablesUsedInCode.StdDev]);
                                       else
                                           d = NormalDistributionRandom.GetInstance.Next();
 

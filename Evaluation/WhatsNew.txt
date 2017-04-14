@@ -1,18 +1,19 @@
 Evaluation 1.0.15.6314 2017-04-14
 
 New features:
- - M8-M11. Added variable Mean and StndDeviation for configuring normal distribution.
+ - M10-M11. An agent can learn from others if they are confident in the goal that is the agents critical during that iteration
+ - M8-M11. Added variable Mean and StdDeviation for configuring normal distribution.
  - M7. Added second agent configuration file for simulating tit-for-tat vs tit-for-tat
  - M8-M11. Removed param MaxGoalValue and changed logic for using Focal value instead of MaxGoalValue.
- - M10. Reduced focal value and modyfied AL (in case Maximize). If diffCurAndFocal >= 0 then (confidence = yes and direction = stand) else (confidence = no and direction = up)
+ - M10. Modyfied AL (in case Maximize). If diffCurAndFocal >= 0 then (confidence = yes and direction = stand) else (confidence = no and direction = up). Before the change the confidence was only YES if diffCurAndFocal == 0.
 
 
 Evaluation 1.0.14.6313 2017-04-13
 
 New features:
  - M8-M11. Changed algorithm for generating goal importance. Uniform distribution random changed to normal distribution
- - M9-M10. Added agent subtype to node_initial.csv
- - M9-M10. Agent "initiator" is not in center/top hierarchy now.
+ - M9-M10. Added agent subtype (initiator/other) to node_initial.csv
+ - M9-M10. Agent "initiator" is not in the center/top hierarchy now. Assigned randomly.
  - M5. Removed punishment.
 
  Fixed bugs:
@@ -26,6 +27,6 @@ New features:
  - M11. Adaptive cycle statistic is collecting at the end of each iteration after deactivation but before reproduction now
  - M5-M6. Create new output "initial_agent_variables.csv" which contains agent Id, agent_c, agent_p for each agent.
 
-Fixed:
+Fixed bugs:
  - M1-M6, M11. Retrieve node/edge initial and final 
   

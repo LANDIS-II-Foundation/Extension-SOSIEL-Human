@@ -6,7 +6,7 @@
         "E": 10,
         "M": 1.5,
         "Mean": 0.3,
-        "StndDeviation": 0.3
+        "StdDev": 0.3
       },
       "Goals": [
         {
@@ -19,7 +19,7 @@
           "Name": "PG2",
           "Tendency": "Maximize",
           "ReferenceVariable": "AgentWellbeing",
-          "FocalValue": 16
+          "FocalValue": 23.5
         }
       ],
       "SetSettings": {

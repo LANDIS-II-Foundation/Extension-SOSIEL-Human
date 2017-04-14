@@ -51,7 +51,7 @@
         //M8
         public const string PoolWellbeing = "PoolWellbeing";
         public const string Mean = "Mean";
-        public const string StndDeviation = "StndDeviation";
+        public const string StdDev = "StdDev";
 
 
         //M11
