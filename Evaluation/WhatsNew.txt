@@ -1,3 +1,9 @@
+Evaluation 1.0.16.6314 2017-04-14
+
+Fixed bugs:
+ - Fixed config files and variable names
+
+
 Evaluation 1.0.15.6314 2017-04-14
 
 New features:
