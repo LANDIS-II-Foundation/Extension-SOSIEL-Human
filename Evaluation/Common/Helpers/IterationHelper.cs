@@ -17,21 +17,21 @@ namespace Common.Helpers
             Dictionary<IAgent, AgentState> temp = new Dictionary<IAgent, AgentState>();
 
 
-            agents.ForEach(a =>
+            agents.ForEach(agent =>
             {
                 AgentState agentState = AgentState.Create();
 
                 Dictionary<Rule, Dictionary<Goal, double>> ai = new Dictionary<Rule, Dictionary<Goal, double>>();
 
-                a.AssignedRules.ForEach(r =>
+                agent.AssignedRules.ForEach(r =>
                 {
                     Dictionary<string, double> source;
 
-                    a.InitialStateConfiguration.AnticipatedInfluenceState.TryGetValue(r.Id, out source);
+                    agent.InitialStateConfiguration.AnticipatedInfluenceState.TryGetValue(r.Id, out source);
 
                     Dictionary<Goal, double> inner = new Dictionary<Goal, double>();
 
-                    a.Goals.ForEach(g =>
+                    agent.Goals.ForEach(g =>
                     {
                         inner.Add(g, source != null && source.ContainsKey(g.Name) ? source[g.Name] : 0 /*(r.IsAction ? 0 : -1)*/);
                     });
@@ -45,7 +45,7 @@ namespace Common.Helpers
                 {
                     double unadjustedProportion = 1;
 
-                    var goals = a.Goals.Join(a.InitialStateConfiguration.AssignedGoals, g => g.Name, gs => gs, (g, gs) => new { g, gs }).ToArray();
+                    var goals = agent.Goals.Join(agent.InitialStateConfiguration.AssignedGoals, g => g.Name, gs => gs, (g, gs) => new { g, gs }).ToArray();
 
                     int numberOfRankingGoals = goals.Count(o => o.g.RankingEnabled);
 
@@ -57,7 +57,12 @@ namespace Common.Helpers
                               {
                                   if (numberOfRankingGoals > 1 && i < numberOfRankingGoals - 1)
                                   {
-                                      double d =  NormalDistributionRandom.GetInstance.Next();
+                                      double d;
+
+                                      if (agent.ContainsVariable(VariablesUsedInCode.Mean) && agent.ContainsVariable(VariablesUsedInCode.StndDeviation))
+                                          d = NormalDistributionRandom.GetInstance.Next(agent[VariablesUsedInCode.Mean], agent[VariablesUsedInCode.StndDeviation]);
+                                      else
+                                          d = NormalDistributionRandom.GetInstance.Next();
 
                                       if (d < 0)
                                           d = 0;
@@ -82,9 +87,9 @@ namespace Common.Helpers
                 }
                 else
                 {
-                    a.InitialStateConfiguration.GoalState.ForEach(gs =>
+                    agent.InitialStateConfiguration.GoalState.ForEach(gs =>
                     {
-                        Goal goal = a.Goals.First(g => g.Name == gs.Key);
+                        Goal goal = agent.Goals.First(g => g.Name == gs.Key);
 
                         GoalState goalState = new GoalState(0, goal.FocalValue, gs.Value.Importance);
 
@@ -94,7 +99,7 @@ namespace Common.Helpers
 
                 if (configuration.RandomlySelectRule)
                 {
-                    a.AssignedRules.Where(r => r.IsAction && r.IsCollectiveAction == false).GroupBy(r => new { r.RuleSet, r.RuleLayer }).ForEach(g =>
+                    agent.AssignedRules.Where(r => r.IsAction && r.IsCollectiveAction == false).GroupBy(r => new { r.RuleSet, r.RuleLayer }).ForEach(g =>
                        {
                            Rule selectedRule = g.RandomizeOne();
 
@@ -104,13 +109,13 @@ namespace Common.Helpers
                 }
                 else
                 {
-                    Rule[] firstIterationsRule = a.InitialStateConfiguration.ActivatedRulesOnFirstIteration.Select(rId => a.AssignedRules.First(ar => ar.Id == rId)).ToArray();
+                    Rule[] firstIterationsRule = agent.InitialStateConfiguration.ActivatedRulesOnFirstIteration.Select(rId => agent.AssignedRules.First(ar => ar.Id == rId)).ToArray();
 
                     agentState.Matched.AddRange(firstIterationsRule);
                     agentState.Activated.AddRange(firstIterationsRule);
                 }
 
-                temp.Add(a, agentState);
+                temp.Add(agent, agentState);
             });
 
             return temp;

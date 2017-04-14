@@ -34,7 +34,7 @@ namespace Common.Algorithm
         ActionTaking _at = new ActionTaking();
 
 
-        
+
 
         public SosielAlgorithm(AlgorithmConfiguration algorithmConfiguration, ProcessConfiguration processConfiguration)
         {
@@ -73,8 +73,8 @@ namespace Common.Algorithm
             IAgent[] activeAgents = _agentList.ActiveAgents;
 
             //Use a uniform distribution to select an agent, agent(i), with: (a) “active” status, (b) at least one neighbor, and (c) common_pool(i)_c(t) > 0.
-            List<IAgent> suitableAgents = activeAgents.Where(a => a[VariablesUsedInCode.AgentC] > 0 
-                || a.ConnectedAgents.Any(n=>n[VariablesUsedInCode.AgentStatus] == "active" && n[VariablesUsedInCode.AgentC] > 0)).ToList();
+            List<IAgent> suitableAgents = activeAgents.Where(a => a[VariablesUsedInCode.AgentC] > 0
+                || a.ConnectedAgents.Any(n => n[VariablesUsedInCode.AgentStatus] == "active" && n[VariablesUsedInCode.AgentC] > 0)).ToList();
 
             if (suitableAgents.Count == 0)
                 return;
@@ -87,7 +87,7 @@ namespace Common.Algorithm
             {
                 IAgent targetAgent = suitableAgents.RandomizeOne();
 
-                List<IAgent> poolOfParticipants = targetAgent.ConnectedAgents.Where(a=> a[VariablesUsedInCode.AgentStatus] == "active").ToList();
+                List<IAgent> poolOfParticipants = targetAgent.ConnectedAgents.Where(a => a[VariablesUsedInCode.AgentStatus] == "active").ToList();
                 poolOfParticipants.Add(targetAgent);
 
                 double contributions = poolOfParticipants.Sum(a => (int)a[VariablesUsedInCode.AgentC]);
@@ -232,7 +232,7 @@ namespace Common.Algorithm
                             }
                         }
 
-                        _sl.ExecuteLearning(agentGroup.ToArray(), _iterations.Last.Previous.Value);
+                        _sl.ExecuteLearning(agentGroup.ToArray(), currentIteration, rankedGoals);
                     }
 
                 }
@@ -349,7 +349,7 @@ namespace Common.Algorithm
         {
             _agentList.ActiveAgents.ForEach(a =>
             {
-                a.RuleActivationFreshness.Keys.ToArray().ForEach(k=>
+                a.RuleActivationFreshness.Keys.ToArray().ForEach(k =>
                 {
                     a.RuleActivationFreshness[k] += 1;
                 });

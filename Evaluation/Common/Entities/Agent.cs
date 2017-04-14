@@ -251,7 +251,7 @@ namespace Common.Entities
             {
                 AssignedRules.Add(newRule);
 
-                RuleActivationFreshness.Add(newRule, 0);
+                RuleActivationFreshness[newRule] = 0;
             }
             else
             {

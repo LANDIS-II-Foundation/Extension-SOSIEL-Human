@@ -4,22 +4,22 @@
       "Variables": {
         "AgentType": 1,
         "E": 10,
-        "M": 1.5
+        "M": 1.5,
+        "Mean": 0.3,
+        "StndDeviation": 0.3
       },
       "Goals": [
         {
           "Name": "PG1",
           "Tendency": "Maximize",
           "ReferenceVariable": "PoolWellbeing",
-          "FocalValue": 15,
-          "MaxGoalValue": 15
+          "FocalValue": 15
         },
         {
           "Name": "PG2",
           "Tendency": "Maximize",
           "ReferenceVariable": "AgentWellbeing",
-          "FocalValue": 15,
-          "MaxGoalValue": 23.5
+          "FocalValue": 23.5
         }
       ],
       "SetSettings": {

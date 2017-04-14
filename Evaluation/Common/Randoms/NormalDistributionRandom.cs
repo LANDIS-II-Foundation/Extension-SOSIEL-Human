@@ -15,6 +15,12 @@ namespace Common.Randoms
 
         public double Next()
         {
+            return Next(_mean, _stndDeviation);
+        }
+
+
+        public double Next(double mean, double stndDeviation)
+        {
             Random r = LinearUniformRandom.GetInstance;
 
             double u1 = 1 - r.NextDouble();
@@ -23,7 +29,7 @@ namespace Common.Randoms
             double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
 
 
-            return _mean + _stndDeviation * randStdNormal;
+            return mean + stndDeviation * randStdNormal;
         }
 
         public static NormalDistributionRandom GetInstance

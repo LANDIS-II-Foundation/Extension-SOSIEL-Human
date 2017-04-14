@@ -25,7 +25,7 @@ namespace Common.Processes
             if (noConfidenceGoals.Length > 0)
             {
                 var noConfidenceProportions = noConfidenceGoals.Select(kvp =>
-                    new { Proportion = kvp.Value.Importance * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / (string.IsNullOrEmpty(kvp.Key.MaxGoalValueReference) ? kvp.Key.MaxGoalValue : (double)agent[kvp.Key.MaxGoalValueReference])), Goal = kvp.Key }).ToArray();
+                    new { Proportion = kvp.Value.Importance * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / (string.IsNullOrEmpty(kvp.Key.FocalValueReference) ? kvp.Key.FocalValue : (double)agent[kvp.Key.FocalValueReference])), Goal = kvp.Key }).ToArray();
 
                 double totalNoConfidenctUnadjustedProportions = noConfidenceGoals.Sum(kvp => kvp.Value.Importance);
 
@@ -84,11 +84,11 @@ namespace Common.Processes
 
         protected override void AboveMin()
         {
-            if (currentGoalState.DiffCurrentAndMin <= 0)
+            if (currentGoalState.DiffCurrentAndFocal <= 0)
             {
                 currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
 
-                if (currentGoalState.DiffCurrentAndMin > currentGoalState.DiffPriorAndMin)
+                if (currentGoalState.DiffCurrentAndFocal > currentGoalState.DiffPriorAndFocal)
                 {
                     currentGoalState.Confidence = true;
                 }
@@ -106,11 +106,11 @@ namespace Common.Processes
 
         protected override void BelowMax()
         {
-            if (currentGoalState.DiffCurrentAndMin > 0)
+            if (currentGoalState.DiffCurrentAndFocal > 0)
             {
                 currentGoalState.AnticipatedDirection = AnticipatedDirection.Down;
 
-                if (currentGoalState.DiffCurrentAndMin > currentGoalState.DiffPriorAndMin)
+                if (currentGoalState.DiffCurrentAndFocal > currentGoalState.DiffPriorAndFocal)
                 {
                     currentGoalState.Confidence = true;
                 }
@@ -128,7 +128,7 @@ namespace Common.Processes
 
         protected override void Maximize()
         {
-            if(currentGoalState.DiffCurrentAndMax == 0)
+            if(currentGoalState.DiffCurrentAndFocal >= 0)
             {
                 currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
                 currentGoalState.Confidence = true;
@@ -176,18 +176,11 @@ namespace Common.Processes
 
                 double focal = string.IsNullOrEmpty(goal.FocalValueReference) ? currentGoalState.FocalValue : agent[goal.FocalValueReference];
 
-                currentGoalState.DiffCurrentAndMin = currentGoalState.Value - focal;
+                currentGoalState.DiffCurrentAndFocal = currentGoalState.Value - focal;
 
-                currentGoalState.DiffPriorAndMin = prevGoalState.Value - focal;
+                currentGoalState.DiffPriorAndFocal = prevGoalState.Value - focal;
 
                 currentGoalState.DiffPriorAndCurrent = prevGoalState.Value - currentGoalState.Value;
-
-
-                double goalMax = string.IsNullOrEmpty(goal.MaxGoalValueReference) ? goal.MaxGoalValue : agent[goal.MaxGoalValueReference];
-
-                currentGoalState.DiffPriorAndMax = prevGoalState.Value - goalMax;
-
-                currentGoalState.DiffCurrentAndMax = currentGoalState.Value - goalMax;
 
                 //goalState.Value contains prior Iteration value
                 currentGoalState.AnticipatedInfluenceValue = currentGoalState.Value - prevGoalState.Value;

@@ -22,7 +22,7 @@ namespace Common.Processes
         protected override void AboveMin()
         {
             Rule[] rules = anticipatedInfluences.Where(kvp=> matchedRules.Contains(kvp.Key))
-                .Where(kvp => kvp.Value[selectedGoal] >= 0 && kvp.Value[selectedGoal] > selectedGoalState.DiffCurrentAndMin).Select(kvp => kvp.Key).ToArray();
+                .Where(kvp => kvp.Value[selectedGoal] >= 0 && kvp.Value[selectedGoal] > selectedGoalState.DiffCurrentAndFocal).Select(kvp => kvp.Key).ToArray();
 
             //If 0 heuristics are identified, then heuristic-set-layer specific counterfactual thinking(t) = unsuccessful.
             if (rules.Length == 0)
@@ -40,7 +40,7 @@ namespace Common.Processes
         protected override void BelowMax()
         {
             Rule[] rules = anticipatedInfluences.Where(kvp => matchedRules.Contains(kvp.Key))
-                .Where(kvp => kvp.Value[selectedGoal] < 0 && Math.Abs(kvp.Value[selectedGoal]) > Math.Abs(selectedGoalState.DiffCurrentAndMin)).Select(kvp => kvp.Key).ToArray();
+                .Where(kvp => kvp.Value[selectedGoal] < 0 && Math.Abs(kvp.Value[selectedGoal]) > Math.Abs(selectedGoalState.DiffCurrentAndFocal)).Select(kvp => kvp.Key).ToArray();
 
             
             //If 0 heuristics are identified, then heuristic-set-layer specific counterfactual thinking(t) = unsuccessful.

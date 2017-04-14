@@ -6,47 +6,61 @@ using System.Linq;
 namespace Common.Processes
 {
     using Entities;
-
+    using Helpers;
 
 
     public class SocialLearning
     {
-        Dictionary<IAgent, List<Rule>> confidentAgents = new Dictionary<IAgent, List<Rule>>();
+        Dictionary<IAgent, Dictionary<Goal, List<Rule>>> confidentAgents = new Dictionary<IAgent, Dictionary<Goal, List<Rule>>>();
 
         public void ExecuteSelection(IAgent agent, AgentState agentState, AgentState previousAgentState,
             RuleLayer layer)
         {
-            if (layer.Set.AssociatedWith.All(g=> agentState.GoalsState[g].Confidence == true))
+            layer.Set.AssociatedWith.ForEach(goal =>
             {
-                Rule activatedRule = previousAgentState.Activated.FirstOrDefault(h => h.Layer == layer);
+                GoalState goalState = agentState.GoalsState[goal];
 
-                if (activatedRule != null)
+                if (goalState.Confidence == true)
                 {
-                    if (confidentAgents.ContainsKey(agent))
-                        confidentAgents[agent].Add(activatedRule);
-                    else
-                        confidentAgents.Add(agent, new List<Rule>() { activatedRule });
+                    Rule activatedRule = previousAgentState.Activated.FirstOrDefault(h => h.Layer == layer);
+
+                    if (confidentAgents.ContainsKey(agent) == false)
+                    {
+                        confidentAgents.Add(agent, new Dictionary<Goal, List<Rule>>());
+                    }
+
+                    if (confidentAgents[agent].ContainsKey(goal) == false)
+                    {
+                        confidentAgents[agent].Add(goal, new List<Rule>());
+                    }
+
+                    confidentAgents[agent][goal].Add(activatedRule);
                 }
-            }
+            });
         }
 
-        public void ExecuteLearning(IAgent[] allAgents, Dictionary<IAgent, AgentState> iterationState)
+        public void ExecuteLearning(IAgent[] allAgents, Dictionary<IAgent, AgentState> iterationState, Dictionary<IAgent, Goal[]> rankedGoals)
         {
-            foreach (var agent in allAgents)
+            allAgents.ForEach(agent =>
             {
-                foreach (IAgent connectedAgent in agent.ConnectedAgents)
+                agent.AssignedRules.GroupBy(r => r.Layer).ForEach(layer =>
                 {
-                    if(confidentAgents.ContainsKey(connectedAgent))
+                    Goal selectedGoal = rankedGoals[agent].First(g => layer.Key.Set.AssociatedWith.Contains(g));
+
+                    agent.ConnectedAgents.ForEach(connectedAgent =>
                     {
-                        foreach (Rule rule in confidentAgents[connectedAgent])
+                        if (confidentAgents.ContainsKey(connectedAgent) && confidentAgents[connectedAgent].ContainsKey(selectedGoal))
                         {
-                            if (agent.AssignedRules.Any(r=>r.Layer == rule.Layer) && agent.AssignedRules.Any(r => r == rule) == false)
+                            Rule[] availableRules = confidentAgents[connectedAgent][selectedGoal].Where(r => r.Layer == layer.Key).ToArray();
+
+
+                            availableRules.ForEach(rule =>
                             {
                                 agent.AssignNewRule(rule);
 
                                 AgentState agentState = iterationState[agent];
 
-                                if(agentState.AnticipationInfluence.ContainsKey(rule))
+                                if (agentState.AnticipationInfluence.ContainsKey(rule))
                                 {
                                     agentState.AnticipationInfluence[rule] = new Dictionary<Goal, double>(iterationState[connectedAgent].AnticipationInfluence[rule]);
                                 }
@@ -54,12 +68,11 @@ namespace Common.Processes
                                 {
                                     agentState.AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(iterationState[connectedAgent].AnticipationInfluence[rule]));
                                 }
-
-                            }
+                            });
                         }
-                    }
-                }
-            }
+                    });
+                });
+            });
 
             //clean state
             confidentAgents.Clear();

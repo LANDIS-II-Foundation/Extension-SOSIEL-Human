@@ -1,3 +1,11 @@
+Evaluation 1.0.15.6314 2017-04-14
+
+New features:
+ - M8-M11. Added variable Mean and StndDeviation for configuring normal distribution.
+ - M7. Added second agent configuration file for simulating tit-for-tat vs tit-for-tat
+ - M8-M11. Removed param MaxGoalValue and changed logic for using Focal value instead of MaxGoalValue.
+ - M10. Reduced focal value and modyfied AL (in case Maximize). If diffCurAndFocal >= 0 then (confidence = yes and direction = stand) else (confidence = no and direction = up)
+
 
 Evaluation 1.0.14.6313 2017-04-13
 

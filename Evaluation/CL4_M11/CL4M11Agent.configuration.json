@@ -14,19 +14,15 @@
           "Tendency": "Maximize",
           "ReferenceVariable": "PoolWellbeing",
           "FocalValue": 15,
-          "MaxGoalValue": 15,
-          "FocalValueReference": "",
-          "MaxGoalValueReference": "MaxPoolWellbeing"
+          "FocalValueReference": "MaxPoolWellbeing"
 
         },
         {
           "Name": "PG2",
           "Tendency": "Maximize",
           "ReferenceVariable": "AgentSavings",
-          "FocalValue": 15,
-          "MaxGoalValue": 23.5,
-          "FocalValueReference": "",
-          "MaxGoalValueReference": "E"
+          "FocalValue": 23.5,
+          "FocalValueReference": "E"
         },
         {
           "Name": "PG3",

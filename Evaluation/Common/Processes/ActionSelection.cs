@@ -29,7 +29,7 @@ namespace Common.Processes
 
             var ai = agentState.AnticipationInfluence;
 
-            if (goalState.DiffCurrentAndMin > 0)
+            if (goalState.DiffCurrentAndFocal > 0)
             {
                 if (matchedRules.Any(r => r == priorPeriodActivatedRule))
                 {
@@ -39,13 +39,13 @@ namespace Common.Processes
                 else
                 {
                     selected = matchedRules.Where(r => ai[r][processedGoal] >= 0 &&
-                        ai[r][processedGoal] < goalState.DiffCurrentAndMin).ToArray();
+                        ai[r][processedGoal] < goalState.DiffCurrentAndFocal).ToArray();
                 }
             }
             else
             {
                 selected = matchedRules.Where(r => ai[r][processedGoal] >= 0 &&
-                    ai[r][processedGoal] > goalState.DiffCurrentAndMin).ToArray();
+                    ai[r][processedGoal] > goalState.DiffCurrentAndFocal).ToArray();
             }
 
             if (selected.Length > 0)
@@ -62,7 +62,7 @@ namespace Common.Processes
 
             var ai = agentState.AnticipationInfluence;
 
-            if (goalState.DiffCurrentAndMin < 0)
+            if (goalState.DiffCurrentAndFocal < 0)
             {
                 if (matchedRules.Any(r => r == priorPeriodActivatedRule))
                 {
@@ -72,13 +72,13 @@ namespace Common.Processes
                 else
                 {
                     selected = matchedRules.Where(r => ai[r][processedGoal] <= 0 &&
-                        Math.Abs(ai[r][processedGoal]) < Math.Abs(goalState.DiffCurrentAndMin)).ToArray();
+                        Math.Abs(ai[r][processedGoal]) < Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
                 }
             }
             else
             {
                 selected = matchedRules.Where(r => ai[r][processedGoal] < 0 &&
-                    Math.Abs(ai[r][processedGoal]) > Math.Abs(goalState.DiffCurrentAndMin)).ToArray();
+                    Math.Abs(ai[r][processedGoal]) > Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
             }
 
             if (selected.Length > 0)

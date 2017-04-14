@@ -26,9 +26,6 @@
       },
 
       "Rules": [
-
-
-
         {
           "RuleSet": 1,
           "RuleLayer": 1,
@@ -36,21 +33,20 @@
           "Id": "RS1_L1_R1",
           "Antecedent": [
             {
-              "Param": "Iteration",
-              "Sign": "==",
-              "Value": 1
+              "Param": "AgentWellbeing",
+              "Sign": ">=",
+              "Value": 15
             }
           ],
           "Consequent": {
             "Param": "AgentC",
-            "VariableValue": "E",
             "CopyToCommon": true,
-            "SavePrevious": true
+            "SavePrevious": true,
+            "VariableValue": "AgentC"
           },
           "RequiredParticipants": 1,
           "IsAction": true
         },
-
         {
           "RuleSet": 1,
           "RuleLayer": 1,
@@ -58,9 +54,40 @@
           "Id": "RS1_L1_R2",
           "Antecedent": [
             {
-              "Param": "Iteration",
+              "Param": "AgentWellbeing",
+              "Sign": "<",
+              "Value": 15
+            },
+            {
+              "Param": "AgentC",
               "Sign": "==",
-              "Value": 1
+              "Value": 0
+            }
+          ],
+          "Consequent": {
+            "Param": "AgentC",
+            "CopyToCommon": true,
+            "SavePrevious": true,
+            "VariableValue": "E"
+          },
+          "RequiredParticipants": 1,
+          "IsAction": true
+        },
+        {
+          "RuleSet": 1,
+          "RuleLayer": 1,
+          "RulePositionNumber": 3,
+          "Id": "RS1_L1_R3",
+          "Antecedent": [
+            {
+              "Param": "AgentWellbeing",
+              "Sign": "<",
+              "Value": 15
+            },
+            {
+              "Param": "AgentC",
+              "Sign": "==",
+              "ReferenceVariable": "E"
             }
           ],
           "Consequent": {
@@ -72,28 +99,8 @@
           "RequiredParticipants": 1,
           "IsAction": true
         },
+      
 
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 3,
-          "Id": "RS1_L1_R3",
-          "Antecedent": [
-            {
-              "Param": "Iteration",
-              "Sign": ">",
-              "Value": 1
-            }
-          ],
-          "Consequent": {
-            "Param": "AgentC",
-            "VariableValue": "Agent_2_Previous_AgentC",
-            "CopyToCommon": true,
-            "SavePrevious": true
-          },
-          "RequiredParticipants": 1,
-          "IsAction": true
-        },
         {
           "RuleSet": 1,
           "RuleLayer": 1,
@@ -102,15 +109,32 @@
           "Antecedent": [
             {
               "Param": "Iteration",
+              "Sign": "==",
+              "Value": 1
+            }
+          ],
+          "Consequent": {
+            "Param": "AgentC",
+            "VariableValue": "E"
+          },
+          "RequiredParticipants": 1,
+          "IsAction": true
+        },
+        {
+          "RuleSet": 1,
+          "RuleLayer": 1,
+          "RulePositionNumber": 5,
+          "Id": "RS1_L1_R5",
+          "Antecedent": [
+            {
+              "Param": "Iteration",
               "Sign": ">",
               "Value": 1
             }
           ],
           "Consequent": {
             "Param": "AgentC",
-            "VariableValue": "Agent_1_Previous_AgentC",
-            "CopyToCommon": true,
-            "SavePrevious": true
+            "VariableValue": "Agent_1_Previous_AgentC"
           },
           "RequiredParticipants": 1,
           "IsAction": true
@@ -132,17 +156,21 @@
           "RS1_L1_R1": {
             "PG1": 15
           },
+          "RS1_L1_R2": {
+            "PG1": 15
+          },
           "RS1_L1_R3": {
             "PG1": 15
           }
         },
         "AssignedRules": [
           "RS1_L1_R1",
+          "RS1_L1_R2",
           "RS1_L1_R3"
         ],
         "AssignedGoals": [ "PG1" ],
 
-        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R1" ],
+        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R3" ],
 
         "GoalState": {
           "PG1": {
@@ -160,20 +188,20 @@
         },
 
         "AnticipatedInfluenceState": {
-          "RS1_L1_R2": {
+          "RS1_L1_R5": {
             "PG1": 10
           },
-          "RS1_L1_R4": {
+          "RS1_L1_R6": {
             "PG1": 10
           }
         },
         "AssignedRules": [
-          "RS1_L1_R2",
-          "RS1_L1_R4"
+          "RS1_L1_R4",
+          "RS1_L1_R5"
         ],
         "AssignedGoals": [ "PG1" ],
 
-        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R2" ],
+        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R4" ],
 
         "GoalState": {
           "PG1": {

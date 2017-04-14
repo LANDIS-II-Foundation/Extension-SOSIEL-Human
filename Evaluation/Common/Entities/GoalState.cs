@@ -13,13 +13,9 @@ namespace Common.Entities
 
         public double FocalValue { get; set; }
 
-        public double DiffCurrentAndMin { get; set; }
+        public double DiffCurrentAndFocal { get; set; }
 
-        public double DiffCurrentAndMax { get; set; }
-
-        public double DiffPriorAndMin { get; set; }
-
-        public double DiffPriorAndMax { get; set; }
+        public double DiffPriorAndFocal { get; set; }
 
         public double DiffPriorAndCurrent { get; set; }
 
