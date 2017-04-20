@@ -2,7 +2,7 @@
 
 using Edu.Wisc.Forest.Flel.Util;
 
-namespace Landis.Extension.SocialHuman
+namespace SocialHuman
 {
     public class Parameters
     {

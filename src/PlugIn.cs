@@ -6,7 +6,7 @@ using Landis.SpatialModeling;
 using log4net;
 using System.Collections.Generic;
 
-namespace Landis.Extension.SocialHuman
+namespace SocialHuman
 {
     public class PlugIn
         : Landis.Core.ExtensionMain
@@ -145,7 +145,7 @@ namespace Landis.Extension.SocialHuman
         //---------------------------------------------------------------------
 
         // A delegate for processing a land use read from an input map.
-        public delegate string ProcessLandUseAt(Site site, LandUse landUse);
+        //public delegate string ProcessLandUseAt(Site site, LandUse landUse);
 
         //---------------------------------------------------------------------
 

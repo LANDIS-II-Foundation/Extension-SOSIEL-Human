@@ -7,8 +7,8 @@
     <ProjectGuid>{B8CED21D-693F-4551-908B-E63321DD1D9F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Landis.Extension.LandUse</RootNamespace>
-    <AssemblyName>Landis.Extension.LandUse</AssemblyName>
+    <RootNamespace>SocialHuman</RootNamespace>
+    <AssemblyName>Landis.Extension.SocialHuman</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -36,11 +36,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AllowHarvestSiteVar.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="LandCover\IChange.cs" />
-    <Compile Include="LandCover\RemoveTrees.cs" />
-    <Compile Include="LandUse.cs" />
     <Compile Include="PlugIn.cs" />
     <Compile Include="MapNames.cs" />
     <Compile Include="Model.cs" />
@@ -84,11 +80,6 @@
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
   <ItemDefinitionGroup>
     <Reference>
       <!-- Do not copy any of referenced assemblies to the output directory during a build.
@@ -104,8 +95,7 @@
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>call $(SolutionDir)\install-libs.cmd</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

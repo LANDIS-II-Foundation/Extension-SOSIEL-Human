@@ -2,7 +2,7 @@
 
 using Landis.Core;
 
-namespace Landis.Extension.SocialHuman
+namespace SocialHuman
 {
     internal static class Model
     {

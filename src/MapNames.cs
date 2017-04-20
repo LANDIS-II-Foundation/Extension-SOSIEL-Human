@@ -8,7 +8,7 @@ using System.Collections.Generic;
 // eventually.
 using FilePath = Edu.Wisc.Forest.Flel.Util.OutputPath;
 
-namespace Landis.Extension.SocialHuman
+namespace SocialHuman
 {
     /// <summary>
     /// Methods for working with the template for the names of input maps.

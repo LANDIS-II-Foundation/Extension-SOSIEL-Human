@@ -3,29 +3,29 @@
 using Landis.Core;
 using Landis.SpatialModeling;
 
-namespace Landis.Extension.SocialHuman
+namespace SocialHuman
 {
     public class SiteVars
     {
-        private static ISiteVar<LandUse> landUse;
-        private static AllowHarvestSiteVar allowHarvest;
+        //private static ISiteVar<LandUse> landUse;
+        //private static AllowHarvestSiteVar allowHarvest;
 
         //---------------------------------------------------------------------
 
         public static void Initialize(ICore modelCore)
         {
-            landUse = modelCore.Landscape.NewSiteVar<LandUse>();
-            allowHarvest = new AllowHarvestSiteVar();
-            Model.Core.RegisterSiteVar(allowHarvest, "LandUse.AllowHarvest");
+            //landUse = modelCore.Landscape.NewSiteVar<LandUse>();
+            //allowHarvest = new AllowHarvestSiteVar();
+            //Model.Core.RegisterSiteVar(allowHarvest, "LandUse.AllowHarvest");
         }
 
         //---------------------------------------------------------------------
 
-        public static ISiteVar<LandUse> LandUse
-        {
-            get {
-                return landUse;
-            }
-        }
+        //public static ISiteVar<LandUse> LandUse
+        //{
+        //    get {
+        //        return landUse;
+        //    }
+        //}
     }
 }
