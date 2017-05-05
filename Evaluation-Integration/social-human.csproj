@@ -62,8 +62,6 @@
     </Reference>
     <Reference Include="Landis.SpatialModeling">
     </Reference>
-    <Reference Include="log4net">
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemDefinitionGroup>

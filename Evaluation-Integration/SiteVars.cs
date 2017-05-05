@@ -11,8 +11,11 @@ namespace SocialHuman
 
         //---------------------------------------------------------------------
 
-        public static void Initialize(ICore modelCore)
+        public static void Initialize()
         {
+            foreach (ActiveSite site in Model.Core.Landscape)
+                SiteVars.Biomass[site] = 200;
+
         }
 
         //---------------------------------------------------------------------
