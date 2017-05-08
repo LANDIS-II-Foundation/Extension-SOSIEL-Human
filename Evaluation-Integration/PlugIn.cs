@@ -1,4 +1,4 @@
-﻿// This file is part of the Social Human extension for LANDIS-II.
+﻿// This file is part of SHE for LANDIS-II.
 
 using Landis.Core;
 using Landis.Library.Succession;
