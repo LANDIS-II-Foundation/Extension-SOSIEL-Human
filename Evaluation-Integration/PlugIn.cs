@@ -12,7 +12,7 @@ namespace SocialHuman
         : Landis.Core.ExtensionMain
     {
 
-        public static readonly ExtensionType ExtType = new ExtensionType("disturbance:social-human");
+        public static readonly ExtensionType ExtType = new ExtensionType("disturbance:sosiel-human");
         public static readonly string ExtensionName = "Land Use";
 
         private Parameters parameters;
@@ -41,9 +41,10 @@ namespace SocialHuman
         {
             Model.Core.UI.WriteLine("Initializing {0}...", Name);
             SiteVars.Initialize();
+            
             Timestep = parameters.Timestep;
 
-            //Read in JsonFile here:
+            //Read in Agent Configuration Json File here:
             // ReadInputFile(parameters.InputJson)
 
             // Other SHE initializations also here.
@@ -60,10 +61,11 @@ namespace SocialHuman
                 foreach (ActiveSite site in Model.Core.Landscape)
                 {
                     int siteBiomass = SiteVars.Biomass[site];  // total biomass on the site
-                    double biomassReduction = 1.0;  // default = no action taken
+                    double biomassReduction = 1.0;  // default = no action taken; varies from 0.0 - 1.0.
 
                     // SHE sub-routines here
                     // biomassReduction = algorithm.Run(siteBiomass);
+                    // Etc.
 
                     // This method uses the biomass reduction calculated from SHE sub-routines to reduce the biomass of every cohort by a percentage.
                     ReduceCohortBiomass(site, biomassReduction);
