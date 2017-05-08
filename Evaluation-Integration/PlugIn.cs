@@ -3,7 +3,6 @@
 using Landis.Core;
 using Landis.Library.Succession;
 using Landis.SpatialModeling;
-//using log4net;
 using System.Collections.Generic;
 
 namespace SocialHuman
