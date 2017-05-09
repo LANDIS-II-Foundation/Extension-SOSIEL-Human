@@ -43,7 +43,7 @@ namespace SocialHuman
             
             Timestep = parameters.Timestep;
 
-            //Read in Agent Configuration Json File here:
+            // Read in (input) Agent Configuration Json File here:
             // ReadInputFile(parameters.InputJson)
 
             // Other SHE initializations also here.
@@ -53,22 +53,24 @@ namespace SocialHuman
 
         public override void Run()
         {
-            int iterations = 1; // Later we can decide if there should be multiple iterations per year.
+            int iterations = 1; // Later we can decide if there should be multiple SHE sub-iterations per LANDIS-II iteration. 
             for (int i = 0; i < iterations; i++)
             {
-                // Step through every site on the landscape
+                // Step through every active site on the landscape.
                 foreach (ActiveSite site in Model.Core.Landscape)
                 {
                     int siteBiomass = SiteVars.Biomass[site];  // total biomass on the site
                     double biomassReduction = 1.0;  // default = no action taken; varies from 0.0 - 1.0.
 
-                    // SHE sub-routines here
+                    // SHE's type 1 agent (forestry enterprise) sub-routines here.
                     // biomassReduction = algorithm.Run(siteBiomass);
                     // Etc.
 
-                    // This method uses the biomass reduction calculated from SHE sub-routines to reduce the biomass of every cohort by a percentage.
+                    // This method uses the biomass reduction calculated from SHE sub-routines to reduce the biomass
+                    // of every cohort by a percentage.
                     ReduceCohortBiomass(site, biomassReduction);
-
+                    
+                    // SHE's type 2 agents (household members) sub-routines here.
                 }
 
             }
