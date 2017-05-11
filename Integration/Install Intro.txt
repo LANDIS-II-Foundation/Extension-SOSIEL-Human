@@ -1,4 +1,4 @@
-Instructions for installing LANDIS-II, biomass succession, and SHE.
+Instructions for installing LANDIS-II, Biomass Succession, and SHE.
 
 1. Install LANDIS-II
    a. http://www.landis-ii.org/install
@@ -7,3 +7,4 @@ Instructions for installing LANDIS-II, biomass succession, and SHE.
    a. http://www.landis-ii.org/extensions/biomass-succession
 3. Install SHE
    a. https://github.com/LANDIS-II-Foundation/Extension-Sosiel-Human/tree/master/Integration/deploy
+   
