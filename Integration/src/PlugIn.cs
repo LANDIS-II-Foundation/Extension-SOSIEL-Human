@@ -56,7 +56,7 @@ namespace SosielHuman
             Timestep = parameters.Timestep;
 
             // Read in (input) Agent Configuration Json File here:
-             ReadInputFile(parameters.InputJson)
+            // ReadInputFile(parameters.InputJson);
 
             // Alex K: load Json file here.
             // Other SHE initializations also here.
@@ -69,13 +69,9 @@ namespace SosielHuman
             int iterations = 1; // Later we can decide if there should be multiple SHE sub-iterations per LANDIS-II iteration. 
             for (int i = 0; i < iterations; i++)
             {
-<<<<<<< HEAD:Integration/src/PlugIn.cs
-                // Step through every site on the landscape
-                foreach (ActiveSite site in ModelCore.Landscape)
-=======
+                
                 // Step through every active site on the landscape.
-                foreach (ActiveSite site in Model.Core.Landscape)
->>>>>>> 5f793e2b22cb302d0a39b2966244c9d82b05bdcc:Evaluation-Integration/PlugIn.cs
+                foreach (ActiveSite site in ModelCore.Landscape)
                 {
                     int siteBiomass = ComputeLivingBiomass(SiteVars.Cohorts[site]);  // total biomass on the site
                     double biomassReduction = 1.0;  // default = no action taken; varies from 0.0 - 1.0.
@@ -95,7 +91,7 @@ namespace SosielHuman
 
         }
 
-        private void ReduceCohortBiomass(ActiveSite site, double biomassReduction)
+        private static void ReduceCohortBiomass(ActiveSite site, double biomassReduction)
         {
             // This is a placeholder, will be cohort-by-cohort in final implementation.
             // SiteVars.Biomass[site] = (int) (biomassReduction * SiteVars.Biomass[site]);
@@ -103,7 +99,7 @@ namespace SosielHuman
 
         //---------------------------------------------------------------------
 
-        public static int ComputeLivingBiomass(ISiteCohorts cohorts)
+        private static int ComputeLivingBiomass(ISiteCohorts cohorts)
         {
             int total = 0;
             if (cohorts != null)
