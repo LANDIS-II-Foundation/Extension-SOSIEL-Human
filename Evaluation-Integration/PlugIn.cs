@@ -44,8 +44,9 @@ namespace SocialHuman
             Timestep = parameters.Timestep;
 
             // Read in (input) Agent Configuration Json File here:
-            // ReadInputFile(parameters.InputJson)
+             ReadInputFile(parameters.InputJson)
 
+            // Alex K: load Json file here.
             // Other SHE initializations also here.
         }
 
