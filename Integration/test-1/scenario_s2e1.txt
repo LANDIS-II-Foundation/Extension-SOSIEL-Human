@@ -18,7 +18,7 @@ LandisData  "Scenario"
 >> REQUIRED INPUTS
 >>-------------------
 
-Duration  	100
+Duration  	10
 
 Species   	./species_s2e1.txt
 
@@ -44,7 +44,7 @@ CellLength  	100 << meters, 100 x 100 m = 1 ha
 
 >> 	Disturbance Extension	Initialization File
 >>	--------------------	-------------------
->>	"SHE"			SHE_SetUp_s2e1.txt
+>>	"Sosiel Humans"			SHE_SetUp_s2e1.txt
 
 
 >>   DisturbancesRandomOrder  yes  	<< optional
@@ -56,8 +56,8 @@ CellLength  	100 << meters, 100 x 100 m = 1 ha
 
 >> 	Output Extension		Initialization File
 >> 	----------------		-------------------
-  	"Output Biomass"		output_Biomass.txt		<<compatible w/ "Biomass Succession" only
-  	"Output Biomass Reclass"    	output_BiomassReclass.txt	<<compatible w/ "Biomass Succession" only
+>>	"Output Biomass"		output_Biomass.txt		<<compatible w/ "Biomass Succession" only
+>> 	"Output Biomass Reclass"    	output_BiomassReclass.txt	<<compatible w/ "Biomass Succession" only
 
 
 
