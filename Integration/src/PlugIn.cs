@@ -5,9 +5,9 @@ using Landis.Library.Succession;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
 using Landis.Library.BiomassCohorts;
+using System.Diagnostics;
 
-
-namespace SosielHuman
+namespace Landis.Extension.Sosiel
 {
     public class PlugIn
         : Landis.Core.ExtensionMain
@@ -40,6 +40,8 @@ namespace SosielHuman
         public override void LoadParameters(string dataFile,
                                             ICore mCore)
         {
+            Debugger.Launch();
+
             modelCore = mCore;
             ModelCore.UI.WriteLine("  Loading parameters from {0}", dataFile);
             ParameterParser parser = new ParameterParser(ModelCore.Species);
