@@ -76,7 +76,8 @@
   </ItemDefinitionGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call $(ProjectDir)\copy-to-extensions.cmd $(ProjectDir)bin\$(Configuration)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>call $(ProjectDir)\install-libs.cmd</PreBuildEvent>
