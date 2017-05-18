@@ -7,16 +7,23 @@ using System.Collections.Generic;
 using Landis.Library.BiomassCohorts;
 using System.Diagnostics;
 
-namespace Landis.Extension.Sosiel
+namespace Landis.Extension.SOSIELHuman
 {
+    using Configuration;
+
     public class PlugIn
         : Landis.Core.ExtensionMain
     {
 
-        public static readonly ExtensionType ExtType = new ExtensionType("disturbance:sosiel-human");
-        public static readonly string ExtensionName = "Land Use";
+        public static readonly ExtensionType ExtType = new ExtensionType("disturbance:SOSIEL Human");
+        public static readonly string ExtensionName = "SOSIEL Human";
 
         private Parameters parameters;
+
+
+        private ConfigurationModel configuration;
+
+
         private static ICore modelCore;
 
         //---------------------------------------------------------------------
@@ -43,9 +50,20 @@ namespace Landis.Extension.Sosiel
             Debugger.Launch();
 
             modelCore = mCore;
+
+            //todo
             ModelCore.UI.WriteLine("  Loading parameters from {0}", dataFile);
+
+            //Parse Landis parameters here
             ParameterParser parser = new ParameterParser(ModelCore.Species);
             parameters = Landis.Data.Load<Parameters>(dataFile, parser);
+
+
+
+
+            //Parse Sosiel parameters here
+            string inputFile = parameters.InputJson;
+            configuration = ConfigurationParser.ParseConfiguration(dataFile);
         }
 
         //---------------------------------------------------------------------

@@ -4,7 +4,7 @@ using Landis.Core;
 using Landis.SpatialModeling;
 using Landis.Library.BiomassCohorts;
 
-namespace Landis.Extension.Sosiel
+namespace Landis.Extension.SOSIELHuman
 {
     public class SiteVars
     {

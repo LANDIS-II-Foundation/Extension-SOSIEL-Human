@@ -7,7 +7,7 @@ using Landis.Library.SiteHarvest;
 using Landis.Library.Succession;
 using System.Collections.Generic;
 
-namespace Landis.Extension.Sosiel
+namespace Landis.Extension.SOSIELHuman
 {
     /// <summary>
     /// A parser that reads the extension's input and output parameters from

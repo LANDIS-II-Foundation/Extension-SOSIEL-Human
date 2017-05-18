@@ -7,9 +7,9 @@
     <ProjectGuid>{B8CED21D-693F-4551-908B-E63321DD1D9F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sosiel_human</RootNamespace>
-    <AssemblyName>Landis.Extension.SosielHuman</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>Landis.Extension.SOSIELHuman</RootNamespace>
+    <AssemblyName>Landis.Extension.SOSIELHuman</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -38,10 +38,59 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Algorithm\IAlgorithm.cs" />
+    <Compile Include="Algorithm\LuhyLiteImplementation.cs" />
+    <Compile Include="Algorithm\SosielAlgorithm.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Configuration\AgentStateConfiguration.cs" />
+    <Compile Include="Configuration\AlgorithmConfiguration.cs" />
+    <Compile Include="Configuration\ConfigurationModel.cs" />
+    <Compile Include="Configuration\ConfigurationParser.cs" />
+    <Compile Include="Configuration\GoalStateConfiguration.cs" />
+    <Compile Include="Configuration\InitialStateConfiguration.cs" />
+    <Compile Include="Entities\AgentList.cs" />
+    <Compile Include="Entities\AgentPrototype.cs" />
+    <Compile Include="Entities\AgentState.cs" />
+    <Compile Include="Entities\GoalState.cs" />
+    <Compile Include="Entities\IAgent.cs" />
+    <Compile Include="Entities\Site.cs" />
+    <Compile Include="Enums\ActionTaking.cs" />
+    <Compile Include="Enums\AnticipatedDirection.cs" />
+    <Compile Include="Enums\ConsequentRelationship.cs" />
+    <Compile Include="Environments\ICloneable.cs" />
+    <Compile Include="Exceptions\SosielAlgorithmException.cs" />
+    <Compile Include="Exceptions\UnknownVariableException.cs" />
+    <Compile Include="Exceptions\InputParameterException.cs" />
+    <Compile Include="Entities\Agent.cs" />
+    <Compile Include="Entities\Goal.cs" />
+    <Compile Include="Entities\IRuleConsequent.cs" />
+    <Compile Include="Configuration\ProcessesConfiguration.cs" />
+    <Compile Include="Entities\Rule.cs" />
+    <Compile Include="Entities\RuleAntecedentPart.cs" />
+    <Compile Include="Entities\RuleConsequent.cs" />
+    <Compile Include="Entities\RuleLayer.cs" />
+    <Compile Include="Entities\RuleLayerSettings.cs" />
+    <Compile Include="Entities\RuleSet.cs" />
+    <Compile Include="Entities\RuleSetSettings.cs" />
+    <Compile Include="Enums\CognitiveLevel.cs" />
+    <Compile Include="Helpers\AntecedentBuilder.cs" />
+    <Compile Include="Helpers\EnumHelper.cs" />
+    <Compile Include="Helpers\IEnumerableHelper.cs" />
+    <Compile Include="Helpers\RandomizeHelper.cs" />
+    <Compile Include="Helpers\VariablesUsedInCode.cs" />
     <Compile Include="PlugIn.cs" />
     <Compile Include="ParameterParser.cs" />
     <Compile Include="Parameters.cs" />
+    <Compile Include="Processes\ActionSelection.cs" />
+    <Compile Include="Processes\ActionTaking.cs" />
+    <Compile Include="Processes\AnticipatoryLearning.cs" />
+    <Compile Include="Processes\CounterfactualThinking.cs" />
+    <Compile Include="Processes\Innovation.cs" />
+    <Compile Include="Processes\SocialLearning.cs" />
+    <Compile Include="Processes\VolatileProcess.cs" />
+    <Compile Include="Randoms\LinearUniformRandom.cs" />
+    <Compile Include="Randoms\NormalDistributionRandom.cs" />
+    <Compile Include="Randoms\PowerLawRandom.cs" />
     <Compile Include="SiteVars.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -63,7 +112,20 @@
     </Reference>
     <Reference Include="Landis.SpatialModeling">
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="configuration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemDefinitionGroup>
     <Reference>
