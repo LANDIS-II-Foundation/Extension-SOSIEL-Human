@@ -1,0 +1,12 @@
+LandisData  "SOSIEL Human"
+
+
+>>------------------
+>> REQUIRED INPUTS
+>>------------------
+
+Timestep  			10
+
+SeedingAlgorithm  		WardSeedDispersal
+
+InputJson			configuration.json
