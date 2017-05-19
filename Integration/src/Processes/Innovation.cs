@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Landis.SpatialModeling;
+
 namespace Landis.Extension.SOSIELHuman.Processes
 {
     using Enums;
@@ -10,22 +12,36 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
     public class Innovation
     {
+        /// <summary>
+        /// Executes agent innovation process for specific site
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="lastIteration"></param>
+        /// <param name="goal"></param>
+        /// <param name="layer"></param>
         public void Execute(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration, Goal goal,
-            RuleLayer layer)
+            RuleLayer layer, ActiveSite site)
         {
             Dictionary<IAgent, AgentState> currentIteration = lastIteration.Value;
             Dictionary<IAgent, AgentState> priorIteration = lastIteration.Previous.Value;
 
-            Rule priorPeriodRule = priorIteration[agent].Activated.Single(r=>r.Layer == layer);
+            //gets prior period activated rule
+            RuleHistory history = priorIteration[agent].RuleHistories[site];
+            Rule priorPeriodRule = history.Activated.Single(r=>r.Layer == layer);
 
             LinkedListNode<Dictionary<IAgent, AgentState>> tempNode = lastIteration.Previous;
 
+            //if prior period rule is do nothing rule then looking for any do something rule
             while (priorPeriodRule.IsAction == false && tempNode.Previous != null)
             {
                 tempNode = tempNode.Previous;
-                priorPeriodRule = tempNode.Value[agent].Activated.Single(r => r.Layer == layer);
+
+                history = tempNode.Value[agent].RuleHistories[site];
+
+                priorPeriodRule = history.Activated.Single(r => r.Layer == layer);
             }
 
+            //if the layer or prior period rule are modifiable then generate new rule
             if (layer.LayerSettings.Modifiable || (!layer.LayerSettings.Modifiable && priorPeriodRule.IsModifiable))
             {
                 RuleLayerSettings parameters = layer.LayerSettings;
@@ -105,12 +121,8 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 generatedRule.Antecedent = antecedentList.ToArray();
                 generatedRule.Consequent = consequent;
 
-
-                agentState.AnticipationInfluence.Add(generatedRule, new Dictionary<Goal, double>(agentState.AnticipationInfluence[priorPeriodRule]));
-
-                layer.Add(generatedRule);
-
-                agent.AssignNewRule(generatedRule);
+                //add the generated rule to the prototype's mental model and assign one to the agent's mental model 
+                agent.AddRule(generatedRule, layer, agent.AnticipationInfluence[priorPeriodRule]);
 
                 if (layer.Set.Layers.Count > 1)
                     //set consequent to actor's variables for next layers

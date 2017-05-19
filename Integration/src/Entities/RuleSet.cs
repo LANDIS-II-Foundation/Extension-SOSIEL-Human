@@ -17,8 +17,6 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         public Goal[] AssociatedWith { get; set; }
 
-        public bool IsSequential { get; set; }
-
         private RuleSet(int number, Goal[] associatedGoals)
         {
             PositionNumber = number;
@@ -26,11 +24,9 @@ namespace Landis.Extension.SOSIELHuman.Entities
             AssociatedWith = associatedGoals;
         }
 
-        public RuleSet(int number, Goal[] associatedGoals, IEnumerable<RuleLayer> layers, bool isSequential) :this(number, associatedGoals)
+        public RuleSet(int number, Goal[] associatedGoals, IEnumerable<RuleLayer> layers) :this(number, associatedGoals)
         {
             layers.ForEach(l => Add(l));
-
-            IsSequential = isSequential;
         }
 
         public void Add(RuleLayer layer)

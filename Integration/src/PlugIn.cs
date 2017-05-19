@@ -52,17 +52,17 @@ namespace Landis.Extension.SOSIELHuman
             modelCore = mCore;
 
             //todo
-            ModelCore.UI.WriteLine("  Loading parameters from {0}", dataFile);
+            //ModelCore.UI.WriteLine("  Loading parameters from {0}", dataFile);
 
             //Parse Landis parameters here
-            ParameterParser parser = new ParameterParser(ModelCore.Species);
-            parameters = Landis.Data.Load<Parameters>(dataFile, parser);
+            //ParameterParser parser = new ParameterParser(ModelCore.Species);
+            //parameters = Landis.Data.Load<Parameters>(dataFile, parser);
 
 
 
 
             //Parse Sosiel parameters here
-            string inputFile = parameters.InputJson;
+            //string inputFile = parameters.InputJson;
             configuration = ConfigurationParser.ParseConfiguration(dataFile);
         }
 
@@ -73,7 +73,7 @@ namespace Landis.Extension.SOSIELHuman
             ModelCore.UI.WriteLine("Initializing {0}...", Name);
             SiteVars.Initialize();
             
-            Timestep = parameters.Timestep;
+            //Timestep = parameters.Timestep;
 
             // Read in (input) Agent Configuration Json File here:
             // ReadInputFile(parameters.InputJson);
@@ -87,6 +87,10 @@ namespace Landis.Extension.SOSIELHuman
         public override void Run()
         {
             int iterations = 1; // Later we can decide if there should be multiple SHE sub-iterations per LANDIS-II iteration. 
+
+
+
+
             for (int i = 0; i < iterations; i++)
             {
                 

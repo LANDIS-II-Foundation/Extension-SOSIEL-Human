@@ -16,12 +16,12 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
 
         /// <summary>
-        /// Prioritization process
+        /// Sorts goals by importance 
         /// </summary>
         /// <param name="agent"></param>
         /// <param name="goals"></param>
         /// <returns></returns>
-        IEnumerable<Goal> SortByProportion(IAgent agent, Dictionary<Goal, GoalState> goals)
+        IEnumerable<Goal> SortByImportance(IAgent agent, Dictionary<Goal, GoalState> goals)
         {
             var importantGoals = goals.Where(kvp => kvp.Value.Importance > 0).ToArray();
 
@@ -87,7 +87,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
             }
         }
 
-
+        #region Specific logic for tendencies
         protected override void AboveMin()
         {
             if (currentGoalState.DiffCurrentAndFocal <= 0)
@@ -144,25 +144,16 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
                 currentGoalState.Confidence = false;
             }
-
-
-            //if (currentGoalState.DiffCurrentAndMax < 0)
-            //{
-            //    currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
-
-            //    currentGoalState.Confidence = false;
-            //}
-            //else if (currentGoalState.DiffCurrentAndMax == 0)
-            //{
-            //    currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
-            //    currentGoalState.Confidence = true;
-            //}
-            //else
-            //{
-            //    throw new AlgorithmException("Unexpected value: DiffCurrentAndMax");
-            //}
         }
+        #endregion
 
+
+        /// <summary>
+        /// Executes anticipatory learning for specific agent and returns sorted by priority goals array
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="lastIteration"></param>
+        /// <returns></returns>
         public Goal[] Execute(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration)
         {
             AgentState currentIterationAgentState = lastIteration.Value[agent];
@@ -192,19 +183,19 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 currentGoalState.AnticipatedInfluenceValue = currentGoalState.Value - prevGoalState.Value;
 
 
-                //2.Update the anticipated influence of heuristics activated in prior Iteration
-                IEnumerable<Rule> activatedInPriorIteration = previousIterationAgentState.Activated;
+                //finds activated rules for each site 
+                IEnumerable<Rule> activatedInPriorIteration = previousIterationAgentState.RuleHistories.SelectMany(rh=> rh.Value.Activated);
 
-                //todo
+                //update anticipated influences of found rules 
                 activatedInPriorIteration.ForEach(r =>
                 {
-                    currentIterationAgentState.AnticipationInfluence[r][goal] = currentGoalState.AnticipatedInfluenceValue;
+                    agent.AnticipationInfluence[r][goal] = currentGoalState.AnticipatedInfluenceValue;
                 });
 
                 SpecificLogic(goal.Tendency);
             }
 
-            return SortByProportion(agent, currentIterationAgentState.GoalsState).ToArray();
+            return SortByImportance(agent, currentIterationAgentState.GoalsState).ToArray();
         }
     }
 }

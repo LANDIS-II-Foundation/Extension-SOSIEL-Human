@@ -24,13 +24,16 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         public List<IAgent> ConnectedAgents { get; set; }
 
-        public List<Rule> AssignedRules { get; set; } = new List<Rule>();
+        public Dictionary<Rule, Dictionary<Goal, double>> AnticipationInfluence { get; private set; }
 
-        public List<Goal> AssignedGoals { get; set; }
+        public List<Rule> AssignedRules { get; private set; }
 
-        public Dictionary<Rule, int> RuleActivationFreshness { get; set; }
+        public List<Goal> AssignedGoals { get; private set; }
 
+        public Dictionary<Rule, int> RuleActivationFreshness { get; private set; }
 
+        public AgentStateConfiguration InitialStateConfiguration { get; private set; }
+        
         public override string ToString()
         {
             return Id;
@@ -42,6 +45,11 @@ namespace Landis.Extension.SOSIELHuman.Entities
         /// Closed agent constructor
         /// </summary>
         private Agent() {
+            privateVariables = new Dictionary<string, dynamic>();
+            ConnectedAgents = new List<IAgent>();
+            AnticipationInfluence = new Dictionary<Rule, Dictionary<Goal, double>>();
+            AssignedRules = new List<Rule>();
+            AssignedGoals = new List<Goal>();
             RuleActivationFreshness = new Dictionary<Rule, int>();
         }
 
@@ -72,7 +80,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
 
         /// <summary>
-        /// Create copy of current agent, after cloning need to set Id, connected agents don't copied
+        /// Creates copy of current agent, after cloning need to set Id, connected agents don't copied
         /// </summary>
         /// <returns></returns>
         public Agent Clone()
@@ -92,7 +100,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
 
         /// <summary>
-        /// Check on parameter existence 
+        /// Checks on parameter existence 
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -136,11 +144,11 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
 
 
-        
+
 
 
         /// <summary>
-        /// Assign new rule to mental model (rule list) of current agent
+        /// Assigns new rule to mental model (rule list) of current agent. If empty rooms ended, old rules will be removed.
         /// </summary>
         /// <param name="newRule"></param>
         public void AssignNewRule(Rule newRule)
@@ -152,6 +160,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
             if (layerRules.Length < layer.LayerSettings.MaxNumberOfRules)
             {
                 AssignedRules.Add(newRule);
+                AnticipationInfluence.Add(newRule, new Dictionary<Goal, double>());
 
                 RuleActivationFreshness[newRule] = 0;
             }
@@ -161,6 +170,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
                     .Take(1).SelectMany(g => g.Select(kvp => kvp.Key)).RandomizeOne();
 
                 AssignedRules.Remove(ruleForRemoving);
+                AnticipationInfluence.Remove(ruleForRemoving);
 
                 RuleActivationFreshness.Remove(ruleForRemoving);
 
@@ -169,7 +179,20 @@ namespace Landis.Extension.SOSIELHuman.Entities
         }
 
         /// <summary>
-        /// Add rule to prototype rules and then assign one to the rule list of current agent
+        /// Assigns new rule with defined anticipated influence to mental model (rule list) of current agent. If empty rooms ended, old rules will be removed. 
+        /// Anticipated influence is copied to the agent.
+        /// </summary>
+        /// <param name="newRule"></param>
+        /// <param name="anticipatedInfluence"></param>
+        public void AssignNewRule(Rule newRule, Dictionary<Goal, double> anticipatedInfluence)
+        {
+            AssignNewRule(newRule);
+
+            AnticipationInfluence[newRule] = new Dictionary<Goal, double>(anticipatedInfluence);
+        }
+
+        /// <summary>
+        /// Adds rule to prototype rules and then assign one to the rule list of current agent.
         /// </summary>
         /// <param name="newRule"></param>
         /// <param name="layer"></param>
@@ -182,9 +205,23 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
 
         /// <summary>
-        /// Create agent instance based on agent prototype and agent configuration 
+        /// Adds rule to prototype rules and then assign one to the rule list of current agent. 
+        /// Also copies anticipated influence to the agent.
         /// </summary>
-        /// <param name="index"></param>
+        /// <param name="newRule"></param>
+        /// <param name="layer"></param>
+        /// <param name="anticipatedInfluence"></param>
+        public void AddRule(Rule newRule, RuleLayer layer, Dictionary<Goal, double> anticipatedInfluence)
+        {
+            prototype.AddNewRule(newRule, layer);
+
+            AssignNewRule(newRule, anticipatedInfluence);
+        }
+
+
+        /// <summary>
+        /// Creates agent instance based on agent prototype and agent configuration 
+        /// </summary>
         /// <param name="agentConfiguration"></param>
         /// <param name="prototype"></param>
         /// <returns></returns>
@@ -198,12 +235,37 @@ namespace Landis.Extension.SOSIELHuman.Entities
             agent.AssignedRules = prototype.Rules.Where(r => agentConfiguration.AssignedRules.Contains(r.Id)).ToList();
             agent.AssignedGoals = prototype.Goals.Where(g => agentConfiguration.AssignedGoals.Contains(g.Name)).ToList();
 
+            agent.AssignedRules.ForEach(rule => agent.RuleActivationFreshness.Add(rule, 1));
+
+
+            //initializes initial anticipated influence for each rule and goal assigned to the agent
+            agent.AssignedRules.ForEach(r =>
+            {
+                Dictionary<string, double> source;
+
+                agentConfiguration.AnticipatedInfluenceState.TryGetValue(r.Id, out source);
+
+                Dictionary<Goal, double> inner = new Dictionary<Goal, double>();
+
+                agent.AssignedGoals.ForEach(g =>
+                {
+                    inner.Add(g, source != null && source.ContainsKey(g.Name) ? source[g.Name] : 0);
+                });
+
+                agent.AnticipationInfluence.Add(r, inner);
+            });
+
+
+
+
+            agent.InitialStateConfiguration = agentConfiguration;
+
             return agent;
         }
 
 
         /// <summary>
-        /// Set id to current agent instance 
+        /// Sets id to current agent instance 
         /// </summary>
         /// <param name="id"></param>
         public void SetId(int id)

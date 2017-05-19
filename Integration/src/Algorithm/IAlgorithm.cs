@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Landis.SpatialModeling;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +11,14 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
     {
         string Name { get; }
 
+        /// <summary>
+        /// Initialization of algorithm
+        /// </summary>
         void Initialize();
 
-        void RunIteration();
+        /// <summary>
+        /// Runs as many iterations as passed to the constructor
+        /// </summary>
+        void RunIteration(IEnumerable<ActiveSite> activeSites);
     }
 }
