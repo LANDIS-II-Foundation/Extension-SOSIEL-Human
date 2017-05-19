@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Landis.SpatialModeling;
+
 namespace Landis.Extension.SOSIELHuman.Processes
 {
     using Entities;
@@ -18,7 +20,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
         Rule[] matchedRules;
         Rule activatedRule;
 
-
+        #region Specific logic for tendencies
         protected override void AboveMin()
         {
             Rule[] rules = anticipatedInfluences.Where(kvp=> matchedRules.Contains(kvp.Key))
@@ -73,22 +75,37 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 confidence = rules.Any(r => !(r == activatedRule || r.IsAction == false));
             }
         }
+        #endregion
 
+
+        /// <summary>
+        /// Executes counterfactual thinking about most important agent goal for specific site
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="lastIteration"></param>
+        /// <param name="goal"></param>
+        /// <param name="matched"></param>
+        /// <param name="layer"></param>
+        /// <param name="site"></param>
+        /// <returns></returns>
         public bool Execute(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration, Goal goal,
-            Rule[] matched, RuleLayer layer)
+            Rule[] matched, RuleLayer layer, ActiveSite site)
         {
             confidence = false;
 
             //Period currentPeriod = periodModel.Value;
-            Dictionary<IAgent, AgentState> priorIteration = lastIteration.Previous.Value;
+            AgentState priorIterationAgentState = lastIteration.Previous.Value[agent];
 
             selectedGoal = goal;
 
             selectedGoalState = lastIteration.Value[agent].GoalsState[selectedGoal];
 
-            activatedRule = priorIteration[agent].Activated.First(r => r.Layer == layer);
+            RuleHistory history = priorIterationAgentState.RuleHistories[site];
 
-            anticipatedInfluences = lastIteration.Value[agent].AnticipationInfluence;
+
+            activatedRule = history.Activated.First(r => r.Layer == layer);
+
+            anticipatedInfluences = agent.AnticipationInfluence;
 
             matchedRules = matched;
 

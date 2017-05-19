@@ -2,6 +2,7 @@
 
 namespace Landis.Extension.SOSIELHuman.Entities
 {
+    using Configuration;
     using Environments;
 
     public interface IAgent
@@ -10,29 +11,52 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         string Id { get; }
 
-        List<Goal> AssignedGoals { get; set; }
+        List<IAgent> ConnectedAgents { get; }
 
-        List<Rule> AssignedRules { get; set; }
+        Dictionary<Rule, Dictionary<Goal, double>> AnticipationInfluence { get; }
 
-        List<IAgent> ConnectedAgents { get; set; }
+        List<Goal> AssignedGoals { get; }
 
-        Dictionary<Rule, int> RuleActivationFreshness { get; set; }
+        List<Rule> AssignedRules { get; }
 
+        Dictionary<Rule, int> RuleActivationFreshness { get; }
 
         AgentPrototype Prototype { get; }
 
+
+
+        AgentStateConfiguration InitialStateConfiguration { get; }
+
         /// <summary>
-        /// Assign new rule to mental model (rule list) of current agent
+        /// Assigns new rule to mental model (rule list) of current agent. If empty rooms ended, old rules will be removed.
         /// </summary>
         /// <param name="newRule"></param>
         void AssignNewRule(Rule newRule);
 
         /// <summary>
-        /// Add rule to prototype rules and then assign one to the rule list of current agent
+        /// Assigns new rule with defined anticipated influence to mental model (rule list) of current agent. If empty rooms ended, old rules will be removed. 
+        /// Anticipated influence is copied to the agent.
+        /// </summary>
+        /// <param name="newRule"></param>
+        /// <param name="anticipatedInfluence"></param>
+        void AssignNewRule(Rule newRule, Dictionary<Goal, double> anticipatedInfluence);
+
+        /// <summary>
+        /// Adds rule to prototype rules and then assign one to the rule list of current agent.
         /// </summary>
         /// <param name="newRule"></param>
         /// <param name="layer"></param>
         void AddRule(Rule newRule, RuleLayer layer);
+
+
+        /// <summary>
+        /// Adds rule to prototype rules and then assign one to the rule list of current agent. 
+        /// Also copies anticipated influence to the agent.
+        /// </summary>
+        /// <param name="newRule"></param>
+        /// <param name="layer"></param>
+        /// <param name="anticipatedInfluence"></param>
+        void AddRule(Rule newRule, RuleLayer layer, Dictionary<Goal, double> anticipatedInfluence);
 
         /// <summary>
         /// Set variable value to prototype variables

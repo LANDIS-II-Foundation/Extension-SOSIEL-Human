@@ -29,8 +29,9 @@ namespace Landis.Extension.SOSIELHuman.Entities
             get { return mentalProto == null ? TransformRulesToRuleSets() : mentalProto; }
         }
 
+        public bool UseDoNothing { get; set; }
 
-        public bool UseDoNothing;
+        public bool IsSiteOriented { get; set; }
 
         public AgentPrototype()
         {
@@ -49,7 +50,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
         {
             mentalProto = Rules.GroupBy(r => r.RuleSet).OrderBy(g => g.Key).Select(g =>
                    new RuleSet(g.Key, Goals.Where(goal => SetSettings[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray(),
-                       g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).Select(g2 => new RuleLayer(SetSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)), SetSettings[g.Key.ToString()].IsSequential)).ToList();
+                       g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).
+                       Select(g2 => new RuleLayer(SetSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
 
             return mentalProto;
         }

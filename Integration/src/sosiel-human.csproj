@@ -53,7 +53,7 @@
     <Compile Include="Entities\AgentState.cs" />
     <Compile Include="Entities\GoalState.cs" />
     <Compile Include="Entities\IAgent.cs" />
-    <Compile Include="Entities\Site.cs" />
+    <Compile Include="Entities\RuleHistory.cs" />
     <Compile Include="Enums\ActionTaking.cs" />
     <Compile Include="Enums\AnticipatedDirection.cs" />
     <Compile Include="Enums\ConsequentRelationship.cs" />
@@ -126,6 +126,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Output\" />
   </ItemGroup>
   <ItemDefinitionGroup>
     <Reference>

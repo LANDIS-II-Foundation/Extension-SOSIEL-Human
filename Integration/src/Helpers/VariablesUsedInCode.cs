@@ -28,5 +28,10 @@ namespace Landis.Extension.SOSIELHuman.Helpers
 
         public const string AgentPrefix = "Agent";
         public const string PreviousPrefix = "Previous";
+
+
+        //it's parameters for normal distribution random
+        public const string Mean = "Mean";
+        public const string StdDev = "StdDev";
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using Landis.SpatialModeling;
+
 namespace Landis.Extension.SOSIELHuman.Processes
 {
     using Enums;
@@ -9,23 +11,14 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
     public class ActionTaking
     {
-        public void Execute(IAgent agent, AgentState state)
+        public void Execute(IAgent agent, AgentState state, ActiveSite site)
         {
-            //Sequential set apply earlier than simultaneous. Ones apply after AS process
-            state.Activated.Where(r=>r.Layer.Set.IsSequential == false).OrderBy(r => r.Layer.Set).ThenBy(r => r.Layer).ForEach(r =>
+            RuleHistory history = state.RuleHistories[site];
+
+            history.Activated.OrderBy(r => r.Layer.Set).ThenBy(r => r.Layer).ForEach(r =>
                {
                    r.Apply(agent);
                });
         }
-
-        public void ExecuteForSpecificRuleSet(IAgent agent, AgentState state, RuleSet set)
-        {
-            //single actions only 
-            state.Activated.Where(r => r.Layer.Set == set && r.IsCollectiveAction == false).OrderBy(r => r.Layer).ForEach(r =>
-              {
-                  r.Apply(agent);
-              });
-        }
-
     }
 }

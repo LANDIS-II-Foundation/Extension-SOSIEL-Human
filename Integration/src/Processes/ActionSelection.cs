@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Landis.SpatialModeling;
+
 namespace Landis.Extension.SOSIELHuman.Processes
 {
     using Entities;
@@ -15,7 +17,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
         GoalState goalState;
 
 
-        AgentState agentState;
+        Dictionary<Rule, Dictionary<Goal, double>> anticipatedInfluence;
 
         Rule[] matchedRules;
 
@@ -23,11 +25,10 @@ namespace Landis.Extension.SOSIELHuman.Processes
         Rule priorPeriodActivatedRule;
         Rule ruleForActivating;
 
+        #region Specific logic for tendencies
         protected override void AboveMin()
         {
             Rule[] selected = new Rule[] { };
-
-            var ai = agentState.AnticipationInfluence;
 
             if (goalState.DiffCurrentAndFocal > 0)
             {
@@ -38,19 +39,19 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 }
                 else
                 {
-                    selected = matchedRules.Where(r => ai[r][processedGoal] >= 0 &&
-                        ai[r][processedGoal] < goalState.DiffCurrentAndFocal).ToArray();
+                    selected = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] >= 0 &&
+                        anticipatedInfluence[r][processedGoal] < goalState.DiffCurrentAndFocal).ToArray();
                 }
             }
             else
             {
-                selected = matchedRules.Where(r => ai[r][processedGoal] >= 0 &&
-                    ai[r][processedGoal] > goalState.DiffCurrentAndFocal).ToArray();
+                selected = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] >= 0 &&
+                    anticipatedInfluence[r][processedGoal] > goalState.DiffCurrentAndFocal).ToArray();
             }
 
             if (selected.Length > 0)
             {
-                selected = selected.GroupBy(r => ai[r][processedGoal]).OrderBy(hg => hg.Key).First().ToArray();
+                selected = selected.GroupBy(r => anticipatedInfluence[r][processedGoal]).OrderBy(hg => hg.Key).First().ToArray();
 
                 ruleForActivating = selected.RandomizeOne();
             }
@@ -59,8 +60,6 @@ namespace Landis.Extension.SOSIELHuman.Processes
         protected override void BelowMax()
         {
             Rule[] selected = new Rule[] { };
-
-            var ai = agentState.AnticipationInfluence;
 
             if (goalState.DiffCurrentAndFocal < 0)
             {
@@ -71,19 +70,19 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 }
                 else
                 {
-                    selected = matchedRules.Where(r => ai[r][processedGoal] <= 0 &&
-                        Math.Abs(ai[r][processedGoal]) < Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+                    selected = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] <= 0 &&
+                        Math.Abs(anticipatedInfluence[r][processedGoal]) < Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
                 }
             }
             else
             {
-                selected = matchedRules.Where(r => ai[r][processedGoal] < 0 &&
-                    Math.Abs(ai[r][processedGoal]) > Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+                selected = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] < 0 &&
+                    Math.Abs(anticipatedInfluence[r][processedGoal]) > Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
             }
 
             if (selected.Length > 0)
             {
-                selected = selected.GroupBy(r => ai[r][processedGoal]).OrderBy(hg => hg.Key).First().ToArray();
+                selected = selected.GroupBy(r => anticipatedInfluence[r][processedGoal]).OrderBy(hg => hg.Key).First().ToArray();
 
                 ruleForActivating = selected.RandomizeOne();
             }
@@ -91,61 +90,72 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
         protected override void Maximize()
         {
-            var ai = agentState.AnticipationInfluence;
-
             if (matchedRules.Length > 0)
             {
-                Rule[] selected = matchedRules.GroupBy(r => ai[r][processedGoal]).OrderByDescending(hg => hg.Key).First().ToArray();
+                Rule[] selected = matchedRules.GroupBy(r => anticipatedInfluence[r][processedGoal]).OrderByDescending(hg => hg.Key).First().ToArray();
 
                 ruleForActivating = selected.RandomizeOne();
             }
         }
+        #endregion
 
+        /// <summary>
+        /// Shares collective action among connected agents
+        /// </summary>
+        /// <param name="currentAgent"></param>
+        /// <param name="rule"></param>
+        /// <param name="agentStates"></param>
         void ShareCollectiveAction(IAgent currentAgent, Rule rule, Dictionary<IAgent, AgentState> agentStates)
         {
-            foreach (IAgent agent in currentAgent.ConnectedAgents)
+            foreach (IAgent neighbour in currentAgent.ConnectedAgents)
             {
-                if (agent.AssignedRules.Contains(rule) == false)
+                if (neighbour.AssignedRules.Contains(rule) == false)
                 {
-                    agent.AssignNewRule(rule);
-
-                    if (agentStates[agent].AnticipationInfluence.ContainsKey(rule))
-                    {
-                        agentStates[agent].AnticipationInfluence[rule] = new Dictionary<Goal, double>(agentStates[currentAgent].AnticipationInfluence[rule]);
-
-                    }
-                    else
-                    {
-                        agentStates[agent].AnticipationInfluence.Add(rule, new Dictionary<Goal, double>(agentStates[currentAgent].AnticipationInfluence[rule]));
-                    }
+                    neighbour.AssignNewRule(rule, currentAgent.AnticipationInfluence[rule]);
                 }
             }
         }
 
-        public void ExecutePartI(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> iterationState,
-            Goal[] rankedGoals, Rule[] processedRules)
+        /// <summary>
+        /// Executes first part of action selection for specific agent and site
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="lastIteration"></param>
+        /// <param name="rankedGoals"></param>
+        /// <param name="processedRules"></param>
+        /// <param name="site"></param>
+        public void ExecutePartI(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration,
+            Goal[] rankedGoals, Rule[] processedRules, ActiveSite site)
         {
             ruleForActivating = null;
 
-            agentState = iterationState.Value[agent];
-            AgentState priorPeriod = iterationState.Previous?.Value[agent];
+            AgentState agentState = lastIteration.Value[agent];
+            AgentState priorPeriod = lastIteration.Previous?.Value[agent];
+
+            //adds new rule history for specific site if it doesn't exist
+            if (agentState.RuleHistories.ContainsKey(site) == false)
+                agentState.RuleHistories.Add(site, new RuleHistory());
+
+            RuleHistory history = agentState.RuleHistories[site];
+
 
 
 
             processedGoal = rankedGoals.First(g => processedRules.First().Layer.Set.AssociatedWith.Contains(g));
             goalState = agentState.GoalsState[processedGoal];
 
-            matchedRules = processedRules.Except(agentState.BlockedRules).Where(h => h.IsMatch(agent)).ToArray();
+            matchedRules = processedRules.Except(history.BlockedRules).Where(h => h.IsMatch(agent)).ToArray();
 
             if (matchedRules.Length > 1)
             {
-                priorPeriodActivatedRule = priorPeriod.Activated.FirstOrDefault(r => r.Layer == processedRules.First().Layer);
+                priorPeriodActivatedRule = priorPeriod.RuleHistories[site].Activated.FirstOrDefault(r => r.Layer == processedRules.First().Layer);
+                
+                //set anticipated influence before execute specific logic
+                anticipatedInfluence = agent.AnticipationInfluence;
 
                 SpecificLogic(processedGoal.Tendency);
 
                 //if none are identified, then choose the do-nothing heuristic.
-
-                //todo
                 if (ruleForActivating == null)
                 {
                     ruleForActivating = processedRules.Single(h => h.IsAction == false);
@@ -160,22 +170,33 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
             if (ruleForActivating.IsCollectiveAction)
             {
-                ShareCollectiveAction(agent, ruleForActivating, iterationState.Value);
+                ShareCollectiveAction(agent, ruleForActivating, lastIteration.Value);
             }
 
 
-            agentState.Activated.Add(ruleForActivating);
-            agentState.Matched.AddRange(matchedRules);
+            history.Activated.Add(ruleForActivating);
+            history.Matched.AddRange(matchedRules);
         }
 
-        public void ExecutePartII(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> iterationState,
-            Goal[] rankedGoals, Rule[] processedRules, IAgent[] activeAgents)
+        /// <summary>
+        /// Executes second part of action selection for specific site
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="lastIteration"></param>
+        /// <param name="rankedGoals"></param>
+        /// <param name="processedRules"></param>
+        /// <param name="site"></param>
+        public void ExecutePartII(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration,
+            Goal[] rankedGoals, Rule[] processedRules, ActiveSite site)
         {
-            AgentState agentState = iterationState.Value[agent];
+            AgentState agentState = lastIteration.Value[agent];
+
+            RuleHistory history = agentState.RuleHistories[site];
 
             RuleLayer layer = processedRules.First().Layer;
 
-            Rule selectedRule = agentState.Activated.Single(r => r.Layer == layer);
+
+            Rule selectedRule = history.Activated.Single(r => r.Layer == layer);
 
             if (selectedRule.IsCollectiveAction)
             {
@@ -186,11 +207,11 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
                 if (numberOfInvolvedAgents < requiredParticipants)
                 {
-                    agentState.BlockedRules.Add(selectedRule);
+                    history.BlockedRules.Add(selectedRule);
 
-                    agentState.Activated.Remove(selectedRule);
+                    history.Activated.Remove(selectedRule);
 
-                    ExecutePartI(agent, iterationState, rankedGoals, processedRules);
+                    ExecutePartI(agent, lastIteration, rankedGoals, processedRules, site);
                 }
             }
         }
