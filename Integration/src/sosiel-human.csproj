@@ -78,6 +78,9 @@
     <Compile Include="Helpers\IEnumerableHelper.cs" />
     <Compile Include="Helpers\RandomizeHelper.cs" />
     <Compile Include="Helpers\VariablesUsedInCode.cs" />
+    <Compile Include="Helpers\WriteToCSVHelper.cs" />
+    <Compile Include="Output\RuleUsageOutput.cs" />
+    <Compile Include="Output\FEValuesOutput.cs" />
     <Compile Include="PlugIn.cs" />
     <Compile Include="ParameterParser.cs" />
     <Compile Include="Parameters.cs" />
@@ -94,6 +97,10 @@
     <Compile Include="SiteVars.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.2.16.0.0\lib\net40\CsvHelper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Edu.Wisc.Forest.Flel.Util">
     </Reference>
     <Reference Include="Landis.Core">
@@ -127,9 +134,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Output\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemDefinitionGroup>
     <Reference>
       <!-- Do not copy any of referenced assemblies to the output directory during a build.
