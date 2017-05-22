@@ -41,38 +41,92 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 			this.processConfiguration = processConfiguration;
 		}
 
-		protected abstract void InitializeAgents();
+		/// <summary>
+        /// Executes agent initializing. It's the first initializing step. 
+        /// </summary>
+        protected abstract void InitializeAgents();
 
 
-		protected abstract Dictionary<IAgent, AgentState> InitializeFirstIterationState();
+        /// <summary>
+        /// Executes iteration state initializing. Executed after InitializeAgents.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract Dictionary<IAgent, AgentState> InitializeFirstIterationState();
 
 
-		protected virtual void AfterInitialization() { }
+        /// <summary>
+        /// Executes last preparations before runs the algorithm. Executes after InitializeAgents and InitializeFirstIterationState.
+        /// </summary>
+        protected virtual void AfterInitialization() { }
 
-		protected virtual void AfterAlgorithmExecuted() { }
-
-
-		protected virtual void PreIterationCalculations(int iteration, IAgent[] orderedAgents) { }
-
-		protected virtual void PreIterationStatistic(int iteration) { }
-
-
-		protected virtual void PostIterationCalculations(int iteration, IAgent[] orderedAgents) { }
-
-		protected virtual void PostIterationStatistic(int iteration) { }
-
-		protected virtual void AgentsDeactivation() { }
-
-		protected virtual void AfterDeactivation(int iteration) { }
+        /// <summary>
+        /// Executed in the end of the algorithm.
+        /// </summary>
+        protected virtual void AfterAlgorithmExecuted() { }
 
 
+        /// <summary>
+        /// Executed before any cognitive process is started.
+        /// </summary>
+        /// <param name="iteration"></param>
+        /// <param name="orderedAgents"></param>
+        protected virtual void PreIterationCalculations(int iteration, IAgent[] orderedAgents) { }
 
-		protected virtual void Reproduction(int minAgentNumber)
+
+        /// <summary>
+        /// Executed after PreIterationCalculations
+        /// </summary>
+        /// <param name="iteration"></param>
+        protected virtual void PreIterationStatistic(int iteration) { }
+
+
+        /// <summary>
+        /// Executed before action selection process
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="site"></param>
+        protected virtual void BeforeActionSelection(IAgent agent, ActiveSite site) { }
+
+
+        /// <summary>
+        /// Executed after last cognitive process is finished
+        /// </summary>
+        /// <param name="iteration"></param>
+        /// <param name="orderedAgents"></param>
+        protected virtual void PostIterationCalculations(int iteration, IAgent[] orderedAgents) { }
+
+        /// <summary>
+        /// Executed after PostIterationCalculations
+        /// </summary>
+        /// <param name="iteration"></param>
+        protected virtual void PostIterationStatistic(int iteration) { }
+
+		/// <summary>
+        /// Executes agent deactivation logic.
+        /// </summary>
+        protected virtual void AgentsDeactivation() { }
+
+        /// <summary>
+        /// Executed after AgentsDeactivation.
+        /// </summary>
+        /// <param name="iteration"></param>
+        protected virtual void AfterDeactivation(int iteration) { }
+
+
+
+		/// <summary>
+        /// Executes reproduction logic.
+        /// </summary>
+        /// <param name="minAgentNumber"></param>
+        protected virtual void Reproduction(int minAgentNumber)
 		{
 			
 		}
 
-		protected virtual void Maintenance()
+        /// <summary>
+        /// Executes maintenance logic.
+        /// </summary>
+        protected virtual void Maintenance()
 		{
 			agentList.ActiveAgents.ForEach(a =>
 			{
@@ -84,7 +138,11 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 		}
 
 
-		private void RunSosiel(IEnumerable<ActiveSite> activeSites)
+		/// <summary>
+        /// Executes SOSIEL Algorithm
+        /// </summary>
+        /// <param name="activeSites"></param>
+        protected void RunSosiel(IEnumerable<ActiveSite> activeSites)
 		{
 			for (int i = 1; i <= numberOfIterations; i++)
 			{
@@ -139,7 +197,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 								{
                                     foreach (ActiveSite site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
                                     {
-                                        foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                                        foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy((IGrouping<RuleSet, Rule> g) => g.Key.PositionNumber))
                                         {
                                             //optimization
                                             Goal selectedGoal = rankedGoals[agent].First(g => set.Key.AssociatedWith.Contains(g));
@@ -148,9 +206,9 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
                                             if (selectedGoalState.Confidence == false)
                                             {
-                                                foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                                                foreach (var layer in set.GroupBy(h => h.Layer).OrderBy((IGrouping<RuleLayer, Rule> g) => g.Key.PositionNumber))
                                                 {
-                                                    if (layer.Key.LayerSettings.Modifiable || (!layer.Key.LayerSettings.Modifiable && layer.Any(r => r.IsModifiable)))
+                                                    if (layer.Key.LayerConfiguration.Modifiable || (!layer.Key.LayerConfiguration.Modifiable && layer.Any(r => r.IsModifiable)))
                                                     {
                                                         //looking for matched rules in prior period
                                                         Rule[] matchedPriorPeriodHeuristics = priorIteration[agent].RuleHistories[site]
@@ -167,7 +225,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                                                         {
                                                             //innovation process
                                                             if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
-                                                               
+
                                                                 it.Execute(agent, iterations.Last, selectedGoal, layer.Key, site);
                                                         }
                                                     }
@@ -211,9 +269,9 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 						{
                             foreach (ActiveSite site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
                             {
-                                foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                                foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy((IGrouping<RuleSet, Rule> g) => g.Key.PositionNumber))
                                 {
-                                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy((IGrouping<RuleLayer, Rule> g) => g.Key.PositionNumber))
                                     {
                                         //string preliminaryCalculationsMethodName = layer.Key.LayerSettings.PreliminaryСalculations;
 
@@ -230,6 +288,9 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                                         //		throw new SosielAlgorithmException($"Preliminary calculation: {preliminaryCalculationsMethodName} hasn't implemented in current model");
                                         //	}
                                         //}
+
+                                        BeforeActionSelection(agent, site);
+
 
                                         //action selection process part I
                                         acts.ExecutePartI(agent, iterations.Last, rankedGoals[agent], layer.ToArray(), site);
@@ -249,10 +310,14 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 							{
                                 foreach (ActiveSite site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
                                 {
-                                    foreach (var set in agent.AssignedRules.GroupBy(r => r.Layer.Set).OrderBy(g => g.Key.PositionNumber))
+                                    foreach (var set in agent.AssignedRules.GroupBy(r => r.Layer.Set).OrderBy((IGrouping<RuleSet, Rule> g) => g.Key.PositionNumber))
                                     {
-                                        foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
+                                        foreach (var layer in set.GroupBy(h => h.Layer).OrderBy((IGrouping<RuleLayer, Rule> g) => g.Key.PositionNumber))
                                         {
+
+
+                                            BeforeActionSelection(agent, site);
+
                                             //todo fix checking collective action for first type agent. Activated rules need to search among rule histories for specific site.
 
                                             //action selection process part II

@@ -10,7 +10,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
     using Entities;
     using Helpers;
     using Randoms;
-    
+
 
     public class LuhyLiteImplementation : SosielAlgorithm, IAlgorithm
     {
@@ -22,11 +22,11 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
         private Dictionary<ActiveSite, double> biomass;
 
-        public LuhyLiteImplementation(int numberOfIterations, 
+        public LuhyLiteImplementation(int numberOfIterations,
             ConfigurationModel configuration,
             IEnumerable<ActiveSite> activeSites,
-            Dictionary<ActiveSite, double> biomass) 
-            : base(numberOfIterations, 
+            Dictionary<ActiveSite, double> biomass)
+            : base(numberOfIterations,
                   ProcessesConfiguration.GetProcessesConfiguration(configuration.AlgorithmConfiguration.CognitiveLevel)
             )
         {
@@ -39,7 +39,8 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
         protected override void InitializeAgents()
         {
-            agentList = AgentList.Generate(configuration);
+            agentList = new AgentList();
+            agentList.Initialize(configuration);
 
             numberOfAgentsAfterInitialize = agentList.Agents.Count;
         }
@@ -60,7 +61,6 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 {
                     double unadjustedProportion = 1;
 
-                    //todo check
                     var goals = agent.AssignedGoals.Join(agent.InitialStateConfiguration.AssignedGoals, g => g.Name, gs => gs, (g, gs) => new { g, gs }).ToArray();
 
                     int numberOfRankingGoals = goals.Count(o => o.g.RankingEnabled);
@@ -175,7 +175,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
 
         /// <summary>
-        /// Initialization of algorithm
+        /// Initialization of the algorithm
         /// </summary>
         public void Initialize()
         {
@@ -191,9 +191,99 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Runs as many iterations as passed to the constructor
         /// </summary>
-        public void RunIteration(IEnumerable<ActiveSite> activeSites)
+        public void RunIteration()
         {
+            RunSosiel(activeSites);
+        }
+
+
+        protected override void AfterInitialization()
+        {
+            //call default implementation
+            base.AfterInitialization();
+
+            //----
+            //set default values which were not defined in configuration file
+            var hmAgents = agentList.GetAgentsWithPrefix("HM");
+
+            hmAgents.ForEach(agent =>
+            {
+
+                agent[VariablesUsedInCode.Income] = 0;
+                agent[VariablesUsedInCode.Expenses] = 0;
+                agent[VariablesUsedInCode.Savings] = 0;
+
+            });
 
         }
+
+        protected override void BeforeActionSelection(IAgent agent, ActiveSite site)
+        {
+            //call default implementation
+            base.BeforeActionSelection(agent, site);
+
+            //if agent is FE, set to local variables current site biomass
+            if (agent[VariablesUsedInCode.AgentType] == "Type1")
+            {
+                agent[VariablesUsedInCode.Biomass] = biomass[site];
+            }
+        }
+
+
+        protected override void PreIterationCalculations(int iteration, IAgent[] orderedAgents)
+        {
+            //call default implementation
+            base.PreIterationCalculations(iteration, orderedAgents);
+
+            //----
+            //calculate tourism value
+            var hmPrototypes = agentList.GetPrototypesWithPrefix("HM");
+
+            double totalBiomass = biomass.Values.Sum();
+
+            hmPrototypes.ForEach(hmProt =>
+            {
+                hmProt[VariablesUsedInCode.Tourism] = totalBiomass >= hmProt[VariablesUsedInCode.TourismThreshold];
+            });
+
+
+            //----
+            //calculate household values (income, expenses, savings) for each agent in specific household
+            var hmAgents = agentList.GetAgentsWithPrefix("HM");
+
+            hmAgents.GroupBy(agent => agent[VariablesUsedInCode.Household]).ForEach(householdAgents =>
+            {
+                double householdIncome = householdAgents.Sum(agent => (double)agent[VariablesUsedInCode.Income]);
+                double householdExpenses = householdAgents.Sum(agent => (double)agent[VariablesUsedInCode.Expenses]);
+                double householdSavings = householdIncome - householdExpenses;
+
+                householdAgents.ForEach(agent =>
+                {
+                    agent[VariablesUsedInCode.HouseholdIncome] = householdIncome;
+                    agent[VariablesUsedInCode.HouseholdExpenses] = householdExpenses;
+                    agent[VariablesUsedInCode.HouseholdSavings] = householdSavings;
+                });
+            });
+
+        }
+
+
+        protected override void PostIterationCalculations(int iteration, IAgent[] orderedAgents)
+        {
+            //call default implementation
+            base.PreIterationCalculations(iteration, orderedAgents);
+
+            //----
+            //calculate tourism value
+            var hmPrototypes = agentList.GetPrototypesWithPrefix("FE");
+
+            double totalBiomass = biomass.Values.Sum();
+
+            hmPrototypes.ForEach(hmProt =>
+            {
+                hmProt[VariablesUsedInCode.Tourism] = totalBiomass >= hmProt[VariablesUsedInCode.TourismThreshold];
+            });
+        }
+
     }
 }

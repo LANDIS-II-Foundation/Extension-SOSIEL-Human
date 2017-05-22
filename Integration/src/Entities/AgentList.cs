@@ -14,7 +14,9 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
     public class AgentList
     {
-        public List<IAgent> Agents { get; set; }
+        public List<IAgent> Agents { get; private set; }
+
+        public List<AgentPrototype> Prototypes { get; private set; }
 
         public IAgent[] ActiveAgents
         {
@@ -24,20 +26,41 @@ namespace Landis.Extension.SOSIELHuman.Entities
             }
         }
 
-        private AgentList() { }
+        public AgentList()
+        {
+            Agents = new List<IAgent>();
+            Prototypes = new List<AgentPrototype>();
+        }
 
 
+        /// <summary>
+        /// Searches for prototypes with following prefix 
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        public IEnumerable<AgentPrototype> GetPrototypesWithPrefix(string prefix)
+        {
+            return Prototypes.Where(prototype => prototype.NamePrefix == prefix);
+        }
+
+        /// <summary>
+        /// Searches for agents with following prefix 
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        public IEnumerable<IAgent> GetAgentsWithPrefix(string prefix)
+        {
+            return ActiveAgents.Where(agent => agent.Prototype.NamePrefix == prefix);
+        }
 
         /// <summary>
         /// Factory method for initializing agents
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static AgentList Generate(ConfigurationModel configuration)
+        public virtual void Initialize(ConfigurationModel configuration)
         {
-            AgentList agentList = new AgentList();
-
-            agentList.Agents = new List<IAgent>();
+            Agents = new List<IAgent>();
 
             Dictionary<string, AgentPrototype> agentPrototypes = configuration.AgentConfiguration;
 
@@ -56,7 +79,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
                 string prototypeName = kvp.Key;
 
-                if (prototype.UseDoNothing)
+                if (prototype.MentalProto.Any(set=> set.Layers.Any(layer=> layer.LayerConfiguration.UseDoNothing)))
                 {
                     var added = prototype.AddDoNothingRules();
 
@@ -67,6 +90,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
                 }
             });
 
+            //save prototypes to list
+            Prototypes = new List<AgentPrototype>(agentPrototypes.Values);
 
 
             //create agents, groupby is used for saving agents numeration, e.g. FE1, HM1. HM2 etc
@@ -76,7 +101,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
                 int index = 1;
 
-                Dictionary<string, List<Agent>> networks = agentStateGroup.SelectMany(state => state.SocialNetwork).Distinct()
+                Dictionary<string, List<Agent>> networks = agentStateGroup.SelectMany(state => state.SocialNetwork ?? new string[0]).Distinct()
                     .ToDictionary(network => network, network => new List<Agent>());
 
                 agentStateGroup.ForEach((agentState) =>
@@ -89,11 +114,16 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
                         agent.SetId(index);
 
-                        agentList.Agents.Add(agent);
+                        Agents.Add(agent);
 
                         //check social network and add to temp dictionary
                         if (agentState.SocialNetwork != null)
-                            agentState.SocialNetwork.ForEach(network => networks[network].Add(agent));
+                        {
+                            //set first network to agent variables as household 
+                            agent[VariablesUsedInCode.Household] = agentState.SocialNetwork.First();
+                            
+                            agentState.SocialNetwork.ForEach((network) => networks[network].Add(agent));
+                        }
 
                         index++;
                     }
@@ -111,13 +141,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
                     });
 
                 });
-
-
-
-                
             });
-
-            return agentList;
         }
 
     }

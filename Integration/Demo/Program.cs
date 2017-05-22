@@ -9,15 +9,31 @@ using System.Diagnostics;
 using Landis.Core;
 using Landis.Extension.SOSIELHuman;
 
+using Landis.Extension.SOSIELHuman.Output;
+using Landis.Extension.SOSIELHuman.Helpers;
+
 namespace Demo
 {
     class Program
     {
         static void Main(string[] args)
         {
+
+            HMRuleUsageOutput ruo = new HMRuleUsageOutput { Iteration = 1, ActivatedRules = new string[] { "RS1_L1_R1", "RS1_L1_R2" }, NotActivatedRules = new string[] { "RS1_L1_R3", "RS1_L1_R4", "RS1_L1_R5" } };
+
+            FEValuesOutput vo = new FEValuesOutput { Iteration = 1, Biomass = 100, ReductionPercentage = 10, BiomassReduction = 10.990000, Profit = 10, Site = "S1" };
+
+            WriteToCSVHelper.AppendTo("ruo.csv", ruo);
+            WriteToCSVHelper.AppendTo("vo.csv", vo);
+
+
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
-            ExtensionMain extension = new PlugIn();
+            PlugIn extension = new PlugIn();
+
+
+
+
 
             Console.WriteLine("Loading Parameters");
 
@@ -62,7 +78,7 @@ namespace Demo
             }
 
 
-            Console.WriteLine($"ERROR! {exception.Message}");
+            Console.WriteLine(string.Format("ERROR! {0}", exception.Message));
 
             WaitKeyPress();
 

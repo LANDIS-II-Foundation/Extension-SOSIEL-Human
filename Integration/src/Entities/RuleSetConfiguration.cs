@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Landis.Extension.SOSIELHuman.Entities
 {
-    public class RuleSetSettings
+    public class RuleSetConfiguration
     {
         public string[] AssociatedWith { get; set; }
 
         public bool IsSequential { get; set; }
 
-        public Dictionary<string, RuleLayerSettings> Layer { get; set; }
+        public Dictionary<string, RuleLayerConfiguration> Layer { get; set; }
     }
 }

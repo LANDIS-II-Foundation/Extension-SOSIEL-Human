@@ -24,11 +24,13 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         public override bool Equals(object obj)
         {
+            //check on equality by object reference or goal name
             return base.Equals(obj) || ((Goal)obj).Name == Name;
         }
 
         public override int GetHashCode()
         {
+            //turn off checking by hash code
             return 0;
         }
     }

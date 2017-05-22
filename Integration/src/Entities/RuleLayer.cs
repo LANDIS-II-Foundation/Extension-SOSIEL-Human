@@ -13,17 +13,17 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         public RuleSet Set { get; set; }
 
-        public RuleLayerSettings LayerSettings { get; private set; }
+        public RuleLayerConfiguration LayerConfiguration { get; private set; }
 
         public List<Rule> Rules { get; private set; }
 
-        public RuleLayer(RuleLayerSettings settings)
+        public RuleLayer(RuleLayerConfiguration configuration)
         {
-            Rules = new List<Rule>(settings.MaxNumberOfRules);
-            LayerSettings = settings;
+            Rules = new List<Rule>(configuration.MaxNumberOfRules);
+            LayerConfiguration = configuration;
         }
 
-        public RuleLayer(RuleLayerSettings parameters, IEnumerable<Rule> rules) : this(parameters)
+        public RuleLayer(RuleLayerConfiguration parameters, IEnumerable<Rule> rules) : this(parameters)
         {
             rules.ForEach(r => Add(r));
         }

@@ -42,9 +42,9 @@ namespace Landis.Extension.SOSIELHuman.Processes
             }
 
             //if the layer or prior period rule are modifiable then generate new rule
-            if (layer.LayerSettings.Modifiable || (!layer.LayerSettings.Modifiable && priorPeriodRule.IsModifiable))
+            if (layer.LayerConfiguration.Modifiable || (!layer.LayerConfiguration.Modifiable && priorPeriodRule.IsModifiable))
             {
-                RuleLayerSettings parameters = layer.LayerSettings;
+                RuleLayerConfiguration parameters = layer.LayerConfiguration;
 
                 Goal selectedGoal = goal;
 
@@ -60,13 +60,13 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 {
                     case AnticipatedDirection.Up:
                         {
-                            if (RuleLayerSettings.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Positive)
+                            if (RuleLayerConfiguration.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Positive)
                             {
                                 max = Math.Abs(consequentValue - max);
 
                                 consequentValue += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
                             }
-                            if (RuleLayerSettings.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Negative)
+                            if (RuleLayerConfiguration.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Negative)
                             {
                                 max = Math.Abs(consequentValue - min);
 
@@ -77,13 +77,13 @@ namespace Landis.Extension.SOSIELHuman.Processes
                         }
                     case AnticipatedDirection.Down:
                         {
-                            if (RuleLayerSettings.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Positive)
+                            if (RuleLayerConfiguration.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Positive)
                             {
                                 max = Math.Abs(consequentValue - min);
 
                                 consequentValue -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
                             }
-                            if (RuleLayerSettings.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Negative)
+                            if (RuleLayerConfiguration.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Negative)
                             {
                                 max = Math.Abs(consequentValue - max);
 
@@ -117,9 +117,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
                 AgentState agentState = currentIteration[agent];
 
-                Rule generatedRule = priorPeriodRule.Copy();
-                generatedRule.Antecedent = antecedentList.ToArray();
-                generatedRule.Consequent = consequent;
+                Rule generatedRule = Rule.Renew(priorPeriodRule, antecedentList.ToArray(), consequent);
 
                 //add the generated rule to the prototype's mental model and assign one to the agent's mental model 
                 agent.AddRule(generatedRule, layer, agent.AnticipationInfluence[priorPeriodRule]);

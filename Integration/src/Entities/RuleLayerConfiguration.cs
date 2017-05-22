@@ -6,9 +6,11 @@ namespace Landis.Extension.SOSIELHuman.Entities
 {
     using Enums;
 
-    public sealed class RuleLayerSettings
+    public sealed class RuleLayerConfiguration
     {
-        public bool Modifiable { get; set; } = false;
+        public bool Modifiable { get; set; }
+
+        public bool UseDoNothing { get; set; }
 
         public int MaxNumberOfRules { get; set; } = 10;
 
@@ -26,8 +28,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
                     return ConsequentRelationship.Negative;
 
                 default:
-                    //todo
-                    throw new Exception("trouble with relationship");
+                    throw new Exception("Unknown consequent relationship. See configuration.");
             }
         }
 
@@ -35,7 +36,18 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         public string MaxConsequentReference { get; set; }
 
+        public string PreliminaryСalculations { get; set; }
 
+        public RuleLayerConfiguration()
+        {
+            Modifiable = false;
+        }
+
+        /// <summary>
+        /// Gets consequent min value
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <returns></returns>
         public int MinValue(IAgent agent)
         {
             if(string.IsNullOrEmpty(MinConsequentReference) == false)
@@ -48,6 +60,11 @@ namespace Landis.Extension.SOSIELHuman.Entities
             }
         }
 
+        /// <summary>
+        /// Gets consequent max value
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <returns></returns>
         public int MaxValue(IAgent agent)
         {
             if (string.IsNullOrEmpty(MaxConsequentReference) == false)
@@ -59,7 +76,5 @@ namespace Landis.Extension.SOSIELHuman.Entities
                 return ConsequentValueInterval[1];
             }
         }
-
-        public string PreliminaryСalculations { get; set; }
     }
 }

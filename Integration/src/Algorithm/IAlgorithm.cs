@@ -19,6 +19,6 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Runs as many iterations as passed to the constructor
         /// </summary>
-        void RunIteration(IEnumerable<ActiveSite> activeSites);
+        void RunIteration();
     }
 }

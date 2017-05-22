@@ -5,19 +5,24 @@ using System.Linq;
 
 namespace Landis.Extension.SOSIELHuman.Entities
 {
+    using Exceptions;
     using Helpers;
+
 
     public class AgentPrototype
     {
-        public string NamePrefix { get; set; }
+        public string NamePrefix { get; private set; }
 
-        public Dictionary<string, dynamic> CommonVariables { get; set; }
+        public Dictionary<string, dynamic> CommonVariables { get; private set; }
 
-        public List<Goal> Goals { get; set; }
+        public List<Goal> Goals { get; private set; }
 
-        public Dictionary<string, RuleSetSettings> SetSettings { get; set; }
+        public Dictionary<string, RuleSetConfiguration> SetConfiguration { get; private set; }
 
-        public List<Rule> Rules { get; set; }
+        public List<Rule> Rules { get; private set; }
+
+
+        public Dictionary<string, double> DoNothingAnticipatedInfluence { get; private set; }
 
 
         private List<RuleSet> mentalProto;
@@ -29,16 +34,31 @@ namespace Landis.Extension.SOSIELHuman.Entities
             get { return mentalProto == null ? TransformRulesToRuleSets() : mentalProto; }
         }
 
-        public bool UseDoNothing { get; set; }
-
         public bool IsSiteOriented { get; set; }
 
         public AgentPrototype()
         {
             CommonVariables = new Dictionary<string, dynamic>();
-            SetSettings = new Dictionary<string, RuleSetSettings>();
+            SetConfiguration = new Dictionary<string, RuleSetConfiguration>();
             Rules = new List<Rule>();
         }
+
+        public dynamic this[string key]
+        {
+            get
+            {
+                if (CommonVariables.ContainsKey(key))
+                    return CommonVariables[key];
+
+                throw new UnknownVariableException(key);
+            }
+            set
+            {
+                CommonVariables[key] = value;
+            }
+
+        }
+
 
 
 
@@ -49,9 +69,9 @@ namespace Landis.Extension.SOSIELHuman.Entities
         private List<RuleSet> TransformRulesToRuleSets()
         {
             mentalProto = Rules.GroupBy(r => r.RuleSet).OrderBy(g => g.Key).Select(g =>
-                   new RuleSet(g.Key, Goals.Where(goal => SetSettings[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray(),
+                   new RuleSet(g.Key, Goals.Where(goal => SetConfiguration[g.Key.ToString()].AssociatedWith.Contains(goal.Name)).ToArray(),
                        g.GroupBy(r => r.RuleLayer).OrderBy(g2 => g2.Key).
-                       Select(g2 => new RuleLayer(SetSettings[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
+                       Select(g2 => new RuleLayer(SetConfiguration[g.Key.ToString()].Layer[g2.Key.ToString()], g2)))).ToList();
 
             return mentalProto;
         }
@@ -78,33 +98,25 @@ namespace Landis.Extension.SOSIELHuman.Entities
         /// <summary>
         /// Add do nothing rule to each rule set and rule layer
         /// </summary>
-        /// <returns>Returns array of rule ids</returns>
+        /// <returns>Returns created rule ids</returns>
         public IEnumerable<string> AddDoNothingRules()
         {
             List<string> temp = new List<string>();
 
-            //todo maybe need add to modifiable layers only 
             MentalProto.ForEach(set =>
             {
-                set.Layers.ForEach(layer =>
+                //only for layers with UseDoNothing: true configuration
+                set.Layers.Where(layer => layer.LayerConfiguration.UseDoNothing).ForEach(layer =>
                 {
                     if (!layer.Rules.Any(r => r.IsAction == false))
                     {
                         Rule proto = layer.Rules.First();
 
-                        Rule doNothing = new Rule
-                        {
-                            Antecedent = new RuleAntecedentPart[] { new RuleAntecedentPart { Param = VariablesUsedInCode.IsActive, Sign = "==", Value = true } },
-                            Consequent = new RuleConsequent
-                            {
-                                Param = proto.Consequent.Param,
-                                Value = Activator.CreateInstance(proto.Consequent.Value),
-                                CopyToCommon = proto.Consequent.CopyToCommon,
-                                SavePrevious = proto.Consequent.SavePrevious
-                            },
-                            RequiredParticipants = 1,
-                            IsAction = false
-                        };
+                        Rule doNothing = Rule.Create(
+                            new RuleAntecedentPart[] { new RuleAntecedentPart(VariablesUsedInCode.IsActive, "==", true) },
+                            RuleConsequent.Renew(proto.Consequent, Activator.CreateInstance(proto.Consequent.Value.GetType())),
+                            false, false, 1, true
+                        );
 
                         AddNewRule(doNothing, layer);
 
