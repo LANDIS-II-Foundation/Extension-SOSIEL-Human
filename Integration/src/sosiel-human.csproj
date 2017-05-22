@@ -63,15 +63,14 @@
     <Compile Include="Exceptions\InputParameterException.cs" />
     <Compile Include="Entities\Agent.cs" />
     <Compile Include="Entities\Goal.cs" />
-    <Compile Include="Entities\IRuleConsequent.cs" />
     <Compile Include="Configuration\ProcessesConfiguration.cs" />
     <Compile Include="Entities\Rule.cs" />
     <Compile Include="Entities\RuleAntecedentPart.cs" />
     <Compile Include="Entities\RuleConsequent.cs" />
     <Compile Include="Entities\RuleLayer.cs" />
-    <Compile Include="Entities\RuleLayerSettings.cs" />
+    <Compile Include="Entities\RuleLayerConfiguration.cs" />
     <Compile Include="Entities\RuleSet.cs" />
-    <Compile Include="Entities\RuleSetSettings.cs" />
+    <Compile Include="Entities\RuleSetConfiguration.cs" />
     <Compile Include="Enums\CognitiveLevel.cs" />
     <Compile Include="Helpers\AntecedentBuilder.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
@@ -79,7 +78,8 @@
     <Compile Include="Helpers\RandomizeHelper.cs" />
     <Compile Include="Helpers\VariablesUsedInCode.cs" />
     <Compile Include="Helpers\WriteToCSVHelper.cs" />
-    <Compile Include="Output\RuleUsageOutput.cs" />
+    <Compile Include="Output\FERuleUsageOutput.cs" />
+    <Compile Include="Output\HMRuleUsageOutput.cs" />
     <Compile Include="Output\FEValuesOutput.cs" />
     <Compile Include="PlugIn.cs" />
     <Compile Include="ParameterParser.cs" />
@@ -103,19 +103,31 @@
     </Reference>
     <Reference Include="Edu.Wisc.Forest.Flel.Util">
     </Reference>
-    <Reference Include="Landis.Core">
+    <Reference Include="Landis.Core, Version=6.1.6347.24528, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Landis.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.Extension.Succession.Biomass, Version=3.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Landis.Extension.Succession.Biomass.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.AgeOnlyCohorts">
     </Reference>
-    <Reference Include="Landis.Library.BiomassCohorts">
+    <Reference Include="Landis.Library.BiomassCohorts-v2, Version=1.3.6347.13889, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Landis.Library.BiomassCohorts-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.BiomassHarvest-v1">
+    <Reference Include="Landis.Library.BiomassHarvest-v2, Version=1.1.6347.15733, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Landis.Library.BiomassHarvest-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Cohorts, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
     </Reference>
     <Reference Include="Landis.Library.SiteHarvest-v1">
     </Reference>
-    <Reference Include="Landis.Library.Succession">
+    <Reference Include="Landis.Library.Succession, Version=4.0.6347.14299, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Landis.Library.Succession.dll</HintPath>
     </Reference>
     <Reference Include="Landis.SpatialModeling">
     </Reference>
@@ -149,7 +161,8 @@
     <PostBuildEvent>call $(ProjectDir)\copy-to-extensions.cmd $(ProjectDir)bin\$(Configuration)</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>call $(ProjectDir)\install-libs.cmd</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

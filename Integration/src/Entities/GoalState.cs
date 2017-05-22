@@ -39,6 +39,11 @@ namespace Landis.Extension.SOSIELHuman.Entities
             Confidence = true;
         }
 
+
+        /// <summary>
+        /// Creates goal state for next iteration. Current goal value, focal goal value and importance are copied to new instance.
+        /// </summary>
+        /// <returns></returns>
         public GoalState CreateForNextIteration()
         {
             return new GoalState(Value, FocalValue, Importance);

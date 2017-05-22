@@ -19,7 +19,7 @@ namespace Demo
         static void Main(string[] args)
         {
 
-            RuleUsageOutput ruo = new RuleUsageOutput { Iteration = 1, ActivatedRules = new string[] { "RS1_L1_R1", "RS1_L1_R2" }, NotActivatedRules = new string[] { "RS1_L1_R3", "RS1_L1_R4", "RS1_L1_R5" } };
+            HMRuleUsageOutput ruo = new HMRuleUsageOutput { Iteration = 1, ActivatedRules = new string[] { "RS1_L1_R1", "RS1_L1_R2" }, NotActivatedRules = new string[] { "RS1_L1_R3", "RS1_L1_R4", "RS1_L1_R5" } };
 
             FEValuesOutput vo = new FEValuesOutput { Iteration = 1, Biomass = 100, ReductionPercentage = 10, BiomassReduction = 10.990000, Profit = 10, Site = "S1" };
 
@@ -29,7 +29,11 @@ namespace Demo
 
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
-            ExtensionMain extension = new PlugIn();
+            PlugIn extension = new PlugIn();
+
+
+
+
 
             Console.WriteLine("Loading Parameters");
 

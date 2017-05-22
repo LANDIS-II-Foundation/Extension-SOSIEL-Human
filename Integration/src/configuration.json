@@ -24,18 +24,19 @@
         {
           "Name": "G2",
           "Tendency": "AboveMin",
-          "ReferenceVariable": "Biomass",
+          "ReferenceVariable": "AverageBiomass",
           "FocalValue": 100,
           "FocalValueReference": ""
         }
       ],
 
-      "SetSettings": {
+      "SetConfiguration": {
         "1": {
           "AssociatedWith": [ "G1", "G2" ],
           "Layer": {
             "1": {
               "Modifiable": true,
+              "UseDoNothing": true,
               "MaxNumberOfRules": 5,
               "ConsequentValueInterval": [ 0, 100 ],
               "MinConsequentReference": "",
@@ -72,7 +73,11 @@
         }
       ],
 
-      "UseDoNothing": true,
+      "DoNothingAnticipatedInfluence": {
+        "G1": 0,
+        "G2": 0
+      },
+      
       "IsSiteOriented": true 
     },
     "HouseholdMember-Prototype": {
@@ -123,7 +128,7 @@
         }
       ],
 
-      "SetSettings": {
+      "SetConfiguration": {
         "1": {
           "AssociatedWith": [ "G3" ],
           "Layer": {
@@ -317,7 +322,7 @@
               "Value": true
             },
             {
-              "Param": "Savings",
+              "Param": "HouseholdSavings",
               "Sign": ">=",
               "ReferenceVariable": "RequiredSavingsForGreenTourism"
             }
@@ -401,7 +406,6 @@
         }
       ],
 
-      "UseDoNothing": true,
       "IsSiteOriented": false
     }
   },
@@ -483,9 +487,20 @@
 
         "AssignedGoals": [ "G3", "G4" ],
 
+        "GoalState": {
+          "G3": {
+            "Importance": 0.5,
+            "Value": 0
+          },
+          "G4": {
+            "Importance": 0.5,
+            "Value": 0
+          }
+        },
+
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R2", "RS2_L1_R1" ],
 
-        "SocialNetwork": [ "H1"]
+        "SocialNetwork": [ "H1" ]
       },
       {
         "PrototypeOfAgent": "HouseholdMember-Prototype",
@@ -509,6 +524,13 @@
         ],
 
         "AssignedGoals": [ "G3" ],
+
+        "GoalState": {
+          "G3": {
+            "Importance": 0.5,
+            "Value": 0
+          }
+              },
 
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R1" ],
 
@@ -540,6 +562,14 @@
         ],
 
         "AssignedGoals": [ "G3" ],
+
+        "GoalState": {
+          "G3": {
+            "Importance": 0.5,
+            "Value": 0
+          }
+          
+        },
 
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R4" ],
 
@@ -588,6 +618,17 @@
 
         "AssignedGoals": [ "G3", "G4" ],
 
+        "GoalState": {
+          "G3": {
+            "Importance": 0.5,
+            "Value": 0
+          },
+          "G4": {
+            "Importance": 0.5,
+            "Value": 0
+          }
+        },
+
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R6", "RS2_L1_R1" ],
 
         "SocialNetwork": [ "H2" ]
@@ -618,6 +659,13 @@
         ],
 
         "AssignedGoals": [ "G3" ],
+
+        "GoalState": {
+          "G3": {
+            "Importance": 0.5,
+            "Value": 0
+          }
+        },
 
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R6" ],
 
@@ -650,6 +698,13 @@
 
         "AssignedGoals": [ "G3" ],
 
+        "GoalState": {
+          "G3": {
+            "Importance": 0.5,
+            "Value": 0
+          }
+        },
+
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R5" ],
 
         "SocialNetwork": [ "H2" ]
@@ -679,6 +734,13 @@
         ],
 
         "AssignedGoals": [ "G3" ],
+
+        "GoalState": {
+          "G3": {
+            "Importance": 0.5,
+            "Value": 0
+          }
+        },
 
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R7" ],
 

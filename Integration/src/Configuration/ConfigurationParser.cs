@@ -6,11 +6,41 @@ using System.IO;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
+
+using System.Reflection;
 
 namespace Landis.Extension.SOSIELHuman.Configuration
 {
+    static class MemberInfoExtensions
+    {
+        internal static bool IsPropertyWithSetter(this MemberInfo member)
+        {
+            var property = member as PropertyInfo;
+
+            return property?.GetSetMethod(true) != null;
+        }
+    }
+
     public static class ConfigurationParser
     {
+        
+
+        private class PrivateSetterContractResolver : DefaultContractResolver
+        {
+            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            {
+                var jProperty = base.CreateProperty(member, memberSerialization);
+                if (jProperty.Writable)
+                    return jProperty;
+
+                jProperty.Writable = member.IsPropertyWithSetter();
+
+                return jProperty;
+            }
+        }
+
+
         private class IntConverter : JsonConverter
         {
             public override bool CanConvert(Type objectType)
@@ -42,6 +72,7 @@ namespace Landis.Extension.SOSIELHuman.Configuration
             serializer = new JsonSerializer();
 
             serializer.Converters.Add(new IntConverter());
+            serializer.ContractResolver = new PrivateSetterContractResolver();
         }
 
         public static ConfigurationModel ParseConfiguration(string jsonPath)

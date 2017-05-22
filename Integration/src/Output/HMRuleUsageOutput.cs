@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Landis.Extension.SOSIELHuman.Output
 {
-    public class RuleUsageOutput
+    public class HMRuleUsageOutput
     {
         public int Iteration { get; set; }
 

@@ -15,7 +15,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
         /// Executes social learning process of current agent for specific rule set layer
         /// </summary>
         /// <param name="agent"></param>
-        /// <param name="priorIterationState"></param>
+        /// <param name="lastIteration"></param>
         /// <param name="layer"></param>
         public void ExecuteLearning(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration, RuleLayer layer)
         {

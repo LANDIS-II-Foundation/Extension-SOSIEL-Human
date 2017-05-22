@@ -1,15 +1,19 @@
 ﻿// This file is part of SHE for LANDIS-II.
 
 using Landis.Core;
+using Landis.Library.BiomassCohorts;
 using Landis.Library.Succession;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
-using Landis.Library.BiomassCohorts;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 
 namespace Landis.Extension.SOSIELHuman
 {
     using Configuration;
+    using Algorithm;
+    using System;
 
     public class PlugIn
         : Landis.Core.ExtensionMain
@@ -22,6 +26,9 @@ namespace Landis.Extension.SOSIELHuman
 
 
         private ConfigurationModel configuration;
+
+
+        private IAlgorithm luhyLite;
 
 
         private static ICore modelCore;
@@ -70,9 +77,9 @@ namespace Landis.Extension.SOSIELHuman
 
         public override void Initialize()
         {
-            ModelCore.UI.WriteLine("Initializing {0}...", Name);
-            SiteVars.Initialize();
-            
+            //ModelCore.UI.WriteLine("Initializing {0}...", Name);
+            //SiteVars.Initialize();
+
             //Timestep = parameters.Timestep;
 
             // Read in (input) Agent Configuration Json File here:
@@ -80,38 +87,69 @@ namespace Landis.Extension.SOSIELHuman
 
             // Alex K: load Json file here.
             // Other SHE initializations also here.
+
+            int iterations = 1; // Later we can decide if there should be multiple SHE sub-iterations per LANDIS-II iteration. 
+
+            ActiveSite[] temporarySites = new ActiveSite[]
+            {
+                GenerateMockActiveSite(1,1),
+                GenerateMockActiveSite(2,2)
+            };
+
+            luhyLite = new LuhyLiteImplementation(iterations, configuration, temporarySites, null);
+
+            luhyLite.Initialize();
+        }
+
+        //temp 
+        private ActiveSite GenerateMockActiveSite(int x, int y)
+        {
+            ActiveSite site = new ActiveSite();
+
+            ValueType type = site; 
+
+
+            var locationField = site.GetType().GetField("location", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            locationField.SetValue(type, new Location(x, y));
+
+            return (ActiveSite)type;
         }
 
         //---------------------------------------------------------------------
 
+
         public override void Run()
         {
-            int iterations = 1; // Later we can decide if there should be multiple SHE sub-iterations per LANDIS-II iteration. 
+
+            luhyLite.RunIteration();
 
 
 
 
-            for (int i = 0; i < iterations; i++)
-            {
-                
-                // Step through every active site on the landscape.
-                foreach (ActiveSite site in ModelCore.Landscape)
-                {
-                    int siteBiomass = ComputeLivingBiomass(SiteVars.Cohorts[site]);  // total biomass on the site
-                    double biomassReduction = 1.0;  // default = no action taken; varies from 0.0 - 1.0.
 
-                    // SHE's type 1 agent (forestry enterprise) sub-routines here.
-                    // biomassReduction = algorithm.Run(siteBiomass);
-                    // Etc.
 
-                    // This method uses the biomass reduction calculated from SHE sub-routines to reduce the biomass
-                    // of every cohort by a percentage.
-                    ReduceCohortBiomass(site, biomassReduction);
-                    
-                    // SHE's type 2 agents (household members) sub-routines here.
-                }
+            //for (int i = 0; i < iterations; i++)
+            //{
 
-            }
+            //    // Step through every active site on the landscape.
+            //    foreach (ActiveSite site in ModelCore.Landscape)
+            //    {
+            //        int siteBiomass = ComputeLivingBiomass(SiteVars.Cohorts[site]);  // total biomass on the site
+            //        double biomassReduction = 1.0;  // default = no action taken; varies from 0.0 - 1.0.
+
+            //        // SHE's type 1 agent (forestry enterprise) sub-routines here.
+            //        // biomassReduction = algorithm.Run(siteBiomass);
+            //        // Etc.
+
+            //        // This method uses the biomass reduction calculated from SHE sub-routines to reduce the biomass
+            //        // of every cohort by a percentage.
+            //        ReduceCohortBiomass(site, biomassReduction);
+
+            //        // SHE's type 2 agents (household members) sub-routines here.
+            //    }
+
+            //}
 
         }
 

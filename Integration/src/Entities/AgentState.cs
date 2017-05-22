@@ -11,8 +11,6 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
     public sealed class AgentState
     {
-        
-
         public Dictionary<Goal, GoalState> GoalsState { get; private set; }
 
         public Dictionary<ActiveSite, RuleHistory> RuleHistories { get; private set; }

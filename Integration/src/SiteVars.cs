@@ -8,7 +8,7 @@ namespace Landis.Extension.SOSIELHuman
 {
     public class SiteVars
     {
-        //private static ISiteVar<int> biomass;
+        private static ISiteVar<int> biomass;
         private static ISiteVar<ISiteCohorts> biomassCohorts;
         //---------------------------------------------------------------------
 
@@ -26,6 +26,24 @@ namespace Landis.Extension.SOSIELHuman
             }
 
         }
+
+        // ----------------------------------------------------
+
+        /// <summary>
+        /// Temporary
+        /// </summary>
+        public static ISiteVar<int> Biomass
+        {
+            get
+            {
+                return biomass;
+            }
+            set
+            {
+                biomass = value;
+            }
+        }
+
 
         // ----------------------------------------------------
 
