@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9F30C0FC-2DAC-463E-93BD-A7A56D342BD5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Landis.Utilities</RootNamespace>
+    <AssemblyName>Landis.Utilities</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="Application.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Bool.cs" />
+    <Compile Include="Directory.cs" />
+    <Compile Include="Exception.cs" />
+    <Compile Include="ExpectedLine.cs" />
+    <Compile Include="IEditable.cs" />
+    <Compile Include="Indexes.cs" />
+    <Compile Include="List.cs" />
+    <Compile Include="Macros.cs" />
+    <Compile Include="MersenneTwister.cs" />
+    <Compile Include="MultiLineException.cs" />
+    <Compile Include="MultiLineText.cs" />
+    <Compile Include="NUnitInfo.cs" />
+    <Compile Include="Object.cs" />
+    <Compile Include="OutputPath.cs" />
+    <Compile Include="Percentage.cs" />
+    <Compile Include="ProgressBar.cs" />
+    <Compile Include="QueryPerfCounter.cs" />
+    <Compile Include="Range.cs" />
+    <Compile Include="Require.cs" />
+    <Compile Include="String.cs" />
+    <Compile Include="Type.cs" />
+    <Compile Include="assembly\Info.cs" />
+    <Compile Include="byte methods\Byte.cs" />
+    <Compile Include="byte methods\Double.cs" />
+    <Compile Include="byte methods\Float.cs" />
+    <Compile Include="byte methods\IByteMethods.cs" />
+    <Compile Include="byte methods\Int.cs" />
+    <Compile Include="byte methods\SByte.cs" />
+    <Compile Include="byte methods\Short.cs" />
+    <Compile Include="byte methods\UInt.cs" />
+    <Compile Include="byte methods\UShort.cs" />
+    <Compile Include="diagnostics\AssertException.cs" />
+    <Compile Include="diagnostics\TraceListener.cs" />
+    <Compile Include="input\FileLineReader.cs" />
+    <Compile Include="input\InputLine.cs" />
+    <Compile Include="input\InputValue.cs" />
+    <Compile Include="input\InputValueException.cs" />
+    <Compile Include="input\InputValues.cs" />
+    <Compile Include="input\InputVar.cs" />
+    <Compile Include="input\InputVariable.cs" />
+    <Compile Include="input\InputVariableException.cs" />
+    <Compile Include="input\ITextParser.cs" />
+    <Compile Include="input\LineReader.cs" />
+    <Compile Include="input\LineReaderException.cs" />
+    <Compile Include="input\ParseMethod2Wrapper.cs" />
+    <Compile Include="input\ParseMethods.cs" />
+    <Compile Include="input\ParseMethodWrapper.cs" />
+    <Compile Include="input\ReadMethod.cs" />
+    <Compile Include="input\StringReader.cs" />
+    <Compile Include="input\TextLineReader.cs" />
+    <Compile Include="input\TextParser.cs" />
+    <Compile Include="input\TextReader.cs" />
+    <Compile Include="plug-ins\Exception.cs" />
+    <Compile Include="plug-ins\IInfo.cs" />
+    <Compile Include="plug-ins\Info.cs" />
+    <Compile Include="plug-ins\IPlugIn.cs" />
+    <Compile Include="plug-ins\Loader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+</Project>
