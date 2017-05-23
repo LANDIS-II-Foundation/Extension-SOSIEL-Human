@@ -82,6 +82,7 @@
     <Compile Include="Output\FERuleUsageOutput.cs" />
     <Compile Include="Output\HMRuleUsageOutput.cs" />
     <Compile Include="Output\FEValuesOutput.cs" />
+    <Compile Include="PartialDisturbance.cs" />
     <Compile Include="PlugIn.cs" />
     <Compile Include="ParameterParser.cs" />
     <Compile Include="Parameters.cs" />

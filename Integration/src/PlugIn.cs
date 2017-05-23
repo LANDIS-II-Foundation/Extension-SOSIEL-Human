@@ -144,6 +144,8 @@ namespace Landis.Extension.SOSIELHuman
             foreach(KeyValuePair<ActiveSite, double> kvp in projectedBiomass)
             {
                 UpdateBiomass(kvp.Key, kvp.Value);
+
+                // PartialDisturbance.ReduceCohortBiomass(site, percentBiomassReduction);  // RMS I'm unsure how this method should be called.
             }
 
             iteration++;
