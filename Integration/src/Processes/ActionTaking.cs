@@ -15,9 +15,14 @@ namespace Landis.Extension.SOSIELHuman.Processes
         {
             RuleHistory history = state.RuleHistories[site];
 
+            state.TakenActions.Add(site, new List<TakenAction>());
+
             history.Activated.OrderBy(r => r.Layer.Set).ThenBy(r => r.Layer).ForEach(r =>
                {
-                   r.Apply(agent);
+                   TakenAction result = r.Apply(agent);
+
+                   //add result to the state
+                   state.TakenActions[site].Add(result);
                });
         }
     }

@@ -33,6 +33,12 @@ namespace Landis.Extension.SOSIELHuman
 
         private static ICore modelCore;
 
+
+        private Dictionary<ActiveSite, double> projectedBiomass;
+
+        private int iteration = 1;
+
+
         //---------------------------------------------------------------------
 
         public PlugIn()
@@ -58,110 +64,100 @@ namespace Landis.Extension.SOSIELHuman
 
             modelCore = mCore;
 
-            //todo
-            //ModelCore.UI.WriteLine("  Loading parameters from {0}", dataFile);
+            ModelCore.UI.WriteLine("  Loading parameters from {0}", dataFile);
 
             //Parse Landis parameters here
-            //ParameterParser parser = new ParameterParser(ModelCore.Species);
-            //parameters = Landis.Data.Load<Parameters>(dataFile, parser);
+            ParameterParser parser = new ParameterParser(ModelCore.Species);
+            parameters = Landis.Data.Load<Parameters>(dataFile, parser);
 
 
-
-
-            //Parse Sosiel parameters here
-            //string inputFile = parameters.InputJson;
-            configuration = ConfigurationParser.ParseConfiguration(dataFile);
+            
         }
 
         //---------------------------------------------------------------------
 
         public override void Initialize()
         {
-            //ModelCore.UI.WriteLine("Initializing {0}...", Name);
-            //SiteVars.Initialize();
+            ModelCore.UI.WriteLine("Initializing {0}...", Name);
+            SiteVars.Initialize();
 
-            //Timestep = parameters.Timestep;
+            Timestep = parameters.Timestep;
 
             // Read in (input) Agent Configuration Json File here:
-            // ReadInputFile(parameters.InputJson);
+            configuration = ConfigurationParser.ParseConfiguration(parameters.InputJson);
 
-            // Alex K: load Json file here.
-            // Other SHE initializations also here.
-
+            
+            //create algorithm instance
             int iterations = 1; // Later we can decide if there should be multiple SHE sub-iterations per LANDIS-II iteration. 
+            //create dictionary 
+            projectedBiomass = ModelCore.Landscape.ToDictionary(activeSite => activeSite, activeSite => 0d);
 
-            ActiveSite[] temporarySites = new ActiveSite[]
-            {
-                GenerateMockActiveSite(1,1),
-                GenerateMockActiveSite(2,2)
-            };
-
-            luhyLite = new LuhyLiteImplementation(iterations, configuration, temporarySites, null);
+            luhyLite = new LuhyLiteImplementation(iterations, configuration, ModelCore.Landscape, projectedBiomass);
 
             luhyLite.Initialize();
+
+
+            //remove old output files
+            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(System.IO.Directory.GetCurrentDirectory());
+
+            foreach (System.IO.FileInfo fi in di.GetFiles("SOSIELHuman_*.csv"))
+            {
+                fi.Delete();
+            }
         }
 
         //temp 
-        private ActiveSite GenerateMockActiveSite(int x, int y)
-        {
-            ActiveSite site = new ActiveSite();
+        //private ActiveSite GenerateMockActiveSite(int x, int y)
+        //{
+        //    ActiveSite site = new ActiveSite();
 
-            ValueType type = site; 
+        //    ValueType type = site; 
 
 
-            var locationField = site.GetType().GetField("location", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        //    var locationField = site.GetType().GetField("location", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-            locationField.SetValue(type, new Location(x, y));
+        //    locationField.SetValue(type, new Location(x, y));
 
-            return (ActiveSite)type;
-        }
+        //    return (ActiveSite)type;
+        //}
 
         //---------------------------------------------------------------------
 
 
         public override void Run()
         {
+            Debugger.Launch();
 
-            luhyLite.RunIteration();
+            //convert cohort biomass to a format understandable by the extension
+            foreach(ActiveSite activeSite in projectedBiomass.Keys.ToArray())
+            {
+                projectedBiomass[activeSite] = ComputeLivingBiomass(SiteVars.Cohorts[activeSite]);
+            }
+
+
+            //run sosiel algorithm
+            luhyLite.RunIteration(iteration);
 
 
 
+            //projectedBiomass contains updated biomass values. Logic for updating SiteVars here:
+            foreach(KeyValuePair<ActiveSite, double> kvp in projectedBiomass)
+            {
+                UpdateBiomass(kvp.Key, kvp.Value);
+            }
 
-
-
-            //for (int i = 0; i < iterations; i++)
-            //{
-
-            //    // Step through every active site on the landscape.
-            //    foreach (ActiveSite site in ModelCore.Landscape)
-            //    {
-            //        int siteBiomass = ComputeLivingBiomass(SiteVars.Cohorts[site]);  // total biomass on the site
-            //        double biomassReduction = 1.0;  // default = no action taken; varies from 0.0 - 1.0.
-
-            //        // SHE's type 1 agent (forestry enterprise) sub-routines here.
-            //        // biomassReduction = algorithm.Run(siteBiomass);
-            //        // Etc.
-
-            //        // This method uses the biomass reduction calculated from SHE sub-routines to reduce the biomass
-            //        // of every cohort by a percentage.
-            //        ReduceCohortBiomass(site, biomassReduction);
-
-            //        // SHE's type 2 agents (household members) sub-routines here.
-            //    }
-
-            //}
-
+            iteration++;
         }
 
-        private static void ReduceCohortBiomass(ActiveSite site, double biomassReduction)
-        {
-            // This is a placeholder, will be cohort-by-cohort in final implementation.
-            // SiteVars.Biomass[site] = (int) (biomassReduction * SiteVars.Biomass[site]);
-        }
+        //private static void ReduceCohortBiomass(ActiveSite site, double biomassReduction)
+        //{
+        //    // This is a placeholder, will be cohort-by-cohort in final implementation.
+        //    // SiteVars.Biomass[site] = (int) (biomassReduction * SiteVars.Biomass[site]);
+        //}
 
         //---------------------------------------------------------------------
 
-        private static int ComputeLivingBiomass(ISiteCohorts cohorts)
+        private int ComputeLivingBiomass(ISiteCohorts cohorts)
         {
             int total = 0;
             if (cohorts != null)
@@ -170,6 +166,11 @@ namespace Landis.Extension.SOSIELHuman
                         total += (int)(cohort.Biomass);
             //total += ComputeBiomass(speciesCohorts);
             return total;
+        }
+
+        private void UpdateBiomass(ActiveSite site, double updatedBiomass)
+        {
+            //update logic here:
         }
     }
 }

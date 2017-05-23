@@ -17,12 +17,13 @@ namespace Landis.Extension.SOSIELHuman.Entities
         /// <summary>
         /// Set in configuration json only
         /// </summary>
-        public int RuleSet { get; set; }
+        public int RuleSet { get; private set; }
 
         /// <summary>
         /// Set in configuration json only
         /// </summary>
-        public int RuleLayer { get; set; }
+        public int RuleLayer { get; private set; }
+
 
         public int RulePositionNumber { get; set; }
 
@@ -70,7 +71,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
         /// Applies the rule. Copies consequent value or reference variable value to agent variables
         /// </summary>
         /// <param name="agent"></param>
-        public void Apply(IAgent agent)
+        /// <returns></returns>
+        public TakenAction Apply(IAgent agent)
         {
             dynamic value;
 
@@ -107,6 +109,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
 
             agent.RuleActivationFreshness[this] = 0;
+
+            return new TakenAction(Id, Consequent.Param, value);
         }
 
         /// <summary>

@@ -36,7 +36,7 @@
           "Layer": {
             "1": {
               "Modifiable": true,
-              "UseDoNothing": true,
+              "UseDoNothing": false,
               "MaxNumberOfRules": 5,
               "ConsequentValueInterval": [ 0, 100 ],
               "MinConsequentReference": "",
@@ -58,9 +58,29 @@
           "Id": "RS1_L1_R1",
           "Antecedent": [
             {
-              "Param": "Biomass",
+              "Param": "AverageBiomass",
               "Sign": ">=",
-              "Value": 100
+              "Value": 0
+            }
+          ],
+          "Consequent": {
+            "Param": "ReductionPercentage",
+            "Value": 0,
+            "VariableValue": ""
+          },
+          "RequiredParticipants": 1,
+          "IsAction": false
+        },
+        {
+          "RuleSet": 1,
+          "RuleLayer": 1,
+          "RulePositionNumber": 2,
+          "Id": "RS1_L1_R2",
+          "Antecedent": [
+            {
+              "Param": "AverageBiomass",
+              "Sign": ">=",
+              "Value": 1000
             }
           ],
           "Consequent": {
@@ -71,6 +91,7 @@
           "RequiredParticipants": 1,
           "IsAction": true
         }
+
       ],
 
       "DoNothingAnticipatedInfluence": {
@@ -100,7 +121,7 @@
         "IncomeFromPickingMushrooms": 10000,
         "IncomeFromGreenTourism": 320000,
 
-        "TourismThreshold": 100,
+        "TourismThreshold": 1000,
         "FE_JobAvailable": true,
         "RequiredSavingsForGreenTourism": 200000,
 
@@ -425,12 +446,17 @@
           "RS1_L1_R1": {
             "G1": 0,
             "G2": 0
+          },
+          "RS1_L1_R2": {
+            "G1": 10,
+            "G2": 10
           }
 
         },
 
         "AssignedRules": [
-          "RS1_L1_R1"
+          "RS1_L1_R1",
+          "RS1_L1_R2"
         ],
 
         "AssignedGoals": [ "G1", "G2" ],
@@ -446,7 +472,7 @@
           }
         },
 
-        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R1" ]
+        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R2" ]
       },
       {
         "PrototypeOfAgent": "HouseholdMember-Prototype",

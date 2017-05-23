@@ -7,10 +7,14 @@ namespace Landis.Extension.SOSIELHuman.Helpers
         public const string AgentType = "AgentType";
 
         public const string Biomass = "Biomass";
+        public const string AverageBiomass = "AverageBiomass";
         public const string ReductionPercentage = "ReductionPercentage";
+        public const string Profit = "Profit";
+
+
         public const string IsActive = "IsActive";
 
-        public const string TotalBiomass = "TotalBiomass";
+        
 
         public const string Tourism = "Tourism";
         public const string TourismThreshold = "TourismThreshold";
@@ -27,7 +31,7 @@ namespace Landis.Extension.SOSIELHuman.Helpers
 
 
         public const string Age = "Age";
-        public const string JobAvailable = "job_available";
+        public const string JobAvailable = "FE_JobAvailable";
 
         public const string AgentPrefix = "Agent";
         public const string PreviousPrefix = "Previous";

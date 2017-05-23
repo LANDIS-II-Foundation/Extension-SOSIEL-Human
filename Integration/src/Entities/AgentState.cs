@@ -15,6 +15,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         public Dictionary<ActiveSite, RuleHistory> RuleHistories { get; private set; }
 
+        public Dictionary<ActiveSite, List<TakenAction>> TakenActions { get; private set; }
+
 
         public bool IsSiteOriented { get; private set; }
 
@@ -24,6 +26,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
             GoalsState = new Dictionary<Goal, GoalState>();
 
             RuleHistories = new Dictionary<ActiveSite, RuleHistory>();
+
+            TakenActions = new Dictionary<ActiveSite, List<TakenAction>>();
         }
 
 

@@ -68,16 +68,13 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Executed before any cognitive process is started.
         /// </summary>
-        /// <param name="iteration"></param>
-        /// <param name="orderedAgents"></param>
-        protected virtual void PreIterationCalculations(int iteration, IAgent[] orderedAgents) { }
+        protected virtual void PreIterationCalculations() { }
 
 
         /// <summary>
         /// Executed after PreIterationCalculations
         /// </summary>
-        /// <param name="iteration"></param>
-        protected virtual void PreIterationStatistic(int iteration) { }
+        protected virtual void PreIterationStatistic() { }
 
 
         /// <summary>
@@ -89,17 +86,21 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
 
         /// <summary>
+        /// Executed after action taking process
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="site"></param>
+        protected virtual void AfterActionTaking(IAgent agent, ActiveSite site) { }
+
+        /// <summary>
         /// Executed after last cognitive process is finished
         /// </summary>
-        /// <param name="iteration"></param>
-        /// <param name="orderedAgents"></param>
-        protected virtual void PostIterationCalculations(int iteration, IAgent[] orderedAgents) { }
+        protected virtual void PostIterationCalculations() { }
 
         /// <summary>
         /// Executed after PostIterationCalculations
         /// </summary>
-        /// <param name="iteration"></param>
-        protected virtual void PostIterationStatistic(int iteration) { }
+        protected virtual void PostIterationStatistic() { }
 
 		/// <summary>
         /// Executes agent deactivation logic.
@@ -109,8 +110,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Executed after AgentsDeactivation.
         /// </summary>
-        /// <param name="iteration"></param>
-        protected virtual void AfterDeactivation(int iteration) { }
+        protected virtual void AfterDeactivation() { }
 
 
 
@@ -152,8 +152,8 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
 				var agentGroups = orderedAgents.GroupBy(a => a[VariablesUsedInCode.AgentType]).OrderBy(group => group.Key).ToArray();
 
-				PreIterationCalculations(i, orderedAgents);
-				PreIterationStatistic(i);
+				PreIterationCalculations();
+				PreIterationStatistic();
 
 				Dictionary<IAgent, AgentState> currentIteration;
 
@@ -340,6 +340,8 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                             foreach (ActiveSite site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
                             {
                                 at.Execute(agent, currentIteration[agent], site);
+
+                                AfterActionTaking(agent, site);
                             }
 							//if (periods.Last.Value.IsOverconsumption)
 							//    return periods;
@@ -355,16 +357,16 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 					}
 				}
 
-				PostIterationCalculations(i, orderedAgents);
+				PostIterationCalculations();
 
-				PostIterationStatistic(i);
+				PostIterationStatistic();
 
 				if (processConfiguration.AgentsDeactivationEnabled && i > 1)
 				{
 					AgentsDeactivation();
 				}
 
-				AfterDeactivation(i);
+				AfterDeactivation();
 
 				if (processConfiguration.ReproductionEnabled && i > 1)
 				{

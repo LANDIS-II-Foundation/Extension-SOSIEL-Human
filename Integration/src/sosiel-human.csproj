@@ -54,6 +54,7 @@
     <Compile Include="Entities\GoalState.cs" />
     <Compile Include="Entities\IAgent.cs" />
     <Compile Include="Entities\RuleHistory.cs" />
+    <Compile Include="Entities\TakenAction.cs" />
     <Compile Include="Enums\ActionTaking.cs" />
     <Compile Include="Enums\AnticipatedDirection.cs" />
     <Compile Include="Enums\ConsequentRelationship.cs" />
@@ -101,35 +102,41 @@
       <HintPath>..\packages\CsvHelper.2.16.0.0\lib\net40\CsvHelper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Edu.Wisc.Forest.Flel.Util">
+    <Reference Include="Edu.Wisc.Forest.Flel.Util, Version=1.1.400.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Edu.Wisc.Forest.Flel.Util.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Core, Version=6.1.6347.24528, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Landis.Core.dll</HintPath>
+      <HintPath>lib-NET4-dlls\Landis.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Extension.Succession.Biomass, Version=3.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Landis.Library.AgeOnlyCohorts, Version=2.1.5520.27591, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Landis.Extension.Succession.Biomass.dll</HintPath>
-    </Reference>
-    <Reference Include="Landis.Library.AgeOnlyCohorts">
+      <HintPath>bin\Debug\Landis.Library.AgeOnlyCohorts.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.BiomassCohorts-v2, Version=1.3.6347.13889, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Landis.Library.BiomassCohorts-v2.dll</HintPath>
+      <HintPath>lib-NET4-dlls\Landis.Library.BiomassCohorts-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.BiomassHarvest-v2, Version=1.1.6347.15733, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\Landis.Library.BiomassHarvest-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Cohorts, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Landis.Library.Cohorts.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.SiteHarvest-v1">
+    <Reference Include="Landis.Library.SiteHarvest-v1, Version=1.0.5688.27841, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Landis.Library.SiteHarvest-v1.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Succession, Version=4.0.6347.14299, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Landis.Library.Succession.dll</HintPath>
+      <HintPath>lib-NET4-dlls\Landis.Library.Succession.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.SpatialModeling">
+    <Reference Include="Landis.SpatialModeling, Version=1.0.4815.34359, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Landis.SpatialModeling.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

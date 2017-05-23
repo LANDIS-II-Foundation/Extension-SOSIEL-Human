@@ -7,6 +7,4 @@ LandisData  "SOSIEL Human"
 
 Timestep  			10
 
-SeedingAlgorithm  		WardSeedDispersal
-
 InputJson			configuration.json

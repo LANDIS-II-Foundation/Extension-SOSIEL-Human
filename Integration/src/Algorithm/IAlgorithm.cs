@@ -12,13 +12,14 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         string Name { get; }
 
         /// <summary>
-        /// Initialization of algorithm
+        /// Runs algorithm initialization 
         /// </summary>
         void Initialize();
 
         /// <summary>
         /// Runs as many iterations as passed to the constructor
         /// </summary>
-        void RunIteration();
+        /// <param name="externalIteration"></param>
+        void RunIteration(int externalIteration);
     }
 }

@@ -21,7 +21,7 @@ namespace Demo
 
             HMRuleUsageOutput ruo = new HMRuleUsageOutput { Iteration = 1, ActivatedRules = new string[] { "RS1_L1_R1", "RS1_L1_R2" }, NotActivatedRules = new string[] { "RS1_L1_R3", "RS1_L1_R4", "RS1_L1_R5" } };
 
-            FEValuesOutput vo = new FEValuesOutput { Iteration = 1, Biomass = 100, ReductionPercentage = 10, BiomassReduction = 10.990000, Profit = 10, Site = "S1" };
+            FEValuesOutput vo = new FEValuesOutput { Iteration = 1, AverageBiomass = 100, ReductionPercentage = 10, BiomassReduction = 10.990000, Profit = 10, Site = "S1" };
 
             WriteToCSVHelper.AppendTo("ruo.csv", ruo);
             WriteToCSVHelper.AppendTo("vo.csv", vo);

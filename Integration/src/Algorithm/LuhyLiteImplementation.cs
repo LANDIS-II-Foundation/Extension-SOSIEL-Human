@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Landis.SpatialModeling;
+using Landis.Library.BiomassCohorts;
 
 namespace Landis.Extension.SOSIELHuman.Algorithm
 {
@@ -10,6 +11,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
     using Entities;
     using Helpers;
     using Randoms;
+    using Output;
 
 
     public class LuhyLiteImplementation : SosielAlgorithm, IAlgorithm
@@ -21,6 +23,8 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         private ActiveSite[] activeSites;
 
         private Dictionary<ActiveSite, double> biomass;
+
+        private int externalIteration;
 
         public LuhyLiteImplementation(int numberOfIterations,
             ConfigurationModel configuration,
@@ -37,6 +41,9 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
             this.biomass = biomass;
         }
 
+        /// <summary>
+        /// Executes agent initializing. It's the first initializing step. 
+        /// </summary>
         protected override void InitializeAgents()
         {
             agentList = new AgentList();
@@ -45,6 +52,10 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
             numberOfAgentsAfterInitialize = agentList.Agents.Count;
         }
 
+        /// <summary>
+        /// Executes iteration state initializing. Executed after InitializeAgents.
+        /// </summary>
+        /// <returns></returns>
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
         {
             Dictionary<IAgent, AgentState> temp = new Dictionary<IAgent, AgentState>();
@@ -141,7 +152,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         }
 
         /// <summary>
-        /// Creates one rule history
+        /// Creates an activated/matched rules history
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="agent"></param>
@@ -175,7 +186,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
 
         /// <summary>
-        /// Initialization of the algorithm
+        /// Executes algorithm initialization
         /// </summary>
         public void Initialize()
         {
@@ -189,61 +200,74 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
 
         /// <summary>
-        /// Runs as many iterations as passed to the constructor
+        /// Runs as many internal iterations as passed to the constructor
         /// </summary>
-        public void RunIteration()
+        public void RunIteration(int externalIteration)
         {
+            this.externalIteration = externalIteration;
+
             RunSosiel(activeSites);
         }
 
-
+        /// <summary>
+        /// Executes last preparations before runs the algorithm. Executes after InitializeAgents and InitializeFirstIterationState.
+        /// </summary>
         protected override void AfterInitialization()
         {
             //call default implementation
             base.AfterInitialization();
 
+
             //----
             //set default values which were not defined in configuration file
+            var feAgents = agentList.GetAgentsWithPrefix("FE");
+
+            feAgents.ForEach(agent =>
+            {
+                agent[VariablesUsedInCode.Profit] = 0d;
+            });
+
+
+
             var hmAgents = agentList.GetAgentsWithPrefix("HM");
 
             hmAgents.ForEach(agent =>
             {
 
-                agent[VariablesUsedInCode.Income] = 0;
-                agent[VariablesUsedInCode.Expenses] = 0;
-                agent[VariablesUsedInCode.Savings] = 0;
+                agent[VariablesUsedInCode.Income] = 0d;
+                agent[VariablesUsedInCode.Expenses] = 0d;
+                agent[VariablesUsedInCode.Savings] = 0d;
 
+                agent[VariablesUsedInCode.HouseholdSavings] = 0d;
             });
 
         }
 
-        protected override void BeforeActionSelection(IAgent agent, ActiveSite site)
+
+        /// <summary>
+        /// Executed before any cognitive process is started.
+        /// </summary>
+        protected override void PreIterationCalculations()
         {
             //call default implementation
-            base.BeforeActionSelection(agent, site);
-
-            //if agent is FE, set to local variables current site biomass
-            if (agent[VariablesUsedInCode.AgentType] == "Type1")
-            {
-                agent[VariablesUsedInCode.Biomass] = biomass[site];
-            }
-        }
-
-
-        protected override void PreIterationCalculations(int iteration, IAgent[] orderedAgents)
-        {
-            //call default implementation
-            base.PreIterationCalculations(iteration, orderedAgents);
+            base.PreIterationCalculations();
 
             //----
             //calculate tourism value
-            var hmPrototypes = agentList.GetPrototypesWithPrefix("HM");
+            double averageBiomass = biomass.Values.Sum();
 
-            double totalBiomass = biomass.Values.Sum();
+            var fePrototypes = agentList.GetPrototypesWithPrefix("FE");
+
+            fePrototypes.ForEach(hmProt =>
+            {
+                hmProt[VariablesUsedInCode.AverageBiomass] = averageBiomass;
+            });
+
+            var hmPrototypes = agentList.GetPrototypesWithPrefix("HM");
 
             hmPrototypes.ForEach(hmProt =>
             {
-                hmProt[VariablesUsedInCode.Tourism] = totalBiomass >= hmProt[VariablesUsedInCode.TourismThreshold];
+                hmProt[VariablesUsedInCode.Tourism] = averageBiomass >= hmProt[VariablesUsedInCode.TourismThreshold];
             });
 
 
@@ -261,29 +285,111 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 {
                     agent[VariablesUsedInCode.HouseholdIncome] = householdIncome;
                     agent[VariablesUsedInCode.HouseholdExpenses] = householdExpenses;
-                    agent[VariablesUsedInCode.HouseholdSavings] = householdSavings;
+                    //accumulate savings
+                    agent[VariablesUsedInCode.HouseholdSavings] += householdSavings;
                 });
             });
 
         }
 
-
-        protected override void PostIterationCalculations(int iteration, IAgent[] orderedAgents)
+        /// <summary>
+        /// Executed before action selection process
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="site"></param>
+        protected override void BeforeActionSelection(IAgent agent, ActiveSite site)
         {
             //call default implementation
-            base.PreIterationCalculations(iteration, orderedAgents);
+            base.BeforeActionSelection(agent, site);
 
-            //----
-            //calculate tourism value
-            var hmPrototypes = agentList.GetPrototypesWithPrefix("FE");
-
-            double totalBiomass = biomass.Values.Sum();
-
-            hmPrototypes.ForEach(hmProt =>
+            //if agent is FE, set to local variables current site biomass
+            if (agent[VariablesUsedInCode.AgentType] == "Type1")
             {
-                hmProt[VariablesUsedInCode.Tourism] = totalBiomass >= hmProt[VariablesUsedInCode.TourismThreshold];
-            });
+                //set value of current site biomass to agent variable. 
+                agent[VariablesUsedInCode.Biomass] = biomass[site];
+
+
+                //drop total profit value 
+                agent[VariablesUsedInCode.Profit] = 0;
+            }
         }
 
+        /// <summary>
+        /// Executed after action taking process
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="site"></param>
+        protected override void AfterActionTaking(IAgent agent, ActiveSite site)
+        {
+            //call default implementation
+            base.AfterActionTaking(agent, site);
+
+
+            if (agent[VariablesUsedInCode.AgentType] == "Type1")
+            {
+                //compute profit
+                double profit = biomass[site] * agent[VariablesUsedInCode.ReductionPercentage] / 100;
+                //add computed profit to total profit
+                agent[VariablesUsedInCode.Profit] += profit;
+
+                //reduce biomass
+                biomass[site] -= profit;
+            }
+        }
+
+        /// <summary>
+        /// Executed after PostIterationCalculations. Here we can collect all output data.
+        /// </summary>
+        protected override void PostIterationStatistic()
+        {
+            base.PostIterationStatistic();
+
+
+            //save statistics for each agent
+            agentList.ActiveAgents.ForEach(agent =>
+            {
+                AgentState agentState = iterations.Last.Value[agent];
+
+                if (agent[VariablesUsedInCode.AgentType] == "Type1")
+                {
+                    double averageReductionPercentage = agentState.TakenActions.Values.SelectMany(tal => tal)
+                        .Where(ta => ta.VariableName == VariablesUsedInCode.ReductionPercentage).Average(ta => (double)ta.Value);
+
+                    double profit = agent[VariablesUsedInCode.Profit];
+
+                    double averageBiomass = agent[VariablesUsedInCode.AverageBiomass];
+
+                    FEValuesOutput values = new FEValuesOutput()
+                    {
+                        Iteration = externalIteration,
+                        AverageBiomass = averageBiomass,
+                        AverageReductionPercentage = averageReductionPercentage,
+                        Profit = profit
+                    };
+
+
+                    WriteToCSVHelper.AppendTo(string.Format("SOSIELHuman_{0}_values.csv", agent.Id), values);
+                }
+
+
+
+
+                //all agent types 
+
+                //save activation rule stat
+                string[] activatedRules = agentState.RuleHistories.Values.SelectMany(rh => rh.Activated.Select(rule => rule.Id)).Distinct().ToArray();
+
+                string[] notActivatedRules = agent.AssignedRules.Select(rule => rule.Id).Except(activatedRules).ToArray();
+
+                HMRuleUsageOutput ruleUsage = new HMRuleUsageOutput()
+                {
+                    Iteration = externalIteration,
+                    ActivatedRules = activatedRules,
+                    NotActivatedRules = notActivatedRules
+                };
+
+                WriteToCSVHelper.AppendTo(string.Format("SOSIELHuman_{0}_rules.csv", agent.Id), ruleUsage);
+            });
+        }
     }
 }
