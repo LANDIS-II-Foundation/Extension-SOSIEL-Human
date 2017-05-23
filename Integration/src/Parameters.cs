@@ -2,7 +2,7 @@
 
 using Edu.Wisc.Forest.Flel.Util;
 
-namespace Landis.Extension.Sosiel
+namespace Landis.Extension.SOSIELHuman
 {
     public class Parameters
     {
