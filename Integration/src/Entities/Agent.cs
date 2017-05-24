@@ -195,7 +195,11 @@ namespace Landis.Extension.SOSIELHuman.Entities
         {
             AssignNewRule(newRule);
 
-            AnticipationInfluence[newRule] = new Dictionary<Goal, double>(anticipatedInfluence);
+            //copy ai to personal ai for assigned goals only
+
+            Dictionary<Goal, double> ai = anticipatedInfluence.Where(kvp => AssignedGoals.Contains(kvp.Key)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            AnticipationInfluence[newRule] = ai;
         }
 
         /// <summary>

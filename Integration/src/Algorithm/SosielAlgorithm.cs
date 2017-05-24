@@ -17,14 +17,13 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 	public abstract class SosielAlgorithm
 	{
 		private int numberOfIterations;
+        private int iterationCounter;
 		private ProcessesConfiguration processConfiguration;
 
 		protected int numberOfAgentsAfterInitialize; 
 		protected bool algorithmStoppage = false;
 		protected AgentList agentList;
 		protected LinkedList<Dictionary<IAgent, AgentState>> iterations = new LinkedList<Dictionary<IAgent, AgentState>>();
-
-		protected Dictionary<string, Action<IAgent>> preliminaryCalculations = new Dictionary<string, Action<IAgent>>();
 
 		//processes
 		AnticipatoryLearning al = new AnticipatoryLearning();
@@ -39,6 +38,8 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 		{
 			this.numberOfIterations = numberOfIterations;
 			this.processConfiguration = processConfiguration;
+
+            iterationCounter = 0;
 		}
 
 		/// <summary>
@@ -68,13 +69,15 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Executed before any cognitive process is started.
         /// </summary>
-        protected virtual void PreIterationCalculations() { }
+        /// <param name="iteration"></param>
+        protected virtual void PreIterationCalculations(int iteration) { }
 
 
         /// <summary>
         /// Executed after PreIterationCalculations
         /// </summary>
-        protected virtual void PreIterationStatistic() { }
+        /// <param name="iteration"></param>
+        protected virtual void PreIterationStatistic(int iteration) { }
 
 
         /// <summary>
@@ -95,12 +98,14 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Executed after last cognitive process is finished
         /// </summary>
-        protected virtual void PostIterationCalculations() { }
+        /// <param name="iteration"></param>
+        protected virtual void PostIterationCalculations(int iteration) { }
 
         /// <summary>
         /// Executed after PostIterationCalculations
         /// </summary>
-        protected virtual void PostIterationStatistic() { }
+        /// <param name="iteration"></param>
+        protected virtual void PostIterationStatistic(int iteration) { }
 
 		/// <summary>
         /// Executes agent deactivation logic.
@@ -110,7 +115,8 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Executed after AgentsDeactivation.
         /// </summary>
-        protected virtual void AfterDeactivation() { }
+        /// <param name="iteration"></param>
+        protected virtual void AfterDeactivation(int iteration) { }
 
 
 
@@ -146,18 +152,18 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 		{
 			for (int i = 1; i <= numberOfIterations; i++)
 			{
-				Console.WriteLine($"Starting {i} iteration");
+                iterationCounter++;
 
 				IAgent[] orderedAgents = agentList.ActiveAgents.Randomize(processConfiguration.AgentRandomizationEnabled).ToArray();
 
 				var agentGroups = orderedAgents.GroupBy(a => a[VariablesUsedInCode.AgentType]).OrderBy(group => group.Key).ToArray();
 
-				PreIterationCalculations();
-				PreIterationStatistic();
+				PreIterationCalculations(iterationCounter);
+				PreIterationStatistic(iterationCounter);
 
 				Dictionary<IAgent, AgentState> currentIteration;
 
-				if (i > 1)
+				if (iterationCounter > 1)
 					currentIteration = iterations.AddLast(new Dictionary<IAgent, AgentState>()).Value;
 				else
 					currentIteration = iterations.AddLast(InitializeFirstIterationState()).Value;
@@ -172,7 +178,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 				{
 					rankedGoals.Add(a, a.AssignedGoals.ToArray());
 
-					if (i > 1)
+					if (iterationCounter > 1)
 						currentIteration.Add(a, priorIteration[a].CreateForNextIteration());
 				});
 
@@ -181,7 +187,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
                 ActiveSite[] notSiteOriented = new ActiveSite[] { default(ActiveSite) };
 
-				if (processConfiguration.AnticipatoryLearningEnabled && i > 1)
+				if (processConfiguration.AnticipatoryLearningEnabled && iterationCounter > 1)
 				{
 					//1st round: AL, CT, IR
 					foreach (var agentGroup in agentGroups)
@@ -239,7 +245,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 					}
 				}
 
-				if (processConfiguration.SocialLearningEnabled && i > 1)
+				if (processConfiguration.SocialLearningEnabled && iterationCounter > 1)
 				{
 					//2nd round: SL
 					foreach (var agentGroup in agentGroups)
@@ -260,7 +266,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
 				}
 
-				if (processConfiguration.RuleSelectionEnabled && i > 1)
+				if (processConfiguration.RuleSelectionEnabled && iterationCounter > 1)
 				{
 					//AS part I
 					foreach (var agentGroup in agentGroups)
@@ -273,22 +279,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                                 {
                                     foreach (var layer in set.GroupBy(h => h.Layer).OrderBy((IGrouping<RuleLayer, Rule> g) => g.Key.PositionNumber))
                                     {
-                                        //string preliminaryCalculationsMethodName = layer.Key.LayerSettings.PreliminaryСalculations;
-
-                                        //if (string.IsNullOrEmpty(preliminaryCalculationsMethodName) == false)
-                                        //{
-                                        //	try
-                                        //	{
-                                        //		Action<IAgent> method = preliminaryCalculations[preliminaryCalculationsMethodName];
-
-                                        //		method(agent);
-                                        //	}
-                                        //	catch (KeyNotFoundException)
-                                        //	{
-                                        //		throw new SosielAlgorithmException($"Preliminary calculation: {preliminaryCalculationsMethodName} hasn't implemented in current model");
-                                        //	}
-                                        //}
-
+                                        
                                         BeforeActionSelection(agent, site);
 
 
@@ -301,7 +292,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 					}
 
 
-					if (processConfiguration.RuleSelectionPart2Enabled && i > 1)
+					if (processConfiguration.RuleSelectionPart2Enabled && iterationCounter > 1)
 					{
 						//4th round: AS part II
 						foreach (var agentGroup in agentGroups)
@@ -345,7 +336,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 					}
 				}
 
-				if (processConfiguration.AlgorithmStopIfAllAgentsSelectDoNothing && i > 1)
+				if (processConfiguration.AlgorithmStopIfAllAgentsSelectDoNothing && iterationCounter > 1)
 				{
 					if (currentIteration.SelectMany(kvp => kvp.Value.RuleHistories.Values.SelectMany(rh=> rh.Activated)).All(r => r.IsAction == false))
 					{
@@ -353,18 +344,18 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 					}
 				}
 
-				PostIterationCalculations();
+				PostIterationCalculations(iterationCounter);
 
-				PostIterationStatistic();
+				PostIterationStatistic(iterationCounter);
 
-				if (processConfiguration.AgentsDeactivationEnabled && i > 1)
+				if (processConfiguration.AgentsDeactivationEnabled && iterationCounter > 1)
 				{
 					AgentsDeactivation();
 				}
 
-				AfterDeactivation();
+				AfterDeactivation(iterationCounter);
 
-				if (processConfiguration.ReproductionEnabled && i > 1)
+				if (processConfiguration.ReproductionEnabled && iterationCounter > 1)
 				{
 					Reproduction(0);
 				}

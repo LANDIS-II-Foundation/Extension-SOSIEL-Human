@@ -1,0 +1,1 @@
+Copy the folder content to C:\Program Files\LANDIS-II\v6\bin with replacement. Remember about backups.

@@ -8,15 +8,15 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
     public sealed class RuleLayerConfiguration
     {
-        public bool Modifiable { get; set; }
+        public bool Modifiable { get; private set; }
 
-        public bool UseDoNothing { get; set; }
+        public bool UseDoNothing { get; private set; }
 
-        public int MaxNumberOfRules { get; set; } = 10;
+        public int MaxNumberOfRules { get; private set; }
 
-        public int[] ConsequentValueInterval { get; set; }
+        public int[] ConsequentValueInterval { get; private set; }
 
-        public Dictionary<string, string> ConsequentRelationshipSign { get; set; }
+        public Dictionary<string, string> ConsequentRelationshipSign { get; private set; }
 
         public static ConsequentRelationship ConvertSign(string sign)
         {
@@ -32,15 +32,14 @@ namespace Landis.Extension.SOSIELHuman.Entities
             }
         }
 
-        public string MinConsequentReference { get; set; }
+        public string MinConsequentReference { get; private set; }
 
-        public string MaxConsequentReference { get; set; }
-
-        public string PreliminaryСalculations { get; set; }
+        public string MaxConsequentReference { get; private set; }
 
         public RuleLayerConfiguration()
         {
             Modifiable = false;
+            MaxNumberOfRules = 10;
         }
 
         /// <summary>

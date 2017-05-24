@@ -17,6 +17,6 @@ namespace Landis.Extension.SOSIELHuman.Output
 
         public double BiomassReduction { get; set; }
 
-        public double Profit { get; set; }
+        //public double Profit { get; set; }
     }
 }

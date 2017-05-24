@@ -7,10 +7,10 @@ namespace Landis.Extension.SOSIELHuman.Entities
 {
     public class RuleHistory
     {
-        public List<Rule> Matched { get; set; }
-        public List<Rule> Activated { get; set; }
+        public List<Rule> Matched { get; private set; }
+        public List<Rule> Activated { get; private set; }
 
-        public List<Rule> BlockedRules { get; set; }
+        public List<Rule> BlockedRules { get; private set; }
 
         public RuleHistory()
         {

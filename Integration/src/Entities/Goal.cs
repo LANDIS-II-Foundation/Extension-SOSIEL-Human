@@ -8,19 +8,27 @@ namespace Landis.Extension.SOSIELHuman.Entities
 {
     public class Goal
     {
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
-        public string Tendency { get; set; }
+        public string Tendency { get; private set; }
 
-        public string ReferenceVariable { get; set; }
+        public string ReferenceVariable { get; private set; }
 
-        public double FocalValue { get; set; }
+        public double FocalValue { get; private set; }
 
-        public bool ChangeFocalValueOnPrevious { get; set; }
+        public bool ChangeFocalValueOnPrevious { get; private set; }
 
-        public string FocalValueReference { get; set; }
+        public double ReductionPercent { get; private set; }
 
-        public bool RankingEnabled { get; set; } = true;
+        public string FocalValueReference { get; private set; }
+
+        public bool RankingEnabled { get; private set; } 
+
+
+        public Goal()
+        {
+            RankingEnabled = true;
+        }
 
         public override bool Equals(object obj)
         {

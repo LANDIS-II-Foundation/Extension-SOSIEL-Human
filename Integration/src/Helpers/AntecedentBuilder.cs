@@ -24,7 +24,7 @@ namespace Landis.Extension.SOSIELHuman.Helpers
                     return ExpressionType.Equal;
 
                 default:
-                    throw new ArgumentException($"Unsupported antecedent condition: {inequalitySign}");
+                    throw new ArgumentException(string.Format("Unsupported antecedent condition: {0}", inequalitySign));
             }
         }
 

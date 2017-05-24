@@ -12,9 +12,9 @@ namespace Landis.Extension.SOSIELHuman.Entities
         int layerIndexer = 0;
 
         public int PositionNumber { get; set; }
-        public List<RuleLayer> Layers { get; set; } 
+        public List<RuleLayer> Layers { get; private set; } 
 
-        public Goal[] AssociatedWith { get; set; }
+        public Goal[] AssociatedWith { get; private set; }
 
         private RuleSet(int number, Goal[] associatedGoals)
         {

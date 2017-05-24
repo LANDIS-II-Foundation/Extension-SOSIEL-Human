@@ -26,67 +26,81 @@ namespace Landis.Extension.SOSIELHuman.Processes
         /// <returns></returns>
         IEnumerable<Goal> SortByImportance(IAgent agent, Dictionary<Goal, GoalState> goals)
         {
-            var importantGoals = goals.Where(kvp => kvp.Value.Importance > 0).ToArray();
-
-            var noConfidenceGoals = importantGoals.Where(kvp => kvp.Value.Confidence == false).ToArray();
-
-
-            if (noConfidenceGoals.Length > 0)
+            if (goals.Count > 1)
             {
-                var noConfidenceProportions = noConfidenceGoals.Select(kvp =>
-                    new { Proportion = kvp.Value.Importance * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent) / (string.IsNullOrEmpty(kvp.Key.FocalValueReference) ? kvp.Key.FocalValue : (double)agent[kvp.Key.FocalValueReference])), Goal = kvp.Key }).ToArray();
+                var importantGoals = goals.Where(kvp => kvp.Value.Importance > 0).ToArray();
 
-                double totalNoConfidenctUnadjustedProportions = noConfidenceGoals.Sum(kvp => kvp.Value.Importance);
+                var noConfidenceGoals = importantGoals.Where(kvp => kvp.Value.Confidence == false).ToArray();
 
-                double totalNoConfidenceAdjustedProportions = noConfidenceProportions.Sum(p => p.Proportion);
 
-                var confidenceGoals = goals.Where(kvp => kvp.Value.Confidence == true).ToArray();
-
-                var confidenceProportions = confidenceGoals.Select(kvp =>
-                    new { Proportion = kvp.Value.Importance * (1 - totalNoConfidenceAdjustedProportions) / totalNoConfidenctUnadjustedProportions, Goal = kvp.Key }).ToArray();
-
-                Enumerable.Concat(noConfidenceProportions, confidenceProportions).ForEach(p =>
+                if (noConfidenceGoals.Length > 0)
                 {
-                    goals[p.Goal].AdjustedImportance = p.Proportion;
+                    var noConfidenceProportions = noConfidenceGoals.Select(kvp => new
+                    {
+                        Proportion = kvp.Value.Importance * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent)
+                                / (string.IsNullOrEmpty(kvp.Key.FocalValueReference) ? kvp.Value.FocalValue : (double)agent[kvp.Key.FocalValueReference])),
+                        Goal = kvp.Key
+                    }).ToArray();
 
+                    double totalNoConfidenctUnadjustedProportions = noConfidenceGoals.Sum(kvp => kvp.Value.Importance);
+
+                    double totalNoConfidenceAdjustedProportions = noConfidenceProportions.Sum(p => p.Proportion);
+
+                    var confidenceGoals = goals.Where(kvp => kvp.Value.Confidence == true).ToArray();
+
+                    var confidenceProportions = confidenceGoals.Select(kvp => new
+                    {
+                        Proportion = kvp.Value.Importance * (1 - totalNoConfidenceAdjustedProportions) / totalNoConfidenctUnadjustedProportions,
+                        Goal = kvp.Key
+                    }).ToArray();
+
+                    Enumerable.Concat(noConfidenceProportions, confidenceProportions).ForEach(p =>
+                    {
+                        goals[p.Goal].AdjustedImportance = p.Proportion;
+
+                    });
+
+                }
+                else
+                {
+                    goals.ForEach(kvp =>
+                    {
+                        kvp.Value.AdjustedImportance = kvp.Value.Importance;
+                    });
+                }
+
+
+                List<Goal> vector = new List<Goal>(100);
+
+                goals.ForEach(kvp =>
+                {
+                    int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.AdjustedImportance * 100));
+
+                    for (int i = 0; i < numberOfInsertions; i++) { vector.Add(kvp.Key); }
                 });
 
+
+                for (int i = 0; i < importantGoals.Length && vector.Count > 0; i++)
+                {
+                    Goal nextGoal = vector.RandomizeOne();
+
+                    vector.RemoveAll(o => o == nextGoal);
+
+
+                    yield return nextGoal;
+                }
+
+                Goal[] otherGoals = goals.Where(kvp => kvp.Value.Importance == 0)
+                    .OrderByDescending(kvp => kvp.Key.RankingEnabled).Select(kvp => kvp.Key).ToArray();
+
+                foreach (Goal goal in otherGoals)
+                {
+                    yield return goal;
+                }
             }
             else
             {
-                goals.ForEach(kvp =>
-                {
-                    kvp.Value.AdjustedImportance = kvp.Value.Importance;
-                });
-            }
-
-
-            List<Goal> vector = new List<Goal>(100);
-
-            goals.ForEach(kvp =>
-            {
-                int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.AdjustedImportance * 100));
-
-                for (int i = 0; i < numberOfInsertions; i++) { vector.Add(kvp.Key); }
-            });
-
-
-            for (int i = 0; i < importantGoals.Length && vector.Count > 0; i++)
-            {
-                Goal nextGoal = vector.RandomizeOne();
-
-                vector.RemoveAll(o => o == nextGoal);
-
-
-                yield return nextGoal;
-            }
-
-            Goal[] otherGoals = goals.Where(kvp => kvp.Value.Importance == 0)
-                .OrderByDescending(kvp => kvp.Key.RankingEnabled).Select(kvp => kvp.Key).ToArray();
-
-            foreach (Goal goal in otherGoals)
-            {
-                yield return goal;
+                yield return goals.Keys.First();
             }
         }
 
@@ -137,7 +151,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
         protected override void Maximize()
         {
-            if(currentGoalState.DiffCurrentAndFocal >= 0)
+            if (currentGoalState.DiffCurrentAndFocal >= 0)
             {
                 currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
                 currentGoalState.Confidence = true;
@@ -172,7 +186,14 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 currentGoalState.Value = agent[goal.ReferenceVariable];
 
                 if (goal.ChangeFocalValueOnPrevious)
-                    currentGoalState.FocalValue = previousIterationAgentState.GoalsState[goal].Value;
+                {
+                    double reductionPercent = 1;
+
+                    if (goal.ReductionPercent > 0d)
+                        reductionPercent = goal.ReductionPercent;
+
+                    currentGoalState.FocalValue = reductionPercent * previousIterationAgentState.GoalsState[goal].Value;
+                }
 
                 double focal = string.IsNullOrEmpty(goal.FocalValueReference) ? currentGoalState.FocalValue : agent[goal.FocalValueReference];
 
@@ -187,7 +208,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
 
                 //finds activated rules for each site 
-                IEnumerable<Rule> activatedInPriorIteration = previousIterationAgentState.RuleHistories.SelectMany(rh=> rh.Value.Activated);
+                IEnumerable<Rule> activatedInPriorIteration = previousIterationAgentState.RuleHistories.SelectMany(rh => rh.Value.Activated);
 
                 //update anticipated influences of found rules 
                 activatedInPriorIteration.ForEach(r =>

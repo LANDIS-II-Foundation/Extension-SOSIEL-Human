@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtensionDataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Extensions>
+    <Extension Name="Biomass Succession" Version="3.2">
+      <Type>succession</Type>
+      <Assembly>Landis.Extension.Succession.Biomass</Assembly>
+      <Class>Landis.Extension.Succession.Biomass.PlugIn</Class>
+      <Description>Succession with biomass cohorts</Description>
+      <UserGuide>LANDIS-II Biomass Succession v3.1 User Guide.pdf</UserGuide>
+    </Extension>
+    <Extension Name="SOSIEL Human" Version="0.5">
+      <Type>disturbance</Type>
+      <Assembly>Landis.Extension.SOSIELHuman</Assembly>
+      <Class>Landis.Extension.SOSIELHuman.PlugIn</Class>
+      <Description>Interactions among agents</Description>
+    </Extension>
+  </Extensions>
+</ExtensionDataset>

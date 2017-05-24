@@ -15,7 +15,7 @@ namespace Landis.Extension.SOSIELHuman.Exceptions
 
         public override string ToString()
         {
-            return $"{variableName} wasn't defined for agent. Maybe you forgot to define it in config";
+            return string.Format("{0} wasn't defined for agent. Maybe you forgot to define it in config", variableName);
         }
     }
 }

@@ -16,7 +16,7 @@
           "Name": "G1",
           "Tendency": "AboveMin",
           "ReferenceVariable": "Profit",
-          "FocalValue": 100,
+          "FocalValue": 0,
           "ChangeFocalValueOnPrevious": true,
           "FocalValueReference": ""
 
@@ -25,7 +25,9 @@
           "Name": "G2",
           "Tendency": "AboveMin",
           "ReferenceVariable": "AverageBiomass",
-          "FocalValue": 100,
+          "FocalValue": 0,
+          "ChangeFocalValueOnPrevious": true,
+          "ReductionPercent": 0.4,
           "FocalValueReference": ""
         }
       ],
@@ -36,8 +38,8 @@
           "Layer": {
             "1": {
               "Modifiable": true,
-              "UseDoNothing": true,
-              "MaxNumberOfRules": 5,
+              "UseDoNothing": false,
+              "MaxNumberOfRules": 20000,
               "ConsequentValueInterval": [ 0, 100 ],
               "MinConsequentReference": "",
               "MaxConsequentReference": "",
@@ -58,9 +60,29 @@
           "Id": "RS1_L1_R1",
           "Antecedent": [
             {
-              "Param": "Biomass",
+              "Param": "AverageBiomass",
               "Sign": ">=",
-              "Value": 100
+              "Value": 0
+            }
+          ],
+          "Consequent": {
+            "Param": "ReductionPercentage",
+            "Value": 0,
+            "VariableValue": ""
+          },
+          "RequiredParticipants": 1,
+          "IsAction": false
+        },
+        {
+          "RuleSet": 1,
+          "RuleLayer": 1,
+          "RulePositionNumber": 2,
+          "Id": "RS1_L1_R2",
+          "Antecedent": [
+            {
+              "Param": "AverageBiomass",
+              "Sign": ">=",
+              "Value": 1000
             }
           ],
           "Consequent": {
@@ -71,6 +93,7 @@
           "RequiredParticipants": 1,
           "IsAction": true
         }
+
       ],
 
       "DoNothingAnticipatedInfluence": {
@@ -100,7 +123,7 @@
         "IncomeFromPickingMushrooms": 10000,
         "IncomeFromGreenTourism": 320000,
 
-        "TourismThreshold": 100,
+        "TourismThreshold": 1000,
         "FE_JobAvailable": true,
         "RequiredSavingsForGreenTourism": 200000,
 
@@ -425,17 +448,22 @@
           "RS1_L1_R1": {
             "G1": 0,
             "G2": 0
+          },
+          "RS1_L1_R2": {
+            "G1": 1000,
+            "G2": 1000
           }
 
         },
 
         "AssignedRules": [
-          "RS1_L1_R1"
+          "RS1_L1_R1",
+          "RS1_L1_R2"
         ],
 
         "AssignedGoals": [ "G1", "G2" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G1": {
             "Importance": 0.5,
             "Value": 0
@@ -446,7 +474,7 @@
           }
         },
 
-        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R1" ]
+        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R2" ]
       },
       {
         "PrototypeOfAgent": "HouseholdMember-Prototype",
@@ -487,7 +515,7 @@
 
         "AssignedGoals": [ "G3", "G4" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
             "Importance": 0.5,
             "Value": 0
@@ -525,12 +553,12 @@
 
         "AssignedGoals": [ "G3" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
-            "Importance": 0.5,
+            "Importance": 1,
             "Value": 0
           }
-              },
+        },
 
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R1" ],
 
@@ -563,12 +591,12 @@
 
         "AssignedGoals": [ "G3" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
-            "Importance": 0.5,
+            "Importance": 1,
             "Value": 0
           }
-          
+
         },
 
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R4" ],
@@ -618,7 +646,7 @@
 
         "AssignedGoals": [ "G3", "G4" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
             "Importance": 0.5,
             "Value": 0
@@ -660,9 +688,9 @@
 
         "AssignedGoals": [ "G3" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
-            "Importance": 0.5,
+            "Importance": 1,
             "Value": 0
           }
         },
@@ -698,9 +726,9 @@
 
         "AssignedGoals": [ "G3" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
-            "Importance": 0.5,
+            "Importance": 1,
             "Value": 0
           }
         },
@@ -735,9 +763,9 @@
 
         "AssignedGoals": [ "G3" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
-            "Importance": 0.5,
+            "Importance": 1,
             "Value": 0
           }
         },

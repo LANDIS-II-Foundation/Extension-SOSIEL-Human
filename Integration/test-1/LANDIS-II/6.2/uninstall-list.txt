@@ -1,0 +1,5 @@
+v6/bin/Landis.Console-6.2.exe
+v6/bin/Landis.Console-6.2.exe.config
+bin/landis-6.2.cmd
+bin/landis-6.2.sh
+v6/bin/6.2

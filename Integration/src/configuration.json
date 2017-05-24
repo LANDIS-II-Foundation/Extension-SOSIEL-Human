@@ -25,7 +25,9 @@
           "Name": "G2",
           "Tendency": "AboveMin",
           "ReferenceVariable": "AverageBiomass",
-          "FocalValue": 100,
+          "FocalValue": 0,
+          "ChangeFocalValueOnPrevious": true,
+          "ReductionPercent": 0.4,
           "FocalValueReference": ""
         }
       ],
@@ -37,7 +39,7 @@
             "1": {
               "Modifiable": true,
               "UseDoNothing": false,
-              "MaxNumberOfRules": 5,
+              "MaxNumberOfRules": 20000,
               "ConsequentValueInterval": [ 0, 100 ],
               "MinConsequentReference": "",
               "MaxConsequentReference": "",
@@ -513,7 +515,7 @@
 
         "AssignedGoals": [ "G3", "G4" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
             "Importance": 0.5,
             "Value": 0
@@ -551,12 +553,12 @@
 
         "AssignedGoals": [ "G3" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
-            "Importance": 0.5,
+            "Importance": 1,
             "Value": 0
           }
-              },
+        },
 
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R1" ],
 
@@ -589,12 +591,12 @@
 
         "AssignedGoals": [ "G3" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
-            "Importance": 0.5,
+            "Importance": 1,
             "Value": 0
           }
-          
+
         },
 
         "ActivatedRulesOnFirstIteration": [ "RS1_L1_R4" ],
@@ -644,7 +646,7 @@
 
         "AssignedGoals": [ "G3", "G4" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
             "Importance": 0.5,
             "Value": 0
@@ -686,9 +688,9 @@
 
         "AssignedGoals": [ "G3" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
-            "Importance": 0.5,
+            "Importance": 1,
             "Value": 0
           }
         },
@@ -724,9 +726,9 @@
 
         "AssignedGoals": [ "G3" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
-            "Importance": 0.5,
+            "Importance": 1,
             "Value": 0
           }
         },
@@ -761,9 +763,9 @@
 
         "AssignedGoals": [ "G3" ],
 
-        "GoalState": {
+        "GoalsState": {
           "G3": {
-            "Importance": 0.5,
+            "Importance": 1,
             "Value": 0
           }
         },

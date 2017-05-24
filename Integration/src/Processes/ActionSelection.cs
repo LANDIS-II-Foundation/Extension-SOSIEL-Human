@@ -9,6 +9,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
     using Entities;
     using Helpers;
     using Enums;
+    using Exceptions;
 
 
     /// <summary>
@@ -161,7 +162,14 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 //if none are identified, then choose the do-nothing heuristic.
                 if (ruleForActivating == null)
                 {
-                    ruleForActivating = processedRules.Single(h => h.IsAction == false);
+                    try
+                    {
+                        ruleForActivating = processedRules.Single(h => h.IsAction == false);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        throw new SosielAlgorithmException(string.Format("Rule for activating hasn't been found by {0}", agent.Id));
+                    }
                 }
             }
             else

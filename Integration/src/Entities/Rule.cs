@@ -52,7 +52,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
         {
             get
             {
-                return $"RS{Layer.Set.PositionNumber}_L{Layer.PositionNumber}_R{RulePositionNumber}";
+                return string.Format("RS{0}_L{1}_R{2}", Layer.Set.PositionNumber, Layer.PositionNumber, RulePositionNumber);
             }
         }
 

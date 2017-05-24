@@ -60,8 +60,6 @@ namespace Landis.Extension.SOSIELHuman
         public override void LoadParameters(string dataFile,
                                             ICore mCore)
         {
-            Debugger.Launch();
-
             modelCore = mCore;
 
             ModelCore.UI.WriteLine("  Loading parameters from {0}", dataFile);
@@ -71,7 +69,7 @@ namespace Landis.Extension.SOSIELHuman
             parameters = Landis.Data.Load<Parameters>(dataFile, parser);
 
 
-            
+
         }
 
         //---------------------------------------------------------------------
@@ -87,7 +85,7 @@ namespace Landis.Extension.SOSIELHuman
             ModelCore.UI.WriteLine("  Loading agent parameters from {0}", parameters.InputJson);
             configuration = ConfigurationParser.ParseConfiguration(parameters.InputJson);
 
-            
+
             //create algorithm instance
             int iterations = 1; // Later we can decide if there should be multiple SHE sub-iterations per LANDIS-II iteration. 
             //create dictionary 
@@ -109,17 +107,19 @@ namespace Landis.Extension.SOSIELHuman
 
         public override void Run()
         {
+#if DEBUG
             Debugger.Launch();
+#endif
 
             //convert cohort biomass to a format understandable by the extension
-            foreach(ActiveSite activeSite in projectedBiomass.Keys.ToArray())
+            foreach (ActiveSite activeSite in projectedBiomass.Keys.ToArray())
             {
                 projectedBiomass[activeSite] = ComputeLivingBiomass(SiteVars.Cohorts[activeSite]);
             }
 
 
             //run SOSIEL algorithm
-            luhyLite.RunIteration(iteration);
+            luhyLite.RunIteration();
 
             ModelCore.UI.WriteLine("Reducing site biomass...");
 
@@ -156,7 +156,7 @@ namespace Landis.Extension.SOSIELHuman
             //update logic here:
             double initialBiomass = ComputeLivingBiomass(SiteVars.Cohorts[site]);
 
-            double reductionPercent = Math.Round(updatedBiomass / initialBiomass, 3); // Change number of fractional digits if needed
+            double reductionPercent = Math.Round(1d - updatedBiomass / initialBiomass, 3); // Change number of fractional digits if needed
 
             //PartialDisturbance.ReduceCohortBiomass(site, percentBiomassReduction);  // RMS I'm unsure how this method should be called.
             //It should be called like this

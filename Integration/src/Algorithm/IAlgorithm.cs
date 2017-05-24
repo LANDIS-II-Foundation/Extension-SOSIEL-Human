@@ -19,7 +19,6 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Runs as many iterations as passed to the constructor
         /// </summary>
-        /// <param name="externalIteration"></param>
-        void RunIteration(int externalIteration);
+        void RunIteration();
     }
 }

@@ -8,10 +8,10 @@ namespace Landis.Extension.SOSIELHuman.Entities
 {
     public class RuleSetConfiguration
     {
-        public string[] AssociatedWith { get; set; }
+        public string[] AssociatedWith { get; private set; }
 
-        public bool IsSequential { get; set; }
+        public bool IsSequential { get; private set; }
 
-        public Dictionary<string, RuleLayerConfiguration> Layer { get; set; }
+        public Dictionary<string, RuleLayerConfiguration> Layer { get; private set; }
     }
 }

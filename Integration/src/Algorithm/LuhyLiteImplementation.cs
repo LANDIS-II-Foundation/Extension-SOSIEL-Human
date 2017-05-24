@@ -24,8 +24,6 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
         private Dictionary<ActiveSite, double> biomass;
 
-        private int externalIteration;
-
         /// <summary>
         /// Initializes Luhy lite implementation
         /// </summary> 
@@ -209,10 +207,8 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Runs as many internal iterations as passed to the constructor
         /// </summary>
-        public void RunIteration(int externalIteration)
+        public void RunIteration()
         {
-            this.externalIteration = externalIteration;
-
             RunSosiel(activeSites);
         }
 
@@ -254,14 +250,15 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Executed before any cognitive process is started.
         /// </summary>
-        protected override void PreIterationCalculations()
+        /// <param name="iteration"></param>
+        protected override void PreIterationCalculations(int iteration)
         {
             //call default implementation
-            base.PreIterationCalculations();
+            base.PreIterationCalculations(iteration);
 
             //----
             //calculate tourism value
-            double averageBiomass = biomass.Values.Sum();
+            double averageBiomass = biomass.Values.Average();
 
             var fePrototypes = agentList.GetPrototypesWithPrefix("FE");
 
@@ -335,7 +332,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
             if (agent[VariablesUsedInCode.AgentType] == "Type1")
             {
                 //compute profit
-                double profit = biomass[site] * agent[VariablesUsedInCode.ReductionPercentage] / 100;
+                double profit = biomass[site] * agent[VariablesUsedInCode.ReductionPercentage] / 100d;
                 //add computed profit to total profit
                 agent[VariablesUsedInCode.Profit] += profit;
 
@@ -347,9 +344,10 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// <summary>
         /// Executed after PostIterationCalculations. Here we can collect all output data.
         /// </summary>
-        protected override void PostIterationStatistic()
+        /// <param name="iteration"></param>
+        protected override void PostIterationStatistic(int iteration)
         {
-            base.PostIterationStatistic();
+            base.PostIterationStatistic(iteration);
 
 
             //save statistics for each agent
@@ -368,10 +366,10 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
                     FEValuesOutput values = new FEValuesOutput()
                     {
-                        Iteration = externalIteration,
+                        Iteration = iteration,
                         AverageBiomass = averageBiomass,
                         AverageReductionPercentage = averageReductionPercentage,
-                        Profit = profit
+                        BiomassReduction = profit
                     };
 
 
@@ -390,7 +388,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
                 HMRuleUsageOutput ruleUsage = new HMRuleUsageOutput()
                 {
-                    Iteration = externalIteration,
+                    Iteration = iteration,
                     ActivatedRules = activatedRules,
                     NotActivatedRules = notActivatedRules
                 };
