@@ -314,14 +314,10 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                                     {
                                         foreach (var layer in set.GroupBy(h => h.Layer).OrderBy((IGrouping<RuleLayer, Rule> g) => g.Key.PositionNumber))
                                         {
-
-
                                             BeforeActionSelection(agent, site);
 
-                                            //todo fix checking collective action for first type agent. Activated rules need to search among rule histories for specific site.
-
                                             //action selection process part II
-                                            acts.ExecutePartII(agent, iterations.Last, rankedGoals[agent], layer.ToArray(), site);
+                                            acts.ExecutePartII(agent, iterations.Last, rankedGoals[agent], layer.ToArray(), agentGroup, site);
                                         }
                                     }
                                 }

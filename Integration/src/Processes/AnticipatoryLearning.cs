@@ -9,6 +9,9 @@ namespace Landis.Extension.SOSIELHuman.Processes
     using Helpers;
     using Exceptions;
 
+    /// <summary>
+    /// Anticipatory learning process implementation.
+    /// </summary>
     public class AnticipatoryLearning : VolatileProcess
     {
 

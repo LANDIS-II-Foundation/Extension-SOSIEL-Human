@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 
 namespace Landis.Extension.SOSIELHuman.Configuration
 {
+    /// <summary>
+    /// Goal state configuration model. Used to parse section "InitialState.AgentsState.GoalsState".
+    /// </summary>
     public class GoalStateConfiguration
     {
         [JsonRequired]

@@ -8,6 +8,9 @@ namespace Landis.Extension.SOSIELHuman.Processes
 {
     using Entities;
 
+    /// <summary>
+    /// Counterfactual thinking process implementation.
+    /// </summary>
     public class CounterfactualThinking : VolatileProcess
     {
         bool confidence;

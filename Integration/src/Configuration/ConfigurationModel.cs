@@ -9,7 +9,7 @@ namespace Landis.Extension.SOSIELHuman.Configuration
     using Entities;
 
     /// <summary>
-    /// Main configuration model
+    /// Main configuration model.
     /// </summary>
     public class ConfigurationModel
     {

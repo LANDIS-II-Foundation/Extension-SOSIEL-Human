@@ -9,8 +9,17 @@ namespace Landis.Extension.SOSIELHuman.Processes
     using Entities;
     using Helpers;
 
+    /// <summary>
+    /// Action taking process implementation.
+    /// </summary>
     public class ActionTaking
     {
+        /// <summary>
+        /// Executes action taking.
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="state"></param>
+        /// <param name="site"></param>
         public void Execute(IAgent agent, AgentState state, ActiveSite site)
         {
             RuleHistory history = state.RuleHistories[site];

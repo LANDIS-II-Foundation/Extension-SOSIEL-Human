@@ -11,6 +11,9 @@ namespace Landis.Extension.SOSIELHuman.Processes
     using Enums;
 
 
+    /// <summary>
+    /// Action selection process implementation.
+    /// </summary>
     public class ActionSelection : VolatileProcess
     {
         Goal processedGoal;
@@ -185,9 +188,10 @@ namespace Landis.Extension.SOSIELHuman.Processes
         /// <param name="lastIteration"></param>
         /// <param name="rankedGoals"></param>
         /// <param name="processedRules"></param>
+        /// <param name="activeAgents">Same type agents</param>
         /// <param name="site"></param>
         public void ExecutePartII(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration,
-            Goal[] rankedGoals, Rule[] processedRules, ActiveSite site)
+            Goal[] rankedGoals, Rule[] processedRules, IEnumerable<IAgent> activeAgents, ActiveSite site)
         {
             AgentState agentState = lastIteration.Value[agent];
 
@@ -200,11 +204,12 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
             if (selectedRule.IsCollectiveAction)
             {
-                int numberOfInvolvedAgents = 0;
+                //counting agents which selected this rule
+                int numberOfInvolvedAgents = activeAgents.Count(a=> lastIteration.Value[a].RuleHistories[site].Activated.Any(rule=> rule == selectedRule));
 
                 int requiredParticipants = selectedRule.RequiredParticipants;
 
-
+                //add rule to blocked rules
                 if (numberOfInvolvedAgents < requiredParticipants)
                 {
                     history.BlockedRules.Add(selectedRule);

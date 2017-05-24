@@ -24,8 +24,6 @@ namespace Landis.Extension.SOSIELHuman.Helpers
 
 
 
-
-
     public static class WriteToCSVHelper
     {
         private static CsvConfiguration configuration = new CsvConfiguration() { CultureInfo = CultureInfo.CurrentCulture, HasHeaderRecord = false };

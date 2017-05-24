@@ -6,7 +6,7 @@ namespace Landis.Extension.SOSIELHuman.Helpers
 {
     
 
-    class AntecedentBuilder
+    public class AntecedentBuilder
     {
         static ExpressionType GetExpressionType(string inequalitySign)
         {
@@ -28,6 +28,11 @@ namespace Landis.Extension.SOSIELHuman.Helpers
             }
         }
 
+        /// <summary>
+        /// Creates expression tree for variable comparison
+        /// </summary>
+        /// <param name="inequalitySign"></param>
+        /// <returns></returns>
         public static Func<dynamic, dynamic, dynamic> Build(string inequalitySign)
         {
             ParameterExpression x = Expression.Parameter(typeof(object), "x");

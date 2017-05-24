@@ -74,7 +74,6 @@
     <Compile Include="Entities\RuleSetConfiguration.cs" />
     <Compile Include="Enums\CognitiveLevel.cs" />
     <Compile Include="Helpers\AntecedentBuilder.cs" />
-    <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\IEnumerableHelper.cs" />
     <Compile Include="Helpers\RandomizeHelper.cs" />
     <Compile Include="Helpers\VariablesUsedInCode.cs" />
@@ -165,10 +164,7 @@
     </Reference>
   </ItemDefinitionGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
+
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

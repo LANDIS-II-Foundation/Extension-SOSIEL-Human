@@ -9,6 +9,10 @@ namespace Landis.Extension.SOSIELHuman.Configuration
     using Enums;
     using Exceptions;
 
+
+    /// <summary>
+    /// Algorithm configuration model. Used to parse section "AlgorithmConfiguration".
+    /// </summary>
     public class AlgorithmConfiguration
     {
         private CognitiveLevel cognitiveLevel;

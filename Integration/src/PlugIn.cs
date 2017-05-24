@@ -84,6 +84,7 @@ namespace Landis.Extension.SOSIELHuman
             Timestep = parameters.Timestep;
 
             // Read in (input) Agent Configuration Json File here:
+            ModelCore.UI.WriteLine("  Loading agent parameters from {0}", parameters.InputJson);
             configuration = ConfigurationParser.ParseConfiguration(parameters.InputJson);
 
             
@@ -106,24 +107,6 @@ namespace Landis.Extension.SOSIELHuman
             }
         }
 
-        //temp 
-        //private ActiveSite GenerateMockActiveSite(int x, int y)
-        //{
-        //    ActiveSite site = new ActiveSite();
-
-        //    ValueType type = site; 
-
-
-        //    var locationField = site.GetType().GetField("location", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-        //    locationField.SetValue(type, new Location(x, y));
-
-        //    return (ActiveSite)type;
-        //}
-
-        //---------------------------------------------------------------------
-
-
         public override void Run()
         {
             Debugger.Launch();
@@ -135,17 +118,15 @@ namespace Landis.Extension.SOSIELHuman
             }
 
 
-            //run sosiel algorithm
+            //run SOSIEL algorithm
             luhyLite.RunIteration(iteration);
 
-
+            ModelCore.UI.WriteLine("Reducing site biomass...");
 
             //projectedBiomass contains updated biomass values. Logic for updating SiteVars here:
-            foreach(KeyValuePair<ActiveSite, double> kvp in projectedBiomass)
+            foreach (KeyValuePair<ActiveSite, double> kvp in projectedBiomass)
             {
                 UpdateBiomass(kvp.Key, kvp.Value);
-
-                // PartialDisturbance.ReduceCohortBiomass(site, percentBiomassReduction);  // RMS I'm unsure how this method should be called.
             }
 
             iteration++;
@@ -173,6 +154,13 @@ namespace Landis.Extension.SOSIELHuman
         private void UpdateBiomass(ActiveSite site, double updatedBiomass)
         {
             //update logic here:
+            double initialBiomass = ComputeLivingBiomass(SiteVars.Cohorts[site]);
+
+            double reductionPercent = Math.Round(updatedBiomass / initialBiomass, 3); // Change number of fractional digits if needed
+
+            //PartialDisturbance.ReduceCohortBiomass(site, percentBiomassReduction);  // RMS I'm unsure how this method should be called.
+            //It should be called like this
+            PartialDisturbance.ReduceCohortBiomass(site, reductionPercent);
         }
     }
 }

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Landis.Extension.SOSIELHuman.Randoms
 {
+    /// <summary>
+    /// Implementation of power law distribution random. Used transformation from linear uniform distribution to normal distribution.
+    /// </summary>
     public class NormalDistributionRandom
     {
         private static NormalDistributionRandom random;

@@ -6,7 +6,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 {
     using Helpers;   
 
-    public class RuleLayer:IComparable<RuleLayer>
+    public class RuleLayer: IComparable<RuleLayer>
     {
         int RuleIndexer = 0;
         public int PositionNumber { get; set; }

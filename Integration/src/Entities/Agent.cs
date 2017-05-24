@@ -280,7 +280,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
 
         /// <summary>
-        /// Sets id to current agent instance 
+        /// Sets id to current agent instance.
         /// </summary>
         /// <param name="id"></param>
         public void SetId(int id)
@@ -291,7 +291,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
 
         /// <summary>
-        /// Equality checking
+        /// Equality checking.
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
@@ -306,6 +306,9 @@ namespace Landis.Extension.SOSIELHuman.Entities
             return Equals(obj as Agent);
         }
 
-        
+        public override int GetHashCode()
+        {
+            return 0;
+        }
     }
 }

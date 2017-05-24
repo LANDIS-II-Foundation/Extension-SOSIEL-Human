@@ -6,9 +6,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
 {
     using Helpers;
 
-    //public delegate void RemovingEventHandler(object sender, RuleEventArgs e);
 
-    public class RuleSet:IComparable<RuleSet>
+    public class RuleSet: IComparable<RuleSet>
     {
         int layerIndexer = 0;
 

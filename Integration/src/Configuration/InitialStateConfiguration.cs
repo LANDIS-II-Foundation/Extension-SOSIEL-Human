@@ -10,6 +10,9 @@ namespace Landis.Extension.SOSIELHuman.Configuration
 {
     using Enums;
 
+    /// <summary>
+    /// Initial state configuration model. Used to parse section "InitialState".
+    /// </summary>
     public class InitialStateConfiguration
     {
         public bool GenerateGoalImportance { get; set; }

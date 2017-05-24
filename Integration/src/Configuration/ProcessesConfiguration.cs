@@ -9,6 +9,9 @@ namespace Landis.Extension.SOSIELHuman.Configuration
     using Enums;
     using Exceptions;
 
+    /// <summary>
+    /// Processes configuration. Used in algorithm for managing cognitive processes.
+    /// </summary>
     public class ProcessesConfiguration
     {
         public bool AgentRandomizationEnabled { get; set; }

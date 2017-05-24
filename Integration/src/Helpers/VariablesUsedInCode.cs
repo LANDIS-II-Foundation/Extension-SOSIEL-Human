@@ -2,6 +2,9 @@
 
 namespace Landis.Extension.SOSIELHuman.Helpers
 {
+    /// <summary>
+    /// Contains variable names used in code.
+    /// </summary>
     public static class VariablesUsedInCode
     {
         public const string AgentType = "AgentType";

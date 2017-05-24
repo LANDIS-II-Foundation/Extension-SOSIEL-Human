@@ -16,7 +16,7 @@
           "Name": "G1",
           "Tendency": "AboveMin",
           "ReferenceVariable": "Profit",
-          "FocalValue": 0,
+          "FocalValue": 100,
           "ChangeFocalValueOnPrevious": true,
           "FocalValueReference": ""
 
@@ -36,7 +36,7 @@
           "Layer": {
             "1": {
               "Modifiable": true,
-              "UseDoNothing": false,
+              "UseDoNothing": true,
               "MaxNumberOfRules": 5,
               "ConsequentValueInterval": [ 0, 100 ],
               "MinConsequentReference": "",
@@ -58,29 +58,9 @@
           "Id": "RS1_L1_R1",
           "Antecedent": [
             {
-              "Param": "AverageBiomass",
+              "Param": "Biomass",
               "Sign": ">=",
-              "Value": 0
-            }
-          ],
-          "Consequent": {
-            "Param": "ReductionPercentage",
-            "Value": 0,
-            "VariableValue": ""
-          },
-          "RequiredParticipants": 1,
-          "IsAction": false
-        },
-        {
-          "RuleSet": 1,
-          "RuleLayer": 1,
-          "RulePositionNumber": 2,
-          "Id": "RS1_L1_R2",
-          "Antecedent": [
-            {
-              "Param": "AverageBiomass",
-              "Sign": ">=",
-              "Value": 1000
+              "Value": 100
             }
           ],
           "Consequent": {
@@ -91,7 +71,6 @@
           "RequiredParticipants": 1,
           "IsAction": true
         }
-
       ],
 
       "DoNothingAnticipatedInfluence": {
@@ -121,7 +100,7 @@
         "IncomeFromPickingMushrooms": 10000,
         "IncomeFromGreenTourism": 320000,
 
-        "TourismThreshold": 1000,
+        "TourismThreshold": 100,
         "FE_JobAvailable": true,
         "RequiredSavingsForGreenTourism": 200000,
 
@@ -446,22 +425,17 @@
           "RS1_L1_R1": {
             "G1": 0,
             "G2": 0
-          },
-          "RS1_L1_R2": {
-            "G1": 1000,
-            "G2": 1000
           }
 
         },
 
         "AssignedRules": [
-          "RS1_L1_R1",
-          "RS1_L1_R2"
+          "RS1_L1_R1"
         ],
 
         "AssignedGoals": [ "G1", "G2" ],
 
-        "GoalsState": {
+        "GoalState": {
           "G1": {
             "Importance": 0.5,
             "Value": 0
@@ -472,7 +446,7 @@
           }
         },
 
-        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R2" ]
+        "ActivatedRulesOnFirstIteration": [ "RS1_L1_R1" ]
       },
       {
         "PrototypeOfAgent": "HouseholdMember-Prototype",

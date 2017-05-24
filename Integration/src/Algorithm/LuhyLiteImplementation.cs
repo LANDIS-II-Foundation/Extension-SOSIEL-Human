@@ -26,6 +26,13 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
         private int externalIteration;
 
+        /// <summary>
+        /// Initializes Luhy lite implementation
+        /// </summary> 
+        /// <param name="numberOfIterations">Number of internal iterations</param>
+        /// <param name="configuration">Parsed agent configuration</param>
+        /// <param name="activeSites">Enumerable of active sites from Landis</param>
+        /// <param name="biomass">Active site biomass values which are updated each iteration</param>
         public LuhyLiteImplementation(int numberOfIterations,
             ConfigurationModel configuration,
             IEnumerable<ActiveSite> activeSites,
@@ -115,7 +122,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 }
                 else
                 {
-                    agent.InitialStateConfiguration.GoalState.ForEach(gs =>
+                    agent.InitialStateConfiguration.GoalsState.ForEach(gs =>
                     {
                         Goal goal = agent.AssignedGoals.First(g => g.Name == gs.Key);
 

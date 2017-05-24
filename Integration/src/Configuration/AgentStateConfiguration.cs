@@ -9,8 +9,11 @@ using Newtonsoft.Json;
 namespace Landis.Extension.SOSIELHuman.Configuration
 {
     using Enums;
-    
 
+
+    /// <summary>
+    /// Agent state configuration model. Used to parse section "InitialState.AgentsState".
+    /// </summary>
     public class AgentStateConfiguration
     {
         [JsonRequired]
@@ -35,7 +38,7 @@ namespace Landis.Extension.SOSIELHuman.Configuration
         public string[] ActivatedRulesOnFirstIteration { get; set; }
         
 
-        public Dictionary<string, GoalStateConfiguration> GoalState { get; set; }
+        public Dictionary<string, GoalStateConfiguration> GoalsState { get; set; }
 
         
         public string[] SocialNetwork { get; set; }

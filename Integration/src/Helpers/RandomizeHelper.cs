@@ -8,11 +8,21 @@ namespace Landis.Extension.SOSIELHuman.Helpers
 
     public static class RandomizeHelper
     {
+        /// <summary>
+        /// Returns one element using linear uniform distribution.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></par
         public static T RandomizeOne<T>(this IEnumerable<T> source)
         {
             return RandomizeOne(source.ToArray());
         }
 
+        /// <summary>
+        /// Returns one element using linear uniform distribution.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></par
         public static T RandomizeOne<T>(this IList<T> source)
         {
             int position = LinearUniformRandom.GetInstance.Next(source.Count);
@@ -20,6 +30,12 @@ namespace Landis.Extension.SOSIELHuman.Helpers
             return source[position];
         }
 
+        /// <summary>
+        /// Returns one element using linear uniform distribution.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public static T RandomizeOne<T>(this List<T> source)
         {
             int position = LinearUniformRandom.GetInstance.Next(source.Count);
@@ -42,6 +58,13 @@ namespace Landis.Extension.SOSIELHuman.Helpers
         }
 
 
+        /// <summary>
+        /// Shuffles elements using linear uniform distribution.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="original"></param>
+        /// <param name="randomize"></param>
+        /// <returns></returns>
         public static IEnumerable<T> Randomize<T>(this IEnumerable<T> original, bool randomize = true)
         {
             if (randomize)

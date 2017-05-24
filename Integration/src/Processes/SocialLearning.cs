@@ -9,6 +9,9 @@ namespace Landis.Extension.SOSIELHuman.Processes
     using Helpers;
 
 
+    /// <summary>
+    /// Social learning process implementation.
+    /// </summary>
     public class SocialLearning
     {
         /// <summary>

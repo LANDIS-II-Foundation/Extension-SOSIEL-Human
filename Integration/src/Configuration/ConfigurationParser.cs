@@ -26,6 +26,9 @@ namespace Landis.Extension.SOSIELHuman.Configuration
     {
         
 
+        /// <summary>
+        /// Contract resolver for setting properties with private set part. 
+        /// </summary>
         private class PrivateSetterContractResolver : DefaultContractResolver
         {
             protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
@@ -41,6 +44,9 @@ namespace Landis.Extension.SOSIELHuman.Configuration
         }
 
 
+        /// <summary>
+        /// Converter for casting integer numbers to int instead of decimal.
+        /// </summary>
         private class IntConverter : JsonConverter
         {
             public override bool CanConvert(Type objectType)
@@ -75,6 +81,11 @@ namespace Landis.Extension.SOSIELHuman.Configuration
             serializer.ContractResolver = new PrivateSetterContractResolver();
         }
 
+        /// <summary>
+        /// Parses all configuration file.
+        /// </summary>
+        /// <param name="jsonPath"></param>
+        /// <returns></returns>
         public static ConfigurationModel ParseConfiguration(string jsonPath)
         {
             if (File.Exists(jsonPath) == false)

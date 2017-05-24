@@ -2,6 +2,9 @@
 
 namespace Landis.Extension.SOSIELHuman.Randoms
 {
+    /// <summary>
+    /// Implementation of power law distribution random. Used transformation from linear uniform distribution to power law distribution.
+    /// </summary>
     public class PowerLawRandom
     {
         private static PowerLawRandom random;

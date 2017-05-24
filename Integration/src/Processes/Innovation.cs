@@ -10,6 +10,9 @@ namespace Landis.Extension.SOSIELHuman.Processes
     using Entities;
     using Randoms;
 
+    /// <summary>
+    /// Innovation process implementation.
+    /// </summary>
     public class Innovation
     {
         /// <summary>
