@@ -43,14 +43,26 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 }
                 else
                 {
-                    selected = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] >= 0 &&
-                        anticipatedInfluence[r][processedGoal] < goalState.DiffCurrentAndFocal).ToArray();
+                    Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] >= 0).ToArray();
+
+                    selected = temp.Where(r=> anticipatedInfluence[r][processedGoal] < goalState.DiffCurrentAndFocal).ToArray();
+
+                    if(selected.Length == 0)
+                    {
+                        selected = temp.Where(r => anticipatedInfluence[r][processedGoal] <= goalState.DiffCurrentAndFocal).ToArray();
+                    }
                 }
             }
             else
             {
-                selected = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] >= 0 &&
-                    anticipatedInfluence[r][processedGoal] > goalState.DiffCurrentAndFocal).ToArray();
+                Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] >= 0).ToArray();
+
+                selected = temp.Where(r=> anticipatedInfluence[r][processedGoal] > goalState.DiffCurrentAndFocal).ToArray();
+
+                if (selected.Length == 0)
+                {
+                    selected = temp.Where(r => anticipatedInfluence[r][processedGoal] >= goalState.DiffCurrentAndFocal).ToArray();
+                }
             }
 
             if (selected.Length > 0)
@@ -74,14 +86,27 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 }
                 else
                 {
-                    selected = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] <= 0 &&
-                        Math.Abs(anticipatedInfluence[r][processedGoal]) < Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+                    Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] <= 0).ToArray();
+
+                    selected = temp.Where(r => anticipatedInfluence[r][processedGoal] < Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+
+                    if (selected.Length == 0)
+                    {
+                        selected = temp.Where(r => anticipatedInfluence[r][processedGoal] <= Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+                    }
+                    
                 }
             }
             else
             {
-                selected = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] < 0 &&
-                    Math.Abs(anticipatedInfluence[r][processedGoal]) > Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+                Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] <= 0).ToArray();
+
+                selected = temp.Where(r => anticipatedInfluence[r][processedGoal] > Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+
+                if (selected.Length == 0)
+                {
+                    selected = temp.Where(r => anticipatedInfluence[r][processedGoal] >= Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+                }
             }
 
             if (selected.Length > 0)

@@ -28,6 +28,10 @@ namespace Landis.Extension.SOSIELHuman.Entities
             layers.ForEach(l => Add(l));
         }
 
+        /// <summary>
+        /// Adds layer to the rule set.
+        /// </summary>
+        /// <param name="layer"></param>
         public void Add(RuleLayer layer)
         {
             layerIndexer++;

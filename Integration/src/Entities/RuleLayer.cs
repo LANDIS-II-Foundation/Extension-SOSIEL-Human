@@ -28,13 +28,28 @@ namespace Landis.Extension.SOSIELHuman.Entities
             rules.ForEach(r => Add(r));
         }
 
-        public void Add(Rule Rule)
+        /// <summary>
+        /// Adds rule to the rule set layer.
+        /// </summary>
+        /// <param name="rule"></param>
+        public void Add(Rule rule)
         {
             RuleIndexer++;
-            Rule.RulePositionNumber = RuleIndexer;
-            Rule.Layer = this;
+            rule.RulePositionNumber = RuleIndexer;
+            rule.Layer = this;
+           
+            Rules.Add(rule);
+        }
 
-            Rules.Add(Rule);
+        /// <summary>
+        /// Removes rule from rule set layer.
+        /// </summary>
+        /// <param name="rule"></param>
+        public void Remove(Rule rule)
+        {
+            rule.Layer = null;
+
+            Rules.Remove(rule);
         }
 
         public int CompareTo(RuleLayer other)

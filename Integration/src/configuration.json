@@ -135,7 +135,7 @@
         {
           "Name": "G3",
           "Tendency": "AboveMin",
-          "ReferenceVariable": "Income",
+          "ReferenceVariable": "TotalIncome",
           "FocalValue": 0,
           "ChangeFocalValueOnPrevious": true,
           "FocalValueReference": ""
@@ -144,7 +144,7 @@
         {
           "Name": "G4",
           "Tendency": "BelowMax",
-          "ReferenceVariable": "Expenses",
+          "ReferenceVariable": "TotalExpenses",
           "FocalValue": 0,
           "ChangeFocalValueOnPrevious": true,
           "FocalValueReference": ""

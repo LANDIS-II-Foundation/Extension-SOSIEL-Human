@@ -5,7 +5,7 @@ namespace Landis.Extension.SOSIELHuman.Helpers
     /// <summary>
     /// Contains variable names used in code.
     /// </summary>
-    public static class VariablesUsedInCode
+    public static partial class VariablesUsedInCode
     {
         public const string AgentType = "AgentType";
 
@@ -23,9 +23,13 @@ namespace Landis.Extension.SOSIELHuman.Helpers
         public const string TourismThreshold = "TourismThreshold";
 
 
-        public const string Income = "Income";
-        public const string Expenses = "Expenses";
-        public const string Savings = "Savings";
+        public const string AgentIncome = "Income";
+        public const string AgentExpenses = "Expenses";
+        public const string AgentSavings = "Savings";
+
+        public const string TotalAgentIncome = "TotalIncome";
+        public const string TotalAgentExpenses = "TotalExpenses";
+        public const string TotalAgentSavings = "TotalSavings";
 
         public const string Household = "Household";
         public const string HouseholdIncome = "HouseholdIncome";

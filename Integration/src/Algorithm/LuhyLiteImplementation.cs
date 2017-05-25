@@ -237,9 +237,13 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
             hmAgents.ForEach(agent =>
             {
 
-                agent[VariablesUsedInCode.Income] = 0d;
-                agent[VariablesUsedInCode.Expenses] = 0d;
-                agent[VariablesUsedInCode.Savings] = 0d;
+                agent[VariablesUsedInCode.AgentIncome] = 0d;
+                agent[VariablesUsedInCode.AgentExpenses] = 0d;
+                agent[VariablesUsedInCode.AgentSavings] = 0d;
+
+                agent[VariablesUsedInCode.TotalAgentIncome] = 0d;
+                agent[VariablesUsedInCode.TotalAgentExpenses] = 0d;
+                agent[VariablesUsedInCode.TotalAgentSavings] = 0d;
 
                 agent[VariablesUsedInCode.HouseholdSavings] = 0d;
             });
@@ -281,8 +285,8 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
             hmAgents.GroupBy(agent => agent[VariablesUsedInCode.Household]).ForEach(householdAgents =>
             {
-                double householdIncome = householdAgents.Sum(agent => (double)agent[VariablesUsedInCode.Income]);
-                double householdExpenses = householdAgents.Sum(agent => (double)agent[VariablesUsedInCode.Expenses]);
+                double householdIncome = householdAgents.Sum(agent => (double)agent[VariablesUsedInCode.AgentIncome]);
+                double householdExpenses = householdAgents.Sum(agent => (double)agent[VariablesUsedInCode.AgentExpenses]);
                 double householdSavings = householdIncome - householdExpenses;
 
                 householdAgents.ForEach(agent =>
@@ -339,6 +343,15 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 //reduce biomass
                 biomass[site] -= profit;
             }
+
+
+            if(agent[VariablesUsedInCode.AgentType] == "Type2")
+            {
+                //accumulate total variable values
+                agent[VariablesUsedInCode.TotalAgentIncome] += agent[VariablesUsedInCode.AgentIncome];
+                agent[VariablesUsedInCode.TotalAgentExpenses] += agent[VariablesUsedInCode.AgentExpenses];
+                agent[VariablesUsedInCode.TotalAgentSavings] += (agent[VariablesUsedInCode.AgentIncome] - agent[VariablesUsedInCode.AgentExpenses]);
+            }
         }
 
         /// <summary>
@@ -394,6 +407,37 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 };
 
                 WriteToCSVHelper.AppendTo(string.Format("SOSIELHuman_{0}_rules.csv", agent.Id), ruleUsage);
+            });
+        }
+
+        protected override void Maintenance()
+        {
+            base.Maintenance();
+
+            //increase household members age
+            IEnumerable<IAgent> householdMembers = agentList.GetAgentsWithPrefix("HM");
+            householdMembers.ForEach(member =>
+            {
+                member[VariablesUsedInCode.Age] += 1;
+            });
+
+
+            //clean up unassigned rules
+            agentList.Prototypes.ForEach(prototype =>
+            {
+                IEnumerable<IAgent> agents = agentList.GetAgentsWithPrefix(prototype.NamePrefix);
+
+                IEnumerable<Rule> prototypeRules = prototype.MentalProto.SelectMany(mental => mental.AsRuleEnumerable());
+                IEnumerable<Rule> assignedRules = agents.SelectMany(agent => agent.AssignedRules).Distinct();
+
+                IEnumerable<Rule> unassignedRules = prototypeRules.Except(assignedRules);
+
+                unassignedRules.ForEach(rule =>
+                {
+                    var layer = rule.Layer;
+
+                    layer.Remove(rule);
+                });
             });
         }
     }
