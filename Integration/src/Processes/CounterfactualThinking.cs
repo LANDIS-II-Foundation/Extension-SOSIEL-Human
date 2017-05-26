@@ -24,7 +24,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
         Rule activatedRule;
 
         #region Specific logic for tendencies
-        protected override void AboveMin()
+        protected override void EqualToOrAboveFocalValue()
         {
             Rule[] rules = anticipatedInfluences.Where(kvp=> matchedRules.Contains(kvp.Key))
                 .Where(kvp => kvp.Value[selectedGoal] >= 0 && kvp.Value[selectedGoal] > selectedGoalState.DiffCurrentAndFocal).Select(kvp => kvp.Key).ToArray();
@@ -42,7 +42,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
             }
         }
 
-        protected override void BelowMax()
+        protected override void BelowFocalValue()
         {
             Rule[] rules = anticipatedInfluences.Where(kvp => matchedRules.Contains(kvp.Key))
                 .Where(kvp => kvp.Value[selectedGoal] < 0 && Math.Abs(kvp.Value[selectedGoal]) > Math.Abs(selectedGoalState.DiffCurrentAndFocal)).Select(kvp => kvp.Key).ToArray();

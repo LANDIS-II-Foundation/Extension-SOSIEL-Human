@@ -11,6 +11,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
     {
         public double Value { get; set; }
 
+        public double PriorValue { get; private set; }
+
         public double FocalValue { get; set; }
 
         public double DiffCurrentAndFocal { get; set; }
@@ -33,7 +35,10 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         public GoalState(double value, double focalValue, double importance)
         {
+            //value will be changed in AL
             Value = value;
+            PriorValue = value;
+
             FocalValue = focalValue;
             Importance = importance;
             Confidence = true;

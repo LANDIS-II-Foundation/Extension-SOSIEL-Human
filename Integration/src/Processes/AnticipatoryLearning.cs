@@ -105,13 +105,13 @@ namespace Landis.Extension.SOSIELHuman.Processes
         }
 
         #region Specific logic for tendencies
-        protected override void AboveMin()
+        protected override void EqualToOrAboveFocalValue()
         {
-            if (currentGoalState.DiffCurrentAndFocal <= 0)
+            if (currentGoalState.DiffCurrentAndFocal < 0)
             {
                 currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
 
-                if (currentGoalState.DiffCurrentAndFocal > currentGoalState.DiffPriorAndFocal)
+                if (currentGoalState.Value > currentGoalState.PriorValue)
                 {
                     currentGoalState.Confidence = true;
                 }
@@ -127,13 +127,13 @@ namespace Landis.Extension.SOSIELHuman.Processes
             }
         }
 
-        protected override void BelowMax()
+        protected override void BelowFocalValue()
         {
             if (currentGoalState.DiffCurrentAndFocal > 0)
             {
                 currentGoalState.AnticipatedDirection = AnticipatedDirection.Down;
 
-                if (currentGoalState.DiffCurrentAndFocal > currentGoalState.DiffPriorAndFocal)
+                if (currentGoalState.Value > currentGoalState.PriorValue)
                 {
                     currentGoalState.Confidence = true;
                 }

@@ -30,7 +30,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
         Rule ruleForActivating;
 
         #region Specific logic for tendencies
-        protected override void AboveMin()
+        protected override void EqualToOrAboveFocalValue()
         {
             Rule[] selected = new Rule[] { };
 
@@ -73,7 +73,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
             }
         }
 
-        protected override void BelowMax()
+        protected override void BelowFocalValue()
         {
             Rule[] selected = new Rule[] { };
 
