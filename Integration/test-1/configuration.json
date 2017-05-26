@@ -25,9 +25,7 @@
           "Name": "G2",
           "Tendency": "EqualToOrAboveFocalValue",
           "ReferenceVariable": "AverageBiomass",
-          "FocalValue": 0,
-          "ChangeFocalValueOnPrevious": true,
-          "ReductionPercent": 0.4,
+          "FocalValue": 20000,
           "FocalValueReference": ""
         }
       ],
@@ -135,7 +133,7 @@
         {
           "Name": "G3",
           "Tendency": "EqualToOrAboveFocalValue",
-          "ReferenceVariable": "TotalIncome",
+          "ReferenceVariable": "Income",
           "FocalValue": 0,
           "ChangeFocalValueOnPrevious": true,
           "FocalValueReference": ""
@@ -144,7 +142,7 @@
         {
           "Name": "G4",
           "Tendency": "BelowFocalValue",
-          "ReferenceVariable": "TotalExpenses",
+          "ReferenceVariable": "Expenses",
           "FocalValue": 0,
           "ChangeFocalValueOnPrevious": true,
           "FocalValueReference": ""

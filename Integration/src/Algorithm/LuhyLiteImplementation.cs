@@ -72,7 +72,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 AgentState agentState = AgentState.Create(agent.Prototype.IsSiteOriented);
 
 
-                //randomly generates goal importance
+                //randomly generate goal importance
                 if (configuration.InitialState.GenerateGoalImportance)
                 {
                     double unadjustedProportion = 1;
@@ -241,9 +241,9 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 agent[VariablesUsedInCode.AgentExpenses] = 0d;
                 agent[VariablesUsedInCode.AgentSavings] = 0d;
 
-                agent[VariablesUsedInCode.TotalAgentIncome] = 0d;
-                agent[VariablesUsedInCode.TotalAgentExpenses] = 0d;
-                agent[VariablesUsedInCode.TotalAgentSavings] = 0d;
+                //agent[VariablesUsedInCode.TotalAgentIncome] = 0d;
+                //agent[VariablesUsedInCode.TotalAgentExpenses] = 0d;
+                //agent[VariablesUsedInCode.TotalAgentSavings] = 0d;
 
                 agent[VariablesUsedInCode.HouseholdSavings] = 0d;
             });
@@ -345,13 +345,13 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
             }
 
 
-            if(agent[VariablesUsedInCode.AgentType] == "Type2")
-            {
-                //accumulate total variable values
-                agent[VariablesUsedInCode.TotalAgentIncome] += agent[VariablesUsedInCode.AgentIncome];
-                agent[VariablesUsedInCode.TotalAgentExpenses] += agent[VariablesUsedInCode.AgentExpenses];
-                agent[VariablesUsedInCode.TotalAgentSavings] += (agent[VariablesUsedInCode.AgentIncome] - agent[VariablesUsedInCode.AgentExpenses]);
-            }
+            //if(agent[VariablesUsedInCode.AgentType] == "Type2")
+            //{
+            //    //accumulate total variable values
+            //    agent[VariablesUsedInCode.TotalAgentIncome] += agent[VariablesUsedInCode.AgentIncome];
+            //    agent[VariablesUsedInCode.TotalAgentExpenses] += agent[VariablesUsedInCode.AgentExpenses];
+            //    agent[VariablesUsedInCode.TotalAgentSavings] += (agent[VariablesUsedInCode.AgentIncome] - agent[VariablesUsedInCode.AgentExpenses]);
+            //}
         }
 
         /// <summary>
