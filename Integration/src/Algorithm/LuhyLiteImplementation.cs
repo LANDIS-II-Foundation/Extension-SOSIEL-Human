@@ -260,6 +260,15 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
             //call default implementation
             base.PreIterationCalculations(iteration);
 
+
+            //calculate biomass for each site
+            foreach(ActiveSite site in activeSites)
+            {
+                biomass[site] = ComputeLivingBiomass(site);
+            }
+
+
+
             //----
             //calculate tourism value
             double averageBiomass = biomass.Values.Average();
@@ -279,24 +288,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
             });
 
 
-            //----
-            //calculate household values (income, expenses, savings) for each agent in specific household
-            var hmAgents = agentList.GetAgentsWithPrefix("HM");
-
-            hmAgents.GroupBy(agent => agent[VariablesUsedInCode.Household]).ForEach(householdAgents =>
-            {
-                double householdIncome = householdAgents.Sum(agent => (double)agent[VariablesUsedInCode.AgentIncome]);
-                double householdExpenses = householdAgents.Sum(agent => (double)agent[VariablesUsedInCode.AgentExpenses]);
-                double householdSavings = householdIncome - householdExpenses;
-
-                householdAgents.ForEach(agent =>
-                {
-                    agent[VariablesUsedInCode.HouseholdIncome] = householdIncome;
-                    agent[VariablesUsedInCode.HouseholdExpenses] = householdExpenses;
-                    //accumulate savings
-                    agent[VariablesUsedInCode.HouseholdSavings] += householdSavings;
-                });
-            });
+            
 
         }
 
@@ -335,8 +327,10 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
             if (agent[VariablesUsedInCode.AgentType] == "Type1")
             {
+                double reductionPercent = agent[VariablesUsedInCode.ReductionPercentage] / 100d;
+
                 //compute profit
-                double profit = biomass[site] * agent[VariablesUsedInCode.ReductionPercentage] / 100d;
+                double profit = ReduceBiomass(site, reductionPercent);
                 //add computed profit to total profit
                 agent[VariablesUsedInCode.Profit] += profit;
 
@@ -344,15 +338,32 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 biomass[site] -= profit;
             }
 
-
-            //if(agent[VariablesUsedInCode.AgentType] == "Type2")
-            //{
-            //    //accumulate total variable values
-            //    agent[VariablesUsedInCode.TotalAgentIncome] += agent[VariablesUsedInCode.AgentIncome];
-            //    agent[VariablesUsedInCode.TotalAgentExpenses] += agent[VariablesUsedInCode.AgentExpenses];
-            //    agent[VariablesUsedInCode.TotalAgentSavings] += (agent[VariablesUsedInCode.AgentIncome] - agent[VariablesUsedInCode.AgentExpenses]);
-            //}
         }
+
+        protected override void PostIterationCalculations(int iteration)
+        {
+            base.PostIterationCalculations(iteration);
+
+            //----
+            //calculate household values (income, expenses, savings) for each agent in specific household
+            var hmAgents = agentList.GetAgentsWithPrefix("HM");
+
+            hmAgents.GroupBy(agent => agent[VariablesUsedInCode.Household]).ForEach(householdAgents =>
+            {
+                double householdIncome = householdAgents.Sum(agent => (double)agent[VariablesUsedInCode.AgentIncome]);
+                double householdExpenses = householdAgents.Sum(agent => (double)agent[VariablesUsedInCode.AgentExpenses]);
+                double householdSavings = householdIncome - householdExpenses;
+
+                householdAgents.ForEach(agent =>
+                {
+                    agent[VariablesUsedInCode.HouseholdIncome] = householdIncome;
+                    agent[VariablesUsedInCode.HouseholdExpenses] = householdExpenses;
+                    //accumulate savings
+                    agent[VariablesUsedInCode.HouseholdSavings] += householdSavings;
+                });
+            });
+        }
+
 
         /// <summary>
         /// Executed after PostIterationCalculations. Here we can collect all output data.
@@ -439,6 +450,39 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                     layer.Remove(rule);
                 });
             });
+        }
+
+        private double ComputeLivingBiomass(ActiveSite site)
+        {
+            int total = 0;
+
+            ISiteCohorts siteCohorts = SiteVars.Cohorts[site];
+
+            if (siteCohorts != null)
+                foreach (ISpeciesCohorts speciesCohorts in siteCohorts)
+                    foreach (ICohort cohort in speciesCohorts)
+                        total += (int)(cohort.Biomass);
+            //total += ComputeBiomass(speciesCohorts);
+            return total;
+        }
+
+
+        /// <summary>
+        /// Reduces biomass 
+        /// </summary>
+        /// <param name="site"></param>
+        /// <param name="reductionPercent"></param>
+        /// <returns>Returns agent </returns>
+        private double ReduceBiomass(ActiveSite site, double reductionPercent)
+        {
+            double initialBiomass = biomass[site];
+
+            PartialDisturbance.ReduceCohortBiomass(site, reductionPercent);
+
+            //calculate new biomass value
+            double reducedBiomass = ComputeLivingBiomass(site);
+
+            return initialBiomass - reducedBiomass;
         }
     }
 }

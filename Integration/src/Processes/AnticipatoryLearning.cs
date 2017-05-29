@@ -89,7 +89,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
                     yield return nextGoal;
                 }
 
-                Goal[] otherGoals = goals.Where(kvp => kvp.Value.Importance == 0 || (int)Math.Round(kvp.Value.AdjustedImportance * 100) == 0)
+                Goal[] otherGoals = goals.Where(kvp => (int)Math.Round(kvp.Value.AdjustedImportance * 100) == 0)
                     .OrderByDescending(kvp => kvp.Key.RankingEnabled).Select(kvp => kvp.Key).ToArray();
 
                 foreach (Goal goal in otherGoals)

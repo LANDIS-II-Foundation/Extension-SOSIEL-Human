@@ -1,3 +1,9 @@
+Integration 1.0.3.6360 2017-05-30
+
+New features:
+ - Biomass reduction moved to the SOSIEL algorithm for avoiding biomass reduction differences.
+
+
 Integration 1.0.2.6359 2017-05-29
 
 New features:
