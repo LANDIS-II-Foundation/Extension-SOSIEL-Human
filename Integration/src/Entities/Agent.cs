@@ -301,18 +301,40 @@ namespace Landis.Extension.SOSIELHuman.Entities
         /// <returns></returns>
         public bool Equals(Agent other)
         {
-            return other!= null && Id == other.Id;
+            return ReferenceEquals(this, other) 
+                || (other!= null && Id == other.Id);
         }
 
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Agent);
+            return base.Equals(obj) || Equals(obj as Agent);
         }
 
         public override int GetHashCode()
         {
             return 0;
+        }
+
+        public static bool operator ==(Agent a, Agent b)
+        {
+            if (Object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if (((object)a == null) || ((object)b == null))
+            {
+                return false;
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Agent a, Agent b)
+        {
+            return !(a == b);
         }
     }
 }

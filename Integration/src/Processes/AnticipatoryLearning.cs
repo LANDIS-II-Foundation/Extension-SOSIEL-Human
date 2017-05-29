@@ -37,8 +37,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 {
                     var noConfidenceProportions = noConfidenceGoals.Select(kvp => new
                     {
-                        Proportion = kvp.Value.Importance * (1 + Math.Abs(kvp.Value.DiffPriorAndCurrent)
-                                / (string.IsNullOrEmpty(kvp.Key.FocalValueReference) ? kvp.Value.FocalValue : (double)agent[kvp.Key.FocalValueReference])),
+                        Proportion = kvp.Value.Importance * (1 + CalculateNormalizedValue(agent, kvp.Key, kvp.Value)),
                         Goal = kvp.Key
                     }).ToArray();
 
@@ -74,7 +73,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
                 goals.ForEach(kvp =>
                 {
-                    int numberOfInsertions = Convert.ToInt32(Math.Round(kvp.Value.AdjustedImportance * 100));
+                    int numberOfInsertions = (int)Math.Round(kvp.Value.AdjustedImportance * 100);
 
                     for (int i = 0; i < numberOfInsertions; i++) { vector.Add(kvp.Key); }
                 });
@@ -90,7 +89,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
                     yield return nextGoal;
                 }
 
-                Goal[] otherGoals = goals.Where(kvp => kvp.Value.Importance == 0)
+                Goal[] otherGoals = goals.Where(kvp => kvp.Value.Importance == 0 || (int)Math.Round(kvp.Value.AdjustedImportance * 100) == 0)
                     .OrderByDescending(kvp => kvp.Key.RankingEnabled).Select(kvp => kvp.Key).ToArray();
 
                 foreach (Goal goal in otherGoals)
@@ -103,6 +102,46 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 yield return goals.Keys.First();
             }
         }
+
+        /// <summary>
+        /// Calculates normalized value for goal prioritizing.
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="goal"></param>
+        /// <param name="goalState"></param>
+        /// <returns></returns>
+        double CalculateNormalizedValue(IAgent agent, Goal goal, GoalState goalState)
+        {
+            double maxPossibleDifference = 0;
+
+
+            RuleLayerConfiguration layerConfiguration = agent.AssignedRules.Where(rule => rule.Consequent.Param == goal.ReferenceVariable && (rule.Layer.LayerConfiguration.ConsequentValueInterval != null && rule.Layer.LayerConfiguration.ConsequentValueInterval.Length == 2))
+                .Select(rule => rule.Layer.LayerConfiguration).FirstOrDefault();
+
+            if(layerConfiguration != null)
+            {
+                maxPossibleDifference = Math.Max(Math.Abs(layerConfiguration.MaxValue(agent) - goalState.Value), Math.Abs(layerConfiguration.MinValue(agent) - goalState.Value));
+            }
+            else
+            {
+                if (goal.Tendency == "EqualToOrAboveFocalValue")
+                {
+                    maxPossibleDifference = (string.IsNullOrEmpty(goal.FocalValueReference) ? goalState.FocalValue : (double)agent[goal.FocalValueReference]);
+                }
+
+                if(goal.Tendency == "BelowFocalValue")
+                {
+                    double maxValue = agent.AssignedRules.Where(rule => rule.Consequent.Param == goal.ReferenceVariable)
+                        .Select(rule => string.IsNullOrEmpty(rule.Consequent.VariableValue) ? (double)rule.Consequent.Value : (double)agent[rule.Consequent.VariableValue])
+                        .Max();
+
+                    maxPossibleDifference = maxValue - goalState.PriorValue;
+                }
+            }
+
+            return Math.Abs(goalState.DiffPriorAndCurrent) / maxPossibleDifference;
+        }
+
 
         #region Specific logic for tendencies
         protected override void EqualToOrAboveFocalValue()

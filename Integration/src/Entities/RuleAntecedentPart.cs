@@ -8,9 +8,9 @@ namespace Landis.Extension.SOSIELHuman.Entities
     using Environments;
     using Helpers;
 
-    public class RuleAntecedentPart : ICloneable<RuleAntecedentPart>
+    public class RuleAntecedentPart : ICloneable<RuleAntecedentPart>, IEquatable<RuleAntecedentPart>
     {
-        
+
 
         private Func<dynamic, dynamic, dynamic> antecedent;
 
@@ -85,6 +85,52 @@ namespace Landis.Extension.SOSIELHuman.Entities
             newAntecedent.Value = newConst;
 
             return newAntecedent;
+        }
+
+        /// <summary>
+        /// Compares two RuleAntecedentPart objects
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool Equals(RuleAntecedentPart other)
+        {
+            //check on reference equality first
+            //custom logic for comparing two objects
+            return ReferenceEquals(this, other) 
+                || (other != null && Param == other.Param && Sign == other.Sign && Value == other.Value && ReferenceVariable == other.ReferenceVariable);
+        }
+
+        public override bool Equals(object obj)
+        {
+            //check on reference equality first
+            return base.Equals(obj) || Equals(obj as RuleAntecedentPart);
+        }
+
+        public override int GetHashCode()
+        {
+            //disable comparing by hash code
+            return 0;
+        }
+
+        public static bool operator ==(RuleAntecedentPart a, RuleAntecedentPart b)
+        {
+            if (Object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if (((object)a == null) || ((object)b == null))
+            {
+                return false;
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(RuleAntecedentPart a, RuleAntecedentPart b)
+        {
+            return !(a == b);
         }
     }
 }

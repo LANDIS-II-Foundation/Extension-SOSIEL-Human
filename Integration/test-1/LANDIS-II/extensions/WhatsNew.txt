@@ -1,0 +1,7 @@
+Integration 1.0.2.6359 2017-05-29
+
+New features:
+ - Implemented the rule equality checking for avoiding creating a lot of similar rules
+ - Implemented additional cases to calculate normalized difference in goal prioritization method
+
+  

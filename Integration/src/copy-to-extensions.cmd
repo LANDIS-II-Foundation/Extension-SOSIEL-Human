@@ -1,11 +1,13 @@
 @echo off
 
-rem  Set environment variables about specific library
 set sourceDir=%1
+set SolutionDir=%2
 
-set targetDir=C:\Program Files\LANDIS-II\v6\bin\extensions
+set targetDir=%SolutionDir%..\test-1\LANDIS-II\extensions\
 
-set files=Landis.Extension.SosielHuman.dll CsvHelper.dll Newtonsoft.Json.dll
+echo %targetDir%
+
+set files=Landis.Extension.SosielHuman.dll CsvHelper.dll Newtonsoft.Json.dll WhatsNew.txt
  
 (for %%a in (%files%) do ( 
    xcopy /Q /Y "%sourceDir%\%%a" "%targetDir%"

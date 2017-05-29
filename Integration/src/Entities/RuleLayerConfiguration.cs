@@ -43,7 +43,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
         }
 
         /// <summary>
-        /// Gets consequent min value
+        /// Gets min consequent value
         /// </summary>
         /// <param name="agent"></param>
         /// <returns></returns>
@@ -60,7 +60,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
         }
 
         /// <summary>
-        /// Gets consequent max value
+        /// Gets max consequent value
         /// </summary>
         /// <param name="agent"></param>
         /// <returns></returns>

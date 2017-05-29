@@ -63,7 +63,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
 
         /// <summary>
-        /// Transformation from rule list to rule sets
+        /// Transforms from rule list to rule sets
         /// </summary>
         /// <returns></returns>
         private List<RuleSet> TransformRulesToRuleSets()
@@ -79,7 +79,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
 
         /// <summary>
-        /// Add rule to rule scope of current prototype
+        /// Adds rule to rule scope of current prototype if it isn't exists in the scope.
         /// </summary>
         /// <param name="newRule"></param>
         /// <param name="layer"></param>
@@ -94,9 +94,19 @@ namespace Landis.Extension.SOSIELHuman.Entities
         }
 
 
+        /// <summary>
+        /// Checks for similar rules
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <returns></returns>
+        public bool IsSimilarRuleExists(Rule rule)
+        {
+            return Rules.Any(r => r == rule);
+        }
+
 
         /// <summary>
-        /// Add do nothing rule to each rule set and rule layer
+        /// Adds do nothing rule to each rule set and rule layer
         /// </summary>
         /// <returns>Returns created rule ids</returns>
         public IEnumerable<string> AddDoNothingRules()

@@ -7,7 +7,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
     using Environments;
     using Helpers;
 
-    public class Rule : ICloneable<Rule>
+    public class Rule : ICloneable<Rule>, IEquatable<Rule>
     {
 
 
@@ -160,6 +160,50 @@ namespace Landis.Extension.SOSIELHuman.Entities
             return newRule;
         }
 
+        /// <summary>
+        /// Compares two Rule objects
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool Equals(Rule other)
+        {
+            //check on reference equality first
+            //custom logic for comparing two objects
+            return ReferenceEquals(this, other) 
+                || (other != null && Consequent == other.Consequent && Antecedent.All(ant => other.Antecedent.Any(ant2 => ant == ant2)));
+        }
 
+        public override bool Equals(object obj)
+        {
+            //check on reference equality first
+            return base.Equals(obj) || Equals(obj as Rule);
+        }
+
+        public override int GetHashCode()
+        {
+            //disable comparing by hash code
+            return 0;
+        }
+
+        public static bool operator ==(Rule a, Rule b)
+        {
+            if (Object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if (((object)a == null) || ((object)b == null))
+            {
+                return false;
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Rule a, Rule b)
+        {
+            return !(a == b);
+        }
     }
 }
