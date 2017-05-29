@@ -42,7 +42,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
             }
         }
 
-        protected override void BelowFocalValue()
+        protected override void EqualToOrBelowFocalValue()
         {
             Rule[] rules = anticipatedInfluences.Where(kvp => matchedRules.Contains(kvp.Key))
                 .Where(kvp => kvp.Value[selectedGoal] < 0 && Math.Abs(kvp.Value[selectedGoal]) > Math.Abs(selectedGoalState.DiffCurrentAndFocal)).Select(kvp => kvp.Key).ToArray();

@@ -129,7 +129,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
                     maxPossibleDifference = (string.IsNullOrEmpty(goal.FocalValueReference) ? goalState.FocalValue : (double)agent[goal.FocalValueReference]);
                 }
 
-                if(goal.Tendency == "BelowFocalValue")
+                if(goal.Tendency == "EqualToOrBelowFocalValue")
                 {
                     double maxValue = agent.AssignedRules.Where(rule => rule.Consequent.Param == goal.ReferenceVariable)
                         .Select(rule => string.IsNullOrEmpty(rule.Consequent.VariableValue) ? (double)rule.Consequent.Value : (double)agent[rule.Consequent.VariableValue])
@@ -166,7 +166,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
             }
         }
 
-        protected override void BelowFocalValue()
+        protected override void EqualToOrBelowFocalValue()
         {
             if (currentGoalState.DiffCurrentAndFocal > 0)
             {

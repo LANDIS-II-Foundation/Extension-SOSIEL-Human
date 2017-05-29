@@ -8,7 +8,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
     public abstract class VolatileProcess
     {
         protected abstract void EqualToOrAboveFocalValue();
-        protected abstract void BelowFocalValue();
+        protected abstract void EqualToOrBelowFocalValue();
         protected abstract void Maximize();
 
 
@@ -19,8 +19,8 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 case "EqualToOrAboveFocalValue":
                     EqualToOrAboveFocalValue();
                     break;
-                case "BelowFocalValue":
-                    BelowFocalValue();
+                case "EqualToOrBelowFocalValue":
+                    EqualToOrBelowFocalValue();
                     break;
                 case "Maximize":
                     Maximize();

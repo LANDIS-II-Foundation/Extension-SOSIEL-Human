@@ -141,7 +141,7 @@
         },
         {
           "Name": "G4",
-          "Tendency": "BelowFocalValue",
+          "Tendency": "EqualToOrBelowFocalValue",
           "ReferenceVariable": "Expenses",
           "FocalValue": 0,
           "ChangeFocalValueOnPrevious": true,

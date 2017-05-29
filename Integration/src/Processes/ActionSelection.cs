@@ -73,7 +73,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
             }
         }
 
-        protected override void BelowFocalValue()
+        protected override void EqualToOrBelowFocalValue()
         {
             Rule[] selected = new Rule[] { };
 
