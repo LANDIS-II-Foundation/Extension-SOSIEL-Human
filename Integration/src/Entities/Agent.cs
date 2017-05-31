@@ -16,14 +16,11 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         private Dictionary<string, dynamic> privateVariables { get; set; }
 
-
         public string Id { get { return Prototype.NamePrefix + id; } }
 
         public AgentPrototype Prototype { get; private set; }
 
         public List<IAgent> ConnectedAgents { get; set; }
-
-        public Dictionary<Rule, Dictionary<Goal, double>> OldAnticipationInfluence { get; private set; }
 
         public Dictionary<Rule, Dictionary<Goal, double>> AnticipationInfluence { get; private set; }
 
@@ -49,7 +46,6 @@ namespace Landis.Extension.SOSIELHuman.Entities
         {
             privateVariables = new Dictionary<string, dynamic>();
             ConnectedAgents = new List<IAgent>();
-            OldAnticipationInfluence = new Dictionary<Rule, Dictionary<Goal, double>>();
             AnticipationInfluence = new Dictionary<Rule, Dictionary<Goal, double>>();
             AssignedRules = new List<Rule>();
             AssignedGoals = new List<Goal>();
@@ -105,11 +101,6 @@ namespace Landis.Extension.SOSIELHuman.Entities
             agent.AssignedRules = new List<Rule>(AssignedRules);
 
             //copy ai
-            OldAnticipationInfluence.ForEach(kvp =>
-            {
-                agent.OldAnticipationInfluence.Add(kvp.Key, new Dictionary<Goal, double>(kvp.Value));
-            });
-
             AnticipationInfluence.ForEach(kvp =>
             {
                 agent.AnticipationInfluence.Add(kvp.Key, new Dictionary<Goal, double>(kvp.Value));
@@ -289,11 +280,6 @@ namespace Landis.Extension.SOSIELHuman.Entities
                 agent.AnticipationInfluence.Add(r, inner);
             });
 
-            //create ai copy 
-            agent.AnticipationInfluence.ForEach(kvp =>
-            {
-                agent.OldAnticipationInfluence.Add(kvp.Key, new Dictionary<Goal, double>(kvp.Value));
-            });
 
             agent.InitialStateConfiguration = agentConfiguration;
 

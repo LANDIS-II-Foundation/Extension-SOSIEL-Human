@@ -13,8 +13,6 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         List<IAgent> ConnectedAgents { get; }
 
-        Dictionary<Rule, Dictionary<Goal, double>> OldAnticipationInfluence { get; }
-
         Dictionary<Rule, Dictionary<Goal, double>> AnticipationInfluence { get; }
 
         List<Goal> AssignedGoals { get; }
