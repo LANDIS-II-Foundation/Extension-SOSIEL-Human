@@ -238,9 +238,9 @@ namespace Landis.Extension.SOSIELHuman.Processes
             if (selectedRule.IsCollectiveAction)
             {
                 //counting agents which selected this rule
-                int numberOfInvolvedAgents = activeAgents.Count(a=> lastIteration.Value[a].RuleHistories[site].Activated.Any(rule=> rule == selectedRule));
+                int numberOfInvolvedAgents = agent.ConnectedAgents.Count(a=> lastIteration.Value[a].RuleHistories[site].Activated.Any(rule=> rule == selectedRule));
 
-                int requiredParticipants = selectedRule.RequiredParticipants;
+                int requiredParticipants = selectedRule.RequiredParticipants - 1;
 
                 //add rule to blocked rules
                 if (numberOfInvolvedAgents < requiredParticipants)
