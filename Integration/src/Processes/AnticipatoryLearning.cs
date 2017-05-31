@@ -139,7 +139,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 }
             }
 
-            return Math.Abs(goalState.DiffPriorAndCurrent) / maxPossibleDifference;
+            return Math.Abs(goalState.DiffPriorAndCurrent / maxPossibleDifference);
         }
 
 
@@ -215,10 +215,9 @@ namespace Landis.Extension.SOSIELHuman.Processes
             AgentState currentIterationAgentState = lastIteration.Value[agent];
             AgentState previousIterationAgentState = lastIteration.Previous.Value[agent];
 
-            foreach (var kvp in previousIterationAgentState.GoalsState)
+            foreach (var goal in agent.AssignedGoals)
             {
-                Goal goal = kvp.Key;
-                GoalState prevGoalState = kvp.Value;
+                GoalState prevGoalState = previousIterationAgentState.GoalsState[goal];
 
                 currentGoalState = currentIterationAgentState.GoalsState[goal];
 

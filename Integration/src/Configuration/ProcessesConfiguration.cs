@@ -60,7 +60,7 @@ namespace Landis.Extension.SOSIELHuman.Configuration
                         ActionTakingEnabled = true,
                         AnticipatoryLearningEnabled = true,
                         RuleSelectionEnabled = true,
-                        AgentRandomizationEnabled = false
+                        AgentRandomizationEnabled = true
                     };
                 case CognitiveLevel.CL3:
                     return new ProcessesConfiguration
@@ -87,7 +87,7 @@ namespace Landis.Extension.SOSIELHuman.Configuration
                     };
 
                 default:
-                    throw new SosielAlgorithmException("Unlnown cognitive level");
+                    throw new SosielAlgorithmException("Unknown cognitive level");
             }
         }
     }

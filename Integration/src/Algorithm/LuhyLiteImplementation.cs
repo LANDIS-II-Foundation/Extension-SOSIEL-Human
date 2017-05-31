@@ -438,10 +438,10 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
             {
                 IEnumerable<IAgent> agents = agentList.GetAgentsWithPrefix(prototype.NamePrefix);
 
-                IEnumerable<Rule> prototypeRules = prototype.MentalProto.SelectMany(mental => mental.AsRuleEnumerable());
+                IEnumerable<Rule> prototypeRules = prototype.MentalProto.SelectMany(mental => mental.AsRuleEnumerable()).ToArray();
                 IEnumerable<Rule> assignedRules = agents.SelectMany(agent => agent.AssignedRules).Distinct();
 
-                IEnumerable<Rule> unassignedRules = prototypeRules.Except(assignedRules);
+                IEnumerable<Rule> unassignedRules = prototypeRules.Except(assignedRules).ToArray();
 
                 unassignedRules.ForEach(rule =>
                 {
@@ -472,7 +472,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         /// </summary>
         /// <param name="site"></param>
         /// <param name="reductionPercent"></param>
-        /// <returns>Returns agent </returns>
+        /// <returns>Returns biomass reduction</returns>
         private double ReduceBiomass(ActiveSite site, double reductionPercent)
         {
             double initialBiomass = biomass[site];

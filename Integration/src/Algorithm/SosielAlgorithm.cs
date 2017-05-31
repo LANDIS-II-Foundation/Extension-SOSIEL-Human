@@ -136,6 +136,18 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 		{
 			agentList.ActiveAgents.ForEach(a =>
 			{
+                a.OldAnticipationInfluence.Clear();
+
+                //save the ai values as old values
+                a.AnticipationInfluence.ForEach(kvp =>
+                {
+                    a.OldAnticipationInfluence[kvp.Key] = new Dictionary<Goal, double>(kvp.Value);
+                });
+
+
+
+
+                //increment rule activation freshness
 				a.RuleActivationFreshness.Keys.ToArray().ForEach(k =>
 				{
 					a.RuleActivationFreshness[k] += 1;

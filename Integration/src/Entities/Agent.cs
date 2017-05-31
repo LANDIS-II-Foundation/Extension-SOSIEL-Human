@@ -10,11 +10,11 @@ namespace Landis.Extension.SOSIELHuman.Entities
     using Exceptions;
     using Helpers;
 
-    public class Agent: IAgent, ICloneable<Agent>, IEquatable<Agent>
+    public class Agent : IAgent, ICloneable<Agent>, IEquatable<Agent>
     {
         private int id;
 
-        private Dictionary<string, dynamic> privateVariables { get; set; } 
+        private Dictionary<string, dynamic> privateVariables { get; set; }
 
 
         public string Id { get { return Prototype.NamePrefix + id; } }
@@ -22,6 +22,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
         public AgentPrototype Prototype { get; private set; }
 
         public List<IAgent> ConnectedAgents { get; set; }
+
+        public Dictionary<Rule, Dictionary<Goal, double>> OldAnticipationInfluence { get; private set; }
 
         public Dictionary<Rule, Dictionary<Goal, double>> AnticipationInfluence { get; private set; }
 
@@ -32,27 +34,29 @@ namespace Landis.Extension.SOSIELHuman.Entities
         public Dictionary<Rule, int> RuleActivationFreshness { get; private set; }
 
         public AgentStateConfiguration InitialStateConfiguration { get; private set; }
-        
+
         public override string ToString()
         {
             return Id;
         }
 
-       
+
 
         /// <summary>
         /// Closed agent constructor
         /// </summary>
-        private Agent() {
+        private Agent()
+        {
             privateVariables = new Dictionary<string, dynamic>();
             ConnectedAgents = new List<IAgent>();
+            OldAnticipationInfluence = new Dictionary<Rule, Dictionary<Goal, double>>();
             AnticipationInfluence = new Dictionary<Rule, Dictionary<Goal, double>>();
             AssignedRules = new List<Rule>();
             AssignedGoals = new List<Goal>();
             RuleActivationFreshness = new Dictionary<Rule, int>();
         }
 
-        
+
         public virtual dynamic this[string key]
         {
             get
@@ -77,7 +81,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
                 if (Prototype.CommonVariables.ContainsKey(key))
                     Prototype[key] = value;
-                else 
+                else
                     privateVariables[key] = value;
 
                 PostSetValue(key, value);
@@ -99,7 +103,18 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
             agent.AssignedGoals = new List<Goal>(AssignedGoals);
             agent.AssignedRules = new List<Rule>(AssignedRules);
-            
+
+            //copy ai
+            OldAnticipationInfluence.ForEach(kvp =>
+            {
+                agent.OldAnticipationInfluence.Add(kvp.Key, new Dictionary<Goal, double>(kvp.Value));
+            });
+
+            AnticipationInfluence.ForEach(kvp =>
+            {
+                agent.AnticipationInfluence.Add(kvp.Key, new Dictionary<Goal, double>(kvp.Value));
+            });
+
             agent.RuleActivationFreshness = new Dictionary<Rule, int>(RuleActivationFreshness);
 
             return agent;
@@ -199,7 +214,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
             Dictionary<Goal, double> ai = anticipatedInfluence.Where(kvp => AssignedGoals.Contains(kvp.Key)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-            AnticipationInfluence[newRule] = ai;
+            AnticipationInfluence[newRule] = new Dictionary<Goal, double>(ai);
         }
 
         /// <summary>
@@ -274,8 +289,11 @@ namespace Landis.Extension.SOSIELHuman.Entities
                 agent.AnticipationInfluence.Add(r, inner);
             });
 
-
-
+            //create ai copy 
+            agent.AnticipationInfluence.ForEach(kvp =>
+            {
+                agent.OldAnticipationInfluence.Add(kvp.Key, new Dictionary<Goal, double>(kvp.Value));
+            });
 
             agent.InitialStateConfiguration = agentConfiguration;
 
@@ -301,8 +319,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
         /// <returns></returns>
         public bool Equals(Agent other)
         {
-            return ReferenceEquals(this, other) 
-                || (other!= null && Id == other.Id);
+            return ReferenceEquals(this, other)
+                || (other != null && Id == other.Id);
         }
 
 

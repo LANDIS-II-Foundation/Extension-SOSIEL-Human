@@ -8,6 +8,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
 {
     using Enums;
     using Entities;
+    using Helpers;
     using Randoms;
 
     /// <summary>
@@ -122,22 +123,71 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
                 Rule generatedRule = Rule.Renew(priorPeriodRule, antecedentList.ToArray(), consequent);
 
+
+                //change base ai values for the new rule
+                double consequentChangeProportion = (generatedRule.Consequent.Value - priorPeriodRule.Consequent.Value) / (double)priorPeriodRule.Consequent.Value;
+
+                
+                Dictionary<Goal, double> baseAI = agent.AnticipationInfluence[priorPeriodRule];
+
+                Dictionary<Goal, double> proportionalAI = new Dictionary<Goal, double>();
+
+
+
+                agent.AssignedGoals.ForEach(g =>
+                {
+                    double ai = baseAI[g];
+
+                    ConsequentRelationship relationship = RuleLayerConfiguration.ConvertSign(priorPeriodRule.Layer.LayerConfiguration.ConsequentRelationshipSign[g.Name]);
+
+                    double difference = Math.Abs(ai * consequentChangeProportion);
+
+
+                    switch(selectedGoalState.AnticipatedDirection)
+                    {
+                        case AnticipatedDirection.Up:
+                            {
+                                if (relationship == ConsequentRelationship.Positive)
+                                {
+                                    ai += difference;
+                                }
+                                else
+                                {
+                                    ai -= difference;
+                                }
+
+                                break;
+                            }
+                        case AnticipatedDirection.Down:
+                            {
+                                if (relationship == ConsequentRelationship.Positive)
+                                {
+                                    ai -= difference;
+                                }
+                                else
+                                {
+                                    ai += difference;
+                                }
+
+                                break;
+                            }
+                    }
+
+                    proportionalAI.Add(g, ai);
+                });
+
+
                 //add the generated rule to the prototype's mental model and assign one to the agent's mental model 
 
                 if(agent.Prototype.IsSimilarRuleExists(generatedRule) == false)
                 {
                     //add to the prototype and assign to current agent
-                    agent.AddRule(generatedRule, layer, agent.AnticipationInfluence[priorPeriodRule]);
+                    agent.AddRule(generatedRule, layer, proportionalAI);
                 }
                 else if(agent.AssignedRules.Any(rule => rule == generatedRule) == false)
                 {
                     //assign to current agent only
-                    agent.AssignNewRule(generatedRule, agent.AnticipationInfluence[priorPeriodRule]);
-                }
-                else
-                {
-                    //update ai only
-                    agent.AnticipationInfluence[generatedRule] = agent.AnticipationInfluence[priorPeriodRule];
+                    agent.AssignNewRule(generatedRule, proportionalAI);
                 }
 
 

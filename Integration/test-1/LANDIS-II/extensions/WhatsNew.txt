@@ -1,3 +1,10 @@
+Integration 1.0.4.6361 2017-05-31
+
+New features:
+ - Changed the formula of normalized difference (Normalized difference = |actual difference / max difference|)
+ - Added algorithm of generating new ai values for the new rule
+
+
 Integration 1.0.3.6360 2017-05-30
 
 New features:
