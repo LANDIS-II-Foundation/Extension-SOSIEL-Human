@@ -743,7 +743,7 @@
           "IsActive": true,
           "Age": 12,
           "Gender": "male",
-          "Disability": true
+          "Disability": false
         },
 
         "AnticipatedInfluenceState": {

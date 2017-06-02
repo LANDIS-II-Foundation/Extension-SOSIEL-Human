@@ -309,7 +309,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                                             BeforeActionSelection(agent, site);
 
                                             //action selection process part II
-                                            acts.ExecutePartII(agent, iterations.Last, rankedGoals[agent], layer.ToArray(), agentGroup, site);
+                                            acts.ExecutePartII(agent, iterations.Last, rankedGoals[agent], layer.ToArray(), site);
                                         }
                                     }
                                 }

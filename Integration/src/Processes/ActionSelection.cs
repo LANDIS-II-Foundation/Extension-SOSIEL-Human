@@ -221,10 +221,9 @@ namespace Landis.Extension.SOSIELHuman.Processes
         /// <param name="lastIteration"></param>
         /// <param name="rankedGoals"></param>
         /// <param name="processedRules"></param>
-        /// <param name="activeAgents">Same type agents</param>
         /// <param name="site"></param>
         public void ExecutePartII(IAgent agent, LinkedListNode<Dictionary<IAgent, AgentState>> lastIteration,
-            Goal[] rankedGoals, Rule[] processedRules, IEnumerable<IAgent> activeAgents, ActiveSite site)
+            Goal[] rankedGoals, Rule[] processedRules, ActiveSite site)
         {
             AgentState agentState = lastIteration.Value[agent];
 
@@ -250,6 +249,8 @@ namespace Landis.Extension.SOSIELHuman.Processes
                     history.Activated.Remove(selectedRule);
 
                     ExecutePartI(agent, lastIteration, rankedGoals, processedRules, site);
+
+                    ExecutePartII(agent, lastIteration, rankedGoals, processedRules, site);
                 }
             }
         }
