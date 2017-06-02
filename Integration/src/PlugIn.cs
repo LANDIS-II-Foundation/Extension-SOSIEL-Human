@@ -76,6 +76,10 @@ namespace Landis.Extension.SOSIELHuman
 
         public override void Initialize()
         {
+#if DEBUG
+            Debugger.Launch();
+#endif
+
             ModelCore.UI.WriteLine("Initializing {0}...", Name);
             SiteVars.Initialize();
 

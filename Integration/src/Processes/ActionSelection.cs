@@ -147,14 +147,15 @@ namespace Landis.Extension.SOSIELHuman.Processes
         #endregion
 
         /// <summary>
-        /// Shares collective action among connected agents
+        /// Shares collective action among same household agents
         /// </summary>
         /// <param name="currentAgent"></param>
         /// <param name="rule"></param>
         /// <param name="agentStates"></param>
         void ShareCollectiveAction(IAgent currentAgent, Rule rule, Dictionary<IAgent, AgentState> agentStates)
         {
-            foreach (IAgent neighbour in currentAgent.ConnectedAgents)
+            foreach (IAgent neighbour in currentAgent.ConnectedAgents
+                .Where(connected => connected[VariablesUsedInCode.Household] == currentAgent[VariablesUsedInCode.Household]))
             {
                 if (neighbour.AssignedRules.Contains(rule) == false)
                 {
@@ -252,7 +253,8 @@ namespace Landis.Extension.SOSIELHuman.Processes
             if (selectedRule.IsCollectiveAction)
             {
                 //counting agents which selected this rule
-                int numberOfInvolvedAgents = agent.ConnectedAgents.Count(a=> lastIteration.Value[a].RuleHistories[site].Activated.Any(rule=> rule == selectedRule));
+                int numberOfInvolvedAgents = agent.ConnectedAgents.Where(connected=> agent[VariablesUsedInCode.Household] == connected[VariablesUsedInCode.Household])
+                    .Count(a=> lastIteration.Value[a].RuleHistories[site].Activated.Any(rule=> rule == selectedRule));
 
                 int requiredParticipants = selectedRule.RequiredParticipants - 1;
 

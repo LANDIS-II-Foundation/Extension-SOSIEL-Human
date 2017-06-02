@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 
 [assembly: AssemblyTitle("Social Human Extension")]
-[assembly: AssemblyVersion("1.0.4.6361")]
+[assembly: AssemblyVersion("1.0.5.6363")]
 [assembly: AssemblyDescription("Social Extension for LANDIS-II")]
 [assembly: AssemblyCopyright("2017 Portland State University")]
 

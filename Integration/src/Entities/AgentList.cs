@@ -137,7 +137,7 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
                     agents.ForEach(agent =>
                     {
-                        agent.ConnectedAgents = agents.Where(a => a != agent).Cast<IAgent>().ToList();
+                        agent.ConnectedAgents.AddRange(agents.Where(a => a != agent).Cast<IAgent>());
                     });
 
                 });

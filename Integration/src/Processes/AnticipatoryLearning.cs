@@ -124,22 +124,21 @@ namespace Landis.Extension.SOSIELHuman.Processes
             }
             else
             {
-                if (goal.Tendency == "EqualToOrAboveFocalValue")
+                if (goal.Tendency == "EqualToOrAboveFocalValue" || goal.Tendency == "Maximize")
                 {
                     maxPossibleDifference = (string.IsNullOrEmpty(goal.FocalValueReference) ? goalState.FocalValue : (double)agent[goal.FocalValueReference]);
                 }
 
-                if(goal.Tendency == "Maximize")
-                {
-                    throw new NotImplementedException("Max possible difference is unknown for Maximize goal managing case (Calculating normalized difference)");
-                }
-
                 if (goal.Tendency == "Minimize")
                 {
-                    throw new NotImplementedException("Max possible difference is unknown for Minimize goal managing case (Calculating normalized difference)");
+                    double maxValue = agent.AssignedRules.Where(rule => rule.Consequent.Param == goal.ReferenceVariable)
+                        .Select(rule => string.IsNullOrEmpty(rule.Consequent.VariableValue) ? (double)rule.Consequent.Value : (double)agent[rule.Consequent.VariableValue])
+                        .Max();
+
+                    maxPossibleDifference = maxValue - goalState.PriorValue;
                 }
 
-                //if(goal.Tendency == "EqualToOrBelowFocalValue")
+                //if (goal.Tendency == "EqualToOrBelowFocalValue")
                 //{
                 //    double maxValue = agent.AssignedRules.Where(rule => rule.Consequent.Param == goal.ReferenceVariable)
                 //        .Select(rule => string.IsNullOrEmpty(rule.Consequent.VariableValue) ? (double)rule.Consequent.Value : (double)agent[rule.Consequent.VariableValue])
@@ -205,10 +204,12 @@ namespace Landis.Extension.SOSIELHuman.Processes
             {
                 if (currentGoalState.DiffPriorAndTwicePrior <= currentGoalState.DiffCurrentAndPrior)
                 {
+                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
                     currentGoalState.Confidence = true;
                 }
                 else
                 {
+                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
                     currentGoalState.Confidence = false;
                 }
 
@@ -218,10 +219,12 @@ namespace Landis.Extension.SOSIELHuman.Processes
             {
                 if(currentGoalState.PriorValue <= currentGoalState.Value)
                 {
+                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
                     currentGoalState.Confidence = true;
                 }
                 else
                 {
+                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
                     currentGoalState.Confidence = false;
                 }
             }
@@ -233,10 +236,12 @@ namespace Landis.Extension.SOSIELHuman.Processes
             {
                 if (currentGoalState.DiffPriorAndTwicePrior >= currentGoalState.DiffCurrentAndPrior)
                 {
+                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
                     currentGoalState.Confidence = true;
                 }
                 else
                 {
+                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
                     currentGoalState.Confidence = false;
                 }
 
@@ -246,10 +251,12 @@ namespace Landis.Extension.SOSIELHuman.Processes
             {
                 if (currentGoalState.PriorValue >= currentGoalState.Value)
                 {
+                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
                     currentGoalState.Confidence = true;
                 }
                 else
                 {
+                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
                     currentGoalState.Confidence = false;
                 }
             }

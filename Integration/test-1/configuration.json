@@ -25,7 +25,7 @@
           "Name": "G2",
           "Tendency": "EqualToOrAboveFocalValue",
           "ReferenceVariable": "AverageBiomass",
-          "FocalValue": 20000,
+          "FocalValue": 1040,
           "FocalValueReference": "",
           "IsCommulative": false
         }

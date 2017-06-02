@@ -360,6 +360,9 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                     agent[VariablesUsedInCode.HouseholdExpenses] = householdExpenses;
                     //accumulate savings
                     agent[VariablesUsedInCode.HouseholdSavings] += householdSavings;
+
+                    //increase household members age
+                    agent[VariablesUsedInCode.Age] += 1;
                 });
             });
         }
@@ -429,14 +432,6 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         protected override void Maintenance()
         {
             base.Maintenance();
-
-            //increase household members age
-            IEnumerable<IAgent> householdMembers = agentList.GetAgentsWithPrefix("HM");
-            householdMembers.ForEach(member =>
-            {
-                member[VariablesUsedInCode.Age] += 1;
-            });
-
 
             //clean up unassigned rules
             agentList.Prototypes.ForEach(prototype =>
