@@ -1,3 +1,5 @@
 Time, Ecoregion, NumSites,LiveB, AG_NPP, LitterB, ExternalGrowthReduction
 0, MN101, 1881, 21452.97, 3.4, 515.9, 0.0
 0, MN102, 7920, 20541.66, 0.7, 466.2, 0.0
+10, MN101, 1881, 23316.99, 897.5, 519.5, 0.0
+10, MN102, 7920, 22033.01, 815.9, 455.0, 0.0

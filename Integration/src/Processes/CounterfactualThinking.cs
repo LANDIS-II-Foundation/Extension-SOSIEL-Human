@@ -63,20 +63,27 @@ namespace Landis.Extension.SOSIELHuman.Processes
 
         protected override void Maximize()
         {
-            Rule[] rules = anticipatedInfluences.Where(kvp => matchedRules.Contains(kvp.Key))
-                .Where(kvp => kvp.Value[selectedGoal] >= 0).Select(kvp => kvp.Key).ToArray();
+            //Rule[] rules = anticipatedInfluences.Where(kvp => matchedRules.Contains(kvp.Key))
+            //    .Where(kvp => kvp.Value[selectedGoal] >= 0).Select(kvp => kvp.Key).ToArray();
 
-            //If 0 heuristics are identified, then heuristic-set-layer specific counterfactual thinking(t) = unsuccessful.
-            if (rules.Length == 0)
-            {
-                confidence = false;
-            }
-            else
-            {
-                rules = rules.GroupBy(r => anticipatedInfluences[r][selectedGoal]).OrderByDescending(h => h.Key).First().ToArray();
+            ////If 0 heuristics are identified, then heuristic-set-layer specific counterfactual thinking(t) = unsuccessful.
+            //if (rules.Length == 0)
+            //{
+            //    confidence = false;
+            //}
+            //else
+            //{
+            //    rules = rules.GroupBy(r => anticipatedInfluences[r][selectedGoal]).OrderByDescending(h => h.Key).First().ToArray();
 
-                confidence = rules.Any(r => !(r == activatedRule || r.IsAction == false));
-            }
+            //    confidence = rules.Any(r => !(r == activatedRule || r.IsAction == false));
+            //}
+
+            throw new NotImplementedException("Maximize is not implemented in CounterfactualThinking");
+        }
+
+        protected override void Minimize()
+        {
+            throw new NotImplementedException("Minimize is not implemented in CounterfactualThinking");
         }
         #endregion
 

@@ -19,7 +19,9 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         public double DiffPriorAndFocal { get; set; }
 
-        public double DiffPriorAndCurrent { get; set; }
+        public double DiffCurrentAndPrior { get; set; }
+
+        public double DiffPriorAndTwicePrior { get; set; }
 
         public double AnticipatedInfluenceValue { get; set; }
 

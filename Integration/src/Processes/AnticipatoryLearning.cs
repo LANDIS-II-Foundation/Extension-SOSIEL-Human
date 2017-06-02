@@ -14,7 +14,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
     /// </summary>
     public class AnticipatoryLearning : VolatileProcess
     {
-
+        Goal currentGoal;
         GoalState currentGoalState;
 
 
@@ -129,17 +129,27 @@ namespace Landis.Extension.SOSIELHuman.Processes
                     maxPossibleDifference = (string.IsNullOrEmpty(goal.FocalValueReference) ? goalState.FocalValue : (double)agent[goal.FocalValueReference]);
                 }
 
-                if(goal.Tendency == "EqualToOrBelowFocalValue")
+                if(goal.Tendency == "Maximize")
                 {
-                    double maxValue = agent.AssignedRules.Where(rule => rule.Consequent.Param == goal.ReferenceVariable)
-                        .Select(rule => string.IsNullOrEmpty(rule.Consequent.VariableValue) ? (double)rule.Consequent.Value : (double)agent[rule.Consequent.VariableValue])
-                        .Max();
-
-                    maxPossibleDifference = maxValue - goalState.PriorValue;
+                    throw new NotImplementedException("Max possible difference is unknown for Maximize goal managing case (Calculating normalized difference)");
                 }
+
+                if (goal.Tendency == "Minimize")
+                {
+                    throw new NotImplementedException("Max possible difference is unknown for Minimize goal managing case (Calculating normalized difference)");
+                }
+
+                //if(goal.Tendency == "EqualToOrBelowFocalValue")
+                //{
+                //    double maxValue = agent.AssignedRules.Where(rule => rule.Consequent.Param == goal.ReferenceVariable)
+                //        .Select(rule => string.IsNullOrEmpty(rule.Consequent.VariableValue) ? (double)rule.Consequent.Value : (double)agent[rule.Consequent.VariableValue])
+                //        .Max();
+
+                //    maxPossibleDifference = maxValue - goalState.PriorValue;
+                //}
             }
 
-            return Math.Abs(goalState.DiffPriorAndCurrent / maxPossibleDifference);
+            return Math.Abs(goalState.DiffCurrentAndPrior / maxPossibleDifference);
         }
 
 
@@ -149,30 +159,64 @@ namespace Landis.Extension.SOSIELHuman.Processes
             if (currentGoalState.DiffCurrentAndFocal < 0)
             {
                 currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
-
-                if (currentGoalState.Value > currentGoalState.PriorValue)
-                {
-                    currentGoalState.Confidence = true;
-                }
-                else
-                {
-                    currentGoalState.Confidence = false;
-                }
             }
             else
             {
                 currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
+            }
+
+            if (currentGoalState.AnticipatedDirection == AnticipatedDirection.Stay)
+            {
                 currentGoalState.Confidence = true;
+            }
+            else
+            {
+                currentGoalState.Confidence = false;
             }
         }
 
         protected override void EqualToOrBelowFocalValue()
         {
-            if (currentGoalState.DiffCurrentAndFocal > 0)
-            {
-                currentGoalState.AnticipatedDirection = AnticipatedDirection.Down;
+            //if (currentGoalState.DiffCurrentAndFocal > 0)
+            //{
+            //    currentGoalState.AnticipatedDirection = AnticipatedDirection.Down;
 
-                if (currentGoalState.Value > currentGoalState.PriorValue)
+            //    if (currentGoalState.Value > currentGoalState.PriorValue)
+            //    {
+            //        currentGoalState.Confidence = true;
+            //    }
+            //    else
+            //    {
+            //        currentGoalState.Confidence = false;
+            //    }
+            //}
+            //else
+            //{
+            //    currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
+            //    currentGoalState.Confidence = true;
+            //}
+
+            throw new NotImplementedException("EqualToOrBelowFocalValue is not implemented in AnticipatoryLearning");
+        }
+
+        protected override void Maximize()
+        {
+            if(currentGoal.IsCommulative)
+            {
+                if (currentGoalState.DiffPriorAndTwicePrior <= currentGoalState.DiffCurrentAndPrior)
+                {
+                    currentGoalState.Confidence = true;
+                }
+                else
+                {
+                    currentGoalState.Confidence = false;
+                }
+
+                //anticipated direction wasn't described
+            }
+            else
+            {
+                if(currentGoalState.PriorValue <= currentGoalState.Value)
                 {
                     currentGoalState.Confidence = true;
                 }
@@ -181,26 +225,36 @@ namespace Landis.Extension.SOSIELHuman.Processes
                     currentGoalState.Confidence = false;
                 }
             }
+        }
+
+        protected override void Minimize()
+        {
+            if (currentGoal.IsCommulative)
+            {
+                if (currentGoalState.DiffPriorAndTwicePrior >= currentGoalState.DiffCurrentAndPrior)
+                {
+                    currentGoalState.Confidence = true;
+                }
+                else
+                {
+                    currentGoalState.Confidence = false;
+                }
+
+                //anticipated direction wasn't described
+            }
             else
             {
-                currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
-                currentGoalState.Confidence = true;
+                if (currentGoalState.PriorValue >= currentGoalState.Value)
+                {
+                    currentGoalState.Confidence = true;
+                }
+                else
+                {
+                    currentGoalState.Confidence = false;
+                }
             }
         }
 
-        protected override void Maximize()
-        {
-            if (currentGoalState.DiffCurrentAndFocal >= 0)
-            {
-                currentGoalState.AnticipatedDirection = AnticipatedDirection.Stay;
-                currentGoalState.Confidence = true;
-            }
-            else
-            {
-                currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
-                currentGoalState.Confidence = false;
-            }
-        }
         #endregion
 
 
@@ -214,11 +268,16 @@ namespace Landis.Extension.SOSIELHuman.Processes
         {
             AgentState currentIterationAgentState = lastIteration.Value[agent];
             AgentState previousIterationAgentState = lastIteration.Previous.Value[agent];
+            AgentState twicePreviousIterationAgentState = null;
+
+            if(lastIteration.Previous.Previous != null)
+            {
+                twicePreviousIterationAgentState = lastIteration.Previous.Previous.Value[agent];
+            }
 
             foreach (var goal in agent.AssignedGoals)
             {
-                GoalState prevGoalState = previousIterationAgentState.GoalsState[goal];
-
+                currentGoal = goal;
                 currentGoalState = currentIterationAgentState.GoalsState[goal];
 
                 currentGoalState.Value = agent[goal.ReferenceVariable];
@@ -230,19 +289,39 @@ namespace Landis.Extension.SOSIELHuman.Processes
                     if (goal.ReductionPercent > 0d)
                         reductionPercent = goal.ReductionPercent;
 
-                    currentGoalState.FocalValue = reductionPercent * previousIterationAgentState.GoalsState[goal].Value;
+                    currentGoalState.FocalValue = reductionPercent * currentGoalState.PriorValue;
                 }
 
                 double focal = string.IsNullOrEmpty(goal.FocalValueReference) ? currentGoalState.FocalValue : agent[goal.FocalValueReference];
 
                 currentGoalState.DiffCurrentAndFocal = currentGoalState.Value - focal;
 
-                currentGoalState.DiffPriorAndFocal = prevGoalState.Value - focal;
+                currentGoalState.DiffPriorAndFocal = currentGoalState.PriorValue - focal;
 
-                currentGoalState.DiffPriorAndCurrent = prevGoalState.Value - currentGoalState.Value;
+                currentGoalState.DiffCurrentAndPrior = currentGoalState.Value - currentGoalState.PriorValue;
 
-                //goalState.Value contains prior Iteration value
-                currentGoalState.AnticipatedInfluenceValue = currentGoalState.Value - prevGoalState.Value;
+                currentGoalState.DiffPriorAndTwicePrior = currentGoalState.PriorValue;
+
+                if(twicePreviousIterationAgentState != null)
+                {
+                    double twicePriorValue = twicePreviousIterationAgentState.GoalsState[goal].Value;
+
+                    currentGoalState.DiffPriorAndTwicePrior -= twicePriorValue;
+                }
+
+
+                double anticipatedInfluence = 0;
+
+                if(goal.IsCommulative)
+                {
+                    anticipatedInfluence = currentGoalState.Value - currentGoalState.PriorValue;
+                }
+                else
+                {
+                    anticipatedInfluence = currentGoalState.Value;
+                }
+
+                currentGoalState.AnticipatedInfluenceValue = anticipatedInfluence;
 
 
                 //finds activated rules for each site 
@@ -251,7 +330,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 //update anticipated influences of found rules 
                 activatedInPriorIteration.ForEach(r =>
                 {
-                    agent.AnticipationInfluence[r][goal] = currentGoalState.AnticipatedInfluenceValue;
+                    agent.AnticipationInfluence[r][goal] = anticipatedInfluence;
                 });
 
                 SpecificLogic(goal.Tendency);

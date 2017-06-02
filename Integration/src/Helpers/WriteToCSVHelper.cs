@@ -18,7 +18,7 @@ namespace Landis.Extension.SOSIELHuman.Helpers
         {
             IEnumerable<T> values = value as IEnumerable<T>;
 
-            return string.Join(CultureInfo.CurrentCulture.TextInfo.ListSeparator, values.OrderBy(v=> v));
+            return string.Join(CultureInfo.CurrentCulture.TextInfo.ListSeparator, values);
         }
     }
 

@@ -10,6 +10,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
         protected abstract void EqualToOrAboveFocalValue();
         protected abstract void EqualToOrBelowFocalValue();
         protected abstract void Maximize();
+        protected abstract void Minimize();
 
 
         protected void SpecificLogic(string tendency)
@@ -17,14 +18,25 @@ namespace Landis.Extension.SOSIELHuman.Processes
             switch(tendency)
             {
                 case "EqualToOrAboveFocalValue":
-                    EqualToOrAboveFocalValue();
-                    break;
+                    {
+                        EqualToOrAboveFocalValue();
+                        break;
+                    }
                 case "EqualToOrBelowFocalValue":
-                    EqualToOrBelowFocalValue();
-                    break;
+                    {
+                        EqualToOrBelowFocalValue();
+                        break;
+                    }
                 case "Maximize":
-                    Maximize();
-                    break;
+                    {
+                        Maximize();
+                        break;
+                    }
+                case "Minimize":
+                    {
+                        Minimize();
+                        break;
+                    }
                 default:
                     throw new Exception("Unknown managing of goal");
             }

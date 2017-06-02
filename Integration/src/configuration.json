@@ -14,19 +14,20 @@
       "Goals": [
         {
           "Name": "G1",
-          "Tendency": "EqualToOrAboveFocalValue",
+          "Tendency": "Maximize",
           "ReferenceVariable": "Profit",
           "FocalValue": 0,
           "ChangeFocalValueOnPrevious": true,
-          "FocalValueReference": ""
-
+          "FocalValueReference": "",
+          "IsCommulative": false
         },
         {
           "Name": "G2",
           "Tendency": "EqualToOrAboveFocalValue",
           "ReferenceVariable": "AverageBiomass",
           "FocalValue": 20000,
-          "FocalValueReference": ""
+          "FocalValueReference": "",
+          "IsCommulative": false
         }
       ],
 
@@ -132,20 +133,21 @@
       "Goals": [
         {
           "Name": "G3",
-          "Tendency": "EqualToOrAboveFocalValue",
+          "Tendency": "Maximize",
           "ReferenceVariable": "Income",
           "FocalValue": 0,
           "ChangeFocalValueOnPrevious": true,
-          "FocalValueReference": ""
-
+          "FocalValueReference": "",
+          "IsCommulative": false
         },
         {
           "Name": "G4",
-          "Tendency": "EqualToOrBelowFocalValue",
+          "Tendency": "Minimize",
           "ReferenceVariable": "Expenses",
           "FocalValue": 0,
           "ChangeFocalValueOnPrevious": true,
-          "FocalValueReference": ""
+          "FocalValueReference": "",
+          "IsCommulative": false
         }
       ],
 

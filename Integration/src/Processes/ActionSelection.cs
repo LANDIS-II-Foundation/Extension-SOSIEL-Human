@@ -32,89 +32,97 @@ namespace Landis.Extension.SOSIELHuman.Processes
         #region Specific logic for tendencies
         protected override void EqualToOrAboveFocalValue()
         {
-            Rule[] selected = new Rule[] { };
+            //Rule[] selected = new Rule[] { };
 
-            if (goalState.DiffCurrentAndFocal > 0)
-            {
-                if (matchedRules.Any(r => r == priorPeriodActivatedRule))
-                {
-                    ruleForActivating = priorPeriodActivatedRule;
-                    return;
-                }
-                else
-                {
-                    Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] >= 0).ToArray();
+            //if (goalState.DiffCurrentAndFocal > 0)
+            //{
+            //    if (matchedRules.Any(r => r == priorPeriodActivatedRule))
+            //    {
+            //        ruleForActivating = priorPeriodActivatedRule;
+            //        return;
+            //    }
+            //    else
+            //    {
+            //        Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] >= 0).ToArray();
 
-                    selected = temp.Where(r=> anticipatedInfluence[r][processedGoal] < goalState.DiffCurrentAndFocal).ToArray();
+            //        selected = temp.Where(r=> anticipatedInfluence[r][processedGoal] < goalState.DiffCurrentAndFocal).ToArray();
 
-                    if(selected.Length == 0)
-                    {
-                        selected = temp.Where(r => anticipatedInfluence[r][processedGoal] <= goalState.DiffCurrentAndFocal).ToArray();
-                    }
-                }
-            }
-            else
-            {
-                Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] >= 0).ToArray();
+            //        if(selected.Length == 0)
+            //        {
+            //            selected = temp.Where(r => anticipatedInfluence[r][processedGoal] <= goalState.DiffCurrentAndFocal).ToArray();
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] >= 0).ToArray();
 
-                selected = temp.Where(r=> anticipatedInfluence[r][processedGoal] > goalState.DiffCurrentAndFocal).ToArray();
+            //    selected = temp.Where(r=> anticipatedInfluence[r][processedGoal] > goalState.DiffCurrentAndFocal).ToArray();
 
-                if (selected.Length == 0)
-                {
-                    selected = temp.Where(r => anticipatedInfluence[r][processedGoal] >= goalState.DiffCurrentAndFocal).ToArray();
-                }
-            }
+            //    if (selected.Length == 0)
+            //    {
+            //        selected = temp.Where(r => anticipatedInfluence[r][processedGoal] >= goalState.DiffCurrentAndFocal).ToArray();
+            //    }
+            //}
 
-            if (selected.Length > 0)
-            {
-                selected = selected.GroupBy(r => anticipatedInfluence[r][processedGoal]).OrderBy(hg => hg.Key).First().ToArray();
+            //if (selected.Length > 0)
+            //{
+            //    selected = selected.GroupBy(r => anticipatedInfluence[r][processedGoal]).OrderBy(hg => hg.Key).First().ToArray();
 
-                ruleForActivating = selected.RandomizeOne();
-            }
+            //    ruleForActivating = selected.RandomizeOne();
+            //}
+
+
+
+
+
+            //We don't do anything. Do nothing rule will be selected later.
         }
 
         protected override void EqualToOrBelowFocalValue()
         {
-            Rule[] selected = new Rule[] { };
+            //Rule[] selected = new Rule[] { };
 
-            if (goalState.DiffCurrentAndFocal < 0)
-            {
-                if (matchedRules.Any(r => r == priorPeriodActivatedRule))
-                {
-                    ruleForActivating = priorPeriodActivatedRule;
-                    return;
-                }
-                else
-                {
-                    Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] <= 0).ToArray();
+            //if (goalState.DiffCurrentAndFocal < 0)
+            //{
+            //    if (matchedRules.Any(r => r == priorPeriodActivatedRule))
+            //    {
+            //        ruleForActivating = priorPeriodActivatedRule;
+            //        return;
+            //    }
+            //    else
+            //    {
+            //        Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] <= 0).ToArray();
 
-                    selected = temp.Where(r => anticipatedInfluence[r][processedGoal] < Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+            //        selected = temp.Where(r => anticipatedInfluence[r][processedGoal] < Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
 
-                    if (selected.Length == 0)
-                    {
-                        selected = temp.Where(r => anticipatedInfluence[r][processedGoal] <= Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
-                    }
-                    
-                }
-            }
-            else
-            {
-                Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] <= 0).ToArray();
+            //        if (selected.Length == 0)
+            //        {
+            //            selected = temp.Where(r => anticipatedInfluence[r][processedGoal] <= Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+            //        }
 
-                selected = temp.Where(r => anticipatedInfluence[r][processedGoal] > Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+            //    }
+            //}
+            //else
+            //{
+            //    Rule[] temp = matchedRules.Where(r => anticipatedInfluence[r][processedGoal] <= 0).ToArray();
 
-                if (selected.Length == 0)
-                {
-                    selected = temp.Where(r => anticipatedInfluence[r][processedGoal] >= Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
-                }
-            }
+            //    selected = temp.Where(r => anticipatedInfluence[r][processedGoal] > Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
 
-            if (selected.Length > 0)
-            {
-                selected = selected.GroupBy(r => anticipatedInfluence[r][processedGoal]).OrderBy(hg => hg.Key).First().ToArray();
+            //    if (selected.Length == 0)
+            //    {
+            //        selected = temp.Where(r => anticipatedInfluence[r][processedGoal] >= Math.Abs(goalState.DiffCurrentAndFocal)).ToArray();
+            //    }
+            //}
 
-                ruleForActivating = selected.RandomizeOne();
-            }
+            //if (selected.Length > 0)
+            //{
+            //    selected = selected.GroupBy(r => anticipatedInfluence[r][processedGoal]).OrderBy(hg => hg.Key).First().ToArray();
+
+            //    ruleForActivating = selected.RandomizeOne();
+            //}
+
+            throw new NotImplementedException("EqualToOrBelowFocalValue is not implemented in ActionSelection");
         }
 
         protected override void Maximize()
@@ -122,6 +130,16 @@ namespace Landis.Extension.SOSIELHuman.Processes
             if (matchedRules.Length > 0)
             {
                 Rule[] selected = matchedRules.GroupBy(r => anticipatedInfluence[r][processedGoal]).OrderByDescending(hg => hg.Key).First().ToArray();
+
+                ruleForActivating = selected.RandomizeOne();
+            }
+        }
+
+        protected override void Minimize()
+        {
+            if (matchedRules.Length > 0)
+            {
+                Rule[] selected = matchedRules.GroupBy(r => anticipatedInfluence[r][processedGoal]).OrderBy(hg => hg.Key).First().ToArray();
 
                 ruleForActivating = selected.RandomizeOne();
             }
@@ -166,9 +184,6 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 agentState.RuleHistories.Add(site, new RuleHistory());
 
             RuleHistory history = agentState.RuleHistories[site];
-
-
-
 
             processedGoal = rankedGoals.First(g => processedRules.First().Layer.Set.AssociatedWith.Contains(g));
             goalState = agentState.GoalsState[processedGoal];

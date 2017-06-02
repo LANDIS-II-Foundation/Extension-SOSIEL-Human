@@ -124,7 +124,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                     {
                         Goal goal = agent.AssignedGoals.First(g => g.Name == gs.Key);
 
-                        GoalState goalState = new GoalState(0, goal.FocalValue, gs.Value.Importance);
+                        GoalState goalState = new GoalState(gs.Value.Value, goal.FocalValue, gs.Value.Importance);
 
                         agentState.GoalsState.Add(goal, goalState);
                     });
@@ -406,14 +406,19 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 //all agent types 
 
                 //save activation rule stat
-                string[] activatedRules = agentState.RuleHistories.Values.SelectMany(rh => rh.Activated.Select(rule => rule.Id)).Distinct().ToArray();
+                Rule[] activatedRules = agentState.RuleHistories.Values.SelectMany(rh => rh.Activated).Distinct().OrderBy(r=>r.Id).ToArray();
 
-                string[] notActivatedRules = agent.AssignedRules.Select(rule => rule.Id).Except(activatedRules).ToArray();
+                string[] activatedRuleIds = activatedRules.Select(r=>r.Id).ToArray();
+
+                string[] notActivatedRules = agent.AssignedRules.Select(rule => rule.Id).Except(activatedRuleIds).ToArray();
 
                 HMRuleUsageOutput ruleUsage = new HMRuleUsageOutput()
                 {
                     Iteration = iteration,
-                    ActivatedRules = activatedRules,
+                    ActivatedRuleValues = activatedRules.Select(r=> string.Format("{0}={1}", r.Consequent.Param, (string.IsNullOrEmpty(r.Consequent.VariableValue) ? (string)r.Consequent.Value.ToString() : (string)agent[r.Consequent.VariableValue].ToString())
+                        )).ToArray(),
+                    ActivatedRules = activatedRuleIds,
+                    TotalNumberOfRules = agent.AssignedRules.Count,
                     NotActivatedRules = notActivatedRules
                 };
 

@@ -24,6 +24,8 @@ namespace Landis.Extension.SOSIELHuman.Entities
 
         public bool RankingEnabled { get; private set; } 
 
+        public bool IsCommulative { get; private set; }
+
 
         public Goal()
         {
