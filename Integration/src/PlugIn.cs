@@ -120,6 +120,18 @@ namespace Landis.Extension.SOSIELHuman
 
             iteration++;
         }
+
+        //---------------------------------------------------------------------
+
+        private static double ComputeSiteBiomass(ActiveSite site)
+        {
+            double siteBiomass = 0;
+            if (SiteVars.Cohorts[site] != null)
+                foreach (ISpeciesCohorts speciesCohorts in SiteVars.Cohorts[site])
+                    foreach (ICohort cohort in speciesCohorts)
+                        siteBiomass += cohort.Biomass;
+            return siteBiomass;
+        }
        
     }
 }
