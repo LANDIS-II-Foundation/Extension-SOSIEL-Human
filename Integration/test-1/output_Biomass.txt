@@ -5,16 +5,16 @@ Timestep  5
 MakeTable yes  << Optional parameter
 
 Species    abiebals
-	   acerrubr
-	   acersacc
-	   betualle
-	   betupapy
-	   fraxamer
-	   pinustro
-	   poputrem
-	   querrubr
-	   thujocci
-	   tiliamer
+>>	   acerrubr
+>>	   acersacc
+>>	   betualle
+>>	   betupapy
+>>	   fraxamer
+>>	   pinustro
+>>	   poputrem
+>>	   querrubr
+>>	   thujocci
+>>	   tiliamer
 
 MapNames  outputs/biomass/biomass-{species}-{timestep}.img
 

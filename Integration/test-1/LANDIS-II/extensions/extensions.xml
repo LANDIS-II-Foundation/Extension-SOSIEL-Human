@@ -14,5 +14,11 @@
       <Class>Landis.Extension.SOSIELHuman.PlugIn</Class>
       <Description>Interactions among agents</Description>
     </Extension>
+	<Extension Name="Biomass Output" Version="2.2">
+      <Type>output</Type>
+      <Assembly>Landis.Extension.Output.Biomass</Assembly>
+      <Class>Landis.Extension.Output.Biomass.PlugIn</Class>
+      <Description>Output biomass cohorts</Description>
+    </Extension>
   </Extensions>
 </ExtensionDataset>

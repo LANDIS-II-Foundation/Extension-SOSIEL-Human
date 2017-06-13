@@ -241,10 +241,6 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 agent[VariablesUsedInCode.AgentExpenses] = 0d;
                 agent[VariablesUsedInCode.AgentSavings] = 0d;
 
-                //agent[VariablesUsedInCode.TotalAgentIncome] = 0d;
-                //agent[VariablesUsedInCode.TotalAgentExpenses] = 0d;
-                //agent[VariablesUsedInCode.TotalAgentSavings] = 0d;
-
                 agent[VariablesUsedInCode.HouseholdSavings] = 0d;
             });
 
@@ -252,7 +248,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
 
         /// <summary>
-        /// Executed before any cognitive process is started.
+        /// Executes at iteration start before any cognitive process is started.
         /// </summary>
         /// <param name="iteration"></param>
         protected override void PreIterationCalculations(int iteration)
@@ -275,9 +271,9 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
             var fePrototypes = agentList.GetPrototypesWithPrefix("FE");
 
-            fePrototypes.ForEach(hmProt =>
+            fePrototypes.ForEach(feProt =>
             {
-                hmProt[VariablesUsedInCode.AverageBiomass] = averageBiomass;
+                feProt[VariablesUsedInCode.AverageBiomass] = averageBiomass;
             });
 
             var hmPrototypes = agentList.GetPrototypesWithPrefix("HM");
@@ -286,14 +282,22 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
             {
                 hmProt[VariablesUsedInCode.Tourism] = averageBiomass >= hmProt[VariablesUsedInCode.TourismThreshold];
             });
-
-
-            
-
         }
 
+        protected override void BeforeCounterfactualThinking(IAgent agent, ActiveSite site)
+        {
+            base.BeforeCounterfactualThinking(agent, site);
+
+            if (agent[VariablesUsedInCode.AgentType] == "Type1")
+            {
+                //set value of current site biomass to agent variable. 
+                agent[VariablesUsedInCode.Biomass] = biomass[site];
+            }
+        }
+
+
         /// <summary>
-        /// Executed before action selection process
+        /// Executes before action selection process
         /// </summary>
         /// <param name="agent"></param>
         /// <param name="site"></param>
@@ -315,7 +319,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         }
 
         /// <summary>
-        /// Executed after action taking process
+        /// Executes after action taking process
         /// </summary>
         /// <param name="agent"></param>
         /// <param name="site"></param>
@@ -369,7 +373,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
 
         /// <summary>
-        /// Executed after PostIterationCalculations. Here we can collect all output data.
+        /// Executes after PostIterationCalculations. Here we can collect all output data.
         /// </summary>
         /// <param name="iteration"></param>
         protected override void PostIterationStatistic(int iteration)
@@ -418,8 +422,7 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
                 HMRuleUsageOutput ruleUsage = new HMRuleUsageOutput()
                 {
                     Iteration = iteration,
-                    ActivatedRuleValues = activatedRules.Select(r=> string.Format("{0}={1}", r.Consequent.Param, (string.IsNullOrEmpty(r.Consequent.VariableValue) ? (string)r.Consequent.Value.ToString() : (string)agent[r.Consequent.VariableValue].ToString())
-                        )).ToArray(),
+                    ActivatedRuleValues = activatedRules.Select(r=> string.IsNullOrEmpty(r.Consequent.VariableValue) ? (string)r.Consequent.Value.ToString() : (string)agent[r.Consequent.VariableValue].ToString()).ToArray(),
                     ActivatedRules = activatedRuleIds,
                     TotalNumberOfRules = agent.AssignedRules.Count,
                     NotActivatedRules = notActivatedRules

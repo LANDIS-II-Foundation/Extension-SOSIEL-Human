@@ -241,7 +241,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 }
                 else
                 {
-                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
+                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Down;
                     currentGoalState.Confidence = false;
                 }
 
@@ -256,7 +256,7 @@ namespace Landis.Extension.SOSIELHuman.Processes
                 }
                 else
                 {
-                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Up;
+                    currentGoalState.AnticipatedDirection = AnticipatedDirection.Down;
                     currentGoalState.Confidence = false;
                 }
             }

@@ -25,7 +25,7 @@
           "Name": "G2",
           "Tendency": "EqualToOrAboveFocalValue",
           "ReferenceVariable": "AverageBiomass",
-          "FocalValue": 1040,
+          "FocalValue": 10400,
           "FocalValueReference": "",
           "IsCommulative": false
         }
@@ -38,7 +38,7 @@
             "1": {
               "Modifiable": true,
               "UseDoNothing": false,
-              "MaxNumberOfRules": 201,
+              "MaxNumberOfRules": 3600,
               "ConsequentValueInterval": [ 0, 100 ],
               "MinConsequentReference": "",
               "MaxConsequentReference": "",
@@ -59,7 +59,7 @@
           "Id": "RS1_L1_R1",
           "Antecedent": [
             {
-              "Param": "AverageBiomass",
+              "Param": "Biomass",
               "Sign": ">=",
               "Value": 0
             }
@@ -79,9 +79,9 @@
           "Id": "RS1_L1_R2",
           "Antecedent": [
             {
-              "Param": "AverageBiomass",
+              "Param": "Biomass",
               "Sign": ">=",
-              "Value": 1000
+              "Value": 0
             }
           ],
           "Consequent": {

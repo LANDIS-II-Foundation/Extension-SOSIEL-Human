@@ -61,27 +61,27 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
         protected virtual void AfterInitialization() { }
 
         /// <summary>
-        /// Executed in the end of the algorithm.
+        /// Executes in the end of the algorithm.
         /// </summary>
         protected virtual void AfterAlgorithmExecuted() { }
 
 
         /// <summary>
-        /// Executed before any cognitive process is started.
+        /// Executes before any cognitive process is started.
         /// </summary>
         /// <param name="iteration"></param>
         protected virtual void PreIterationCalculations(int iteration) { }
 
 
         /// <summary>
-        /// Executed after PreIterationCalculations
+        /// Executes after PreIterationCalculations
         /// </summary>
         /// <param name="iteration"></param>
         protected virtual void PreIterationStatistic(int iteration) { }
 
 
         /// <summary>
-        /// Executed before action selection process
+        /// Executes before action selection process
         /// </summary>
         /// <param name="agent"></param>
         /// <param name="site"></param>
@@ -89,20 +89,29 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 
 
         /// <summary>
-        /// Executed after action taking process
+        /// Executes after action taking process
         /// </summary>
         /// <param name="agent"></param>
         /// <param name="site"></param>
         protected virtual void AfterActionTaking(IAgent agent, ActiveSite site) { }
 
+
         /// <summary>
-        /// Executed after last cognitive process is finished
+        /// Befores the counterfactual thinking.
+        /// </summary>
+        /// <param name="agent"></param>
+        /// <param name="site"></param>
+        protected virtual void BeforeCounterfactualThinking(IAgent agent, ActiveSite site) { }
+
+
+        /// <summary>
+        /// Executes after last cognitive process is finished
         /// </summary>
         /// <param name="iteration"></param>
         protected virtual void PostIterationCalculations(int iteration) { }
 
         /// <summary>
-        /// Executed after PostIterationCalculations
+        /// Executes after PostIterationCalculations
         /// </summary>
         /// <param name="iteration"></param>
         protected virtual void PostIterationStatistic(int iteration) { }
@@ -204,6 +213,8 @@ namespace Landis.Extension.SOSIELHuman.Algorithm
 								{
                                     foreach (ActiveSite site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
                                     {
+                                        BeforeCounterfactualThinking(agent, site);
+
                                         foreach (var set in agent.AssignedRules.GroupBy(h => h.Layer.Set).OrderBy((IGrouping<RuleSet, Rule> g) => g.Key.PositionNumber))
                                         {
                                             //optimization
