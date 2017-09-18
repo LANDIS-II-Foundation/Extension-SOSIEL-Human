@@ -1,0 +1,259 @@
+﻿{
+  "AlgorithmConfiguration": {
+    "NumberOfIterations": 10
+  },
+
+  "AgentConfiguration": {
+    "Prototype": {
+      "NamePrefix": "Prototype",
+
+      "CommonVariables": {
+        "AgentType": "Type1",
+        "E": 10,
+        "M": 1.5
+      },
+
+      "Goals": [
+        {
+          "Name": "G1",
+          "Tendency": "Maximize",
+          "ReferenceVariable": "AgentProfit",
+          "FocalValue": 23.5,
+          "ChangeFocalValueOnPrevious": false,
+          "FocalValueReference": "",
+          "IsCommulative": false
+        },
+        {
+          "Name": "G2",
+          "Tendency": "Maximize",
+          "ReferenceVariable": "CommonProfit",
+          "FocalValue": 15,
+          "ChangeFocalValueOnPrevious": false,
+          "FocalValueReference": "",
+          "IsCommulative": false
+        }
+      ],
+
+      "MentalModel": {
+        "1": {
+          "AssociatedWith": [ "G1", "G2" ],
+          "Layer": {
+            "1": {
+              "Modifiable": true,
+              "UseDoNothing": false,
+              "MaxNumberOfHeuristics": 10,
+              "ConsequentValueInterval": [ 0, 0 ],
+              "MinConsequentReference": "",
+              "MaxConsequentReference": "E",
+              "ConsequentRelationshipSign": {
+                "G1": "-",
+                "G2": "+"
+              }
+            }
+          }
+        }
+      },
+
+      "KnowledgeHeuristics": [
+        {
+          "MentalModel": 1,
+          "KnowledgeHeuristicsLayer": 1,
+          "PositionNumber": 1,
+          "Id": "MM1_L1_KH1",
+          "Antecedent": [
+            {
+              "Param": "AgentStatus",
+              "Sign": "==",
+              "Value": "active"
+            }
+          ],
+          "Consequent": {
+            "Param": "AgentC",
+            "Value": 0,
+            "VariableValue": "InitialAgentC"
+          },
+          "RequiredParticipants": 1,
+          "IsAction": true
+        }
+      ],
+
+      "IsSiteOriented": false
+    }
+  },
+
+  "InitialState": {
+
+    "AgentsState": [
+      {
+        "PrototypeOfAgent": "Prototype",
+        "NumberOfAgents": 2,
+
+        "PrivateVariables": {
+          "AgentStatus": "active",
+          "InitialAgentC": 0
+        },
+
+        "VariablesTransform": {
+        },
+
+        "AnticipatedInfluenceState": {
+          "MM1_L1_KH1": {
+            "G1": 0
+          }
+        },
+
+        "AssignedKnowledgeHeuristics": [
+          "MM1_L1_KH1"
+        ],
+
+        "AssignedGoals": [ "G1" ],
+
+        "GoalsState": {
+          "G1": {
+            "Importance": 1,
+            "Value": 0
+          }
+        },
+
+        "ActivatedKhOnFirstIteration": [ "MM1_L1_KH1" ]
+      },
+      {
+        "PrototypeOfAgent": "Prototype",
+        "NumberOfAgents": 2,
+
+        "PrivateVariables": {
+          "AgentStatus": "active"
+        },
+
+        "VariablesTransform": {
+          "InitialAgentC": "G1_Importance"
+        },
+
+        "AnticipatedInfluenceState": {
+          "MM1_L1_KH1": {
+            "G1": 0,
+            "G2": 0
+          }
+        },
+
+        "AnticipatedInfluenceTransform": {
+          "MM1_L1_KH1": {
+            "G1": "InitialAgentC",
+            "G2": "InitialAgentC"
+          }
+        },
+
+        "AssignedKnowledgeHeuristics": [
+          "MM1_L1_KH1"
+        ],
+
+        "AssignedGoals": [ "G1", "G2" ],
+
+        "GoalsState": {
+          "G1": {
+            "Importance": 0,
+            "Value": 0,
+            "Randomness": true,
+            "RandomFrom": 0.5,
+            "RandomTo": 0.9
+          },
+          "G2": {
+            "Importance": 0,
+            "Value": 0,
+            "Randomness": true,
+            "RandomFrom": 0.1,
+            "RandomTo": 0,
+            "BasedOn": "G1"
+          }
+        },
+
+        "ActivatedKhOnFirstIteration": [ "MM1_L1_KH1" ]
+      },
+      {
+        "PrototypeOfAgent": "Prototype",
+        "NumberOfAgents": 4,
+
+        "PrivateVariables": {
+          "AgentStatus": "active"
+        },
+
+        "VariablesTransform": {
+          "InitialAgentC": "G2_Importance"
+        },
+
+        "AnticipatedInfluenceState": {
+          "MM1_L1_KH1": {
+            "G1": 0,
+            "G2": 0
+          }
+        },
+
+        "AnticipatedInfluenceTransform": {
+          "MM1_L1_KH1": {
+            "G1": "InitialAgentC",
+            "G2": "InitialAgentC"
+          }
+        },
+
+        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1" ],
+
+        "AssignedGoals": [ "G1", "G2" ],
+
+        "GoalsState": {
+          "G2": {
+            "Importance": 0,
+            "Value": 0,
+            "Randomness": true,
+            "RandomFrom": 0.6,
+            "RandomTo": 0.9
+          },
+          "G1": {
+            "Importance": 0,
+            "Value": 0,
+            "Randomness": true,
+            "RandomFrom": 0.1,
+            "RandomTo": 0,
+            "BasedOn": "G2"
+
+          }
+        },
+
+        "ActivatedKhOnFirstIteration": [ "MM1_L1_KH1" ]
+      },
+      {
+        "PrototypeOfAgent": "Prototype",
+        "NumberOfAgents": 2,
+
+        "PrivateVariables": {
+          "AgentStatus": "active",
+          "InitialAgentC": 10
+        },
+
+        "VariablesTransform": {
+        },
+
+        "AnticipatedInfluenceState": {
+          "MM1_L1_KH1": {
+            "G2": 10
+          }
+        },
+
+        "AssignedKnowledgeHeuristics": [
+          "MM1_L1_KH1"
+        ],
+
+        "AssignedGoals": [ "G2" ],
+
+        "GoalsState": {
+          "G2": {
+            "Importance": 1,
+            "Value": 0
+          }
+        },
+
+        "ActivatedKhOnFirstIteration": [ "MM1_L1_KH1" ]
+      }
+
+    ]
+  }
+}
