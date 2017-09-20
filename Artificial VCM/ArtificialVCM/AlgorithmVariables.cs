@@ -7,6 +7,7 @@ namespace ArtificialVCM
     /// </summary>
     public static class AlgorithmVariables
     {
+        public const string AgentProfile = "AgentProfile";
         public const string AgentProfit = "AgentProfit";
         public const string CommonProfit = "CommonProfit";
 
@@ -14,6 +15,7 @@ namespace ArtificialVCM
         public const string M = "M";
 
         public const string InitialAgentC = "InitialAgentC";
+        public const string AgentC = "AgentC";
 
 
         public const string G1Importance = "G1_Importance";

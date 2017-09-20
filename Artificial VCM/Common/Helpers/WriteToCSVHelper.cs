@@ -46,7 +46,7 @@ namespace Common.Helpers
         {
             bool isFileExist = File.Exists(filePath);
 
-            using (FileStream fs = File.Open(filePath, FileMode.Append))
+            using (FileStream fs = File.Open(filePath, isFileExist ? FileMode.Append : FileMode.Create))
             using (StreamWriter sw = new StreamWriter(fs))
             using (CsvWriter csv = new CsvWriter(sw, configuration))
             {
@@ -72,7 +72,7 @@ namespace Common.Helpers
         {
             bool isFileExist = File.Exists(filePath);
 
-            using (FileStream fs = File.Open(filePath, FileMode.Append))
+            using (FileStream fs = File.Open(filePath, isFileExist ? FileMode.Append : FileMode.Create))
             using (StreamWriter sw = new StreamWriter(fs))
             using (CsvWriter csv = new CsvWriter(sw, configuration))
             {

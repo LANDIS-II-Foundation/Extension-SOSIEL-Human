@@ -56,7 +56,9 @@ namespace Common.Processes
                 double min = parameters.MinValue(agent);
                 double max = parameters.MaxValue(agent);
 
-                double consequentValue = priorPeriodHeuristic.Consequent.Value;
+                double consequentValue = string.IsNullOrEmpty(priorPeriodHeuristic.Consequent.VariableValue)
+                    ? priorPeriodHeuristic.Consequent.Value
+                    : agent[priorPeriodHeuristic.Consequent.VariableValue];
 
                 switch (selectedGoalState.AnticipatedDirection)
                 {
@@ -187,9 +189,6 @@ namespace Common.Processes
                     //assign to current agent only
                     agent.AssignNewHeuristic(generatedHeuristic, proportionalAI);
                 }
-
-
-                
 
                 if (layer.Set.Layers.Count > 1)
                     //set consequent to actor's variables for next layers

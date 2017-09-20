@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ArtificialVCM.Configuration;
+using ArtificialVCM.Output;
 using Common.Algorithm;
 using Common.Configuration;
 using Common.Entities;
@@ -41,7 +42,7 @@ namespace ArtificialVCM
         {
             _configuration = configuration;
 
-            _outputFolder = @"Output\ArtificialVCM";
+            _outputFolder = @"Output\";
 
             if (Directory.Exists(_outputFolder) == false)
                 Directory.CreateDirectory(_outputFolder);
@@ -49,6 +50,8 @@ namespace ArtificialVCM
 
         public string Run()
         {
+            Initialize();
+
             var sites = new Site[] {Site.DefaultSite};
 
             Enumerable.Range(1, _configuration.AlgorithmConfiguration.NumberOfIterations).ForEach(iteration =>
@@ -61,8 +64,18 @@ namespace ArtificialVCM
             return _outputFolder;
         }
 
+        /// <summary>
+        /// Executes algorithm initialization
+        /// </summary>
+        public void Initialize()
+        {
+            InitializeAgents();
+
+            AfterInitialization();
+        }
+
         /// <inheritdoc />
-        protected override List<IAgent> InitializeAgents()
+        protected override void InitializeAgents()
         {
             var agents = new List<IAgent>();
 
@@ -114,7 +127,7 @@ namespace ArtificialVCM
                 });
             });
 
-            return agents;
+            agentList =  new AgentList(agents, agentPrototypes.Select(kvp=>kvp.Value).ToList());
         }
 
         /// <inheritdoc />
@@ -162,6 +175,68 @@ namespace ArtificialVCM
             history.Activated.AddRange(firstIterationActivated);
 
             return history;
+        }
+
+        protected override void PostIterationCalculations(int iteration)
+        {
+            base.PostIterationCalculations(iteration);
+
+            var commonProfit = agentList.ActiveAgents
+                .Select(agent => (double) agent[AlgorithmVariables.M] * (double) agent[AlgorithmVariables.AgentC])
+                .Average();
+
+            var firstAgent = agentList.Agents.First();
+            firstAgent.SetToCommon(AlgorithmVariables.CommonProfit, commonProfit);
+
+            agentList.ActiveAgents.ForEach(agent =>
+            {
+                agent[AlgorithmVariables.AgentProfit] = agent[AlgorithmVariables.E] - agent[AlgorithmVariables.AgentC] +
+                                                        agent[AlgorithmVariables.CommonProfit];
+            });
+        }
+
+        protected override void PostIterationStatistic(int iteration)
+        {
+            base.PostIterationStatistic(iteration);
+
+            var firstAgent = agentList.Agents.First();
+
+            WriteToCSVHelper.AppendTo(_outputFolder + AverageContribution.FileName, new AverageContribution
+            {
+                Iteration = iteration,
+                CommonPoolProfit = firstAgent[AlgorithmVariables.CommonProfit]
+            });
+
+            agentList.Agents.ForEach(agent =>
+            {
+                var activatedKH = iterations.Last.Value[agent].TakenActions[Site.DefaultSite];
+                var consequentValue = activatedKH.First().Value;
+
+                var details = new AgentDetails
+                {
+                    Iteration = iteration,
+                    AgentProfile = agent[AlgorithmVariables.AgentProfile],
+                    G1Importance = GetG1Importance(agent),
+                    G2Importance = GetG2Importance(agent),
+                    AgentContribution = agent[AlgorithmVariables.AgentC],
+                    ConsequentValue = consequentValue,
+                    NumberOfKH = agent.AssignedKnowledgeHeuristics.Count
+                };
+
+                WriteToCSVHelper.AppendTo(_outputFolder + AgentDetails.FileName, details);
+            });
+
+            
+        }
+
+        private double GetG1Importance(IAgent agent)
+        {
+            return agent.ContainsVariable(AlgorithmVariables.G1Importance) ? agent[AlgorithmVariables.G1Importance] : 0;
+        }
+
+        private double GetG2Importance(IAgent agent)
+        {
+            return agent.ContainsVariable(AlgorithmVariables.G2Importance) ? agent[AlgorithmVariables.G2Importance] : 0;
         }
     }
 }

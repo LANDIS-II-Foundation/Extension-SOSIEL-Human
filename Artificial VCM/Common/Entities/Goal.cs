@@ -24,7 +24,7 @@ namespace Common.Entities
 
         public bool RankingEnabled { get; private set; } 
 
-        public bool IsCommulative { get; private set; }
+        public bool IsCumulative { get; private set; }
 
 
         public Goal()
@@ -74,6 +74,11 @@ namespace Common.Entities
         public static bool operator !=(Goal a, Goal b)
         {
             return !(a == b);
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

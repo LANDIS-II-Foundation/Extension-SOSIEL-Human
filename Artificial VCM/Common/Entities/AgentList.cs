@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 
 namespace Common.Entities
 {
-    using Configuration;
-    using Exceptions;
-    using Randoms;
     using Helpers;
-    using Enums;
 
 
     public class AgentList
@@ -22,14 +17,14 @@ namespace Common.Entities
         {
             get
             {
-                return Agents.Where(a => a[SosielVariables.AgentStatus] == true).ToArray();
+                return Agents.Where(a => a[SosielVariables.AgentStatus] == "active").ToArray();
             }
         }
 
-        public AgentList()
+        public AgentList(List<IAgent> agents, List<AgentPrototype> prototypes)
         {
-            Agents = new List<IAgent>();
-            Prototypes = new List<AgentPrototype>();
+            Agents = agents;
+            Prototypes = prototypes;
         }
 
 

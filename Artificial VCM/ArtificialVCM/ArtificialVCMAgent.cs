@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ArtificialVCM.Configuration;
 using Common.Entities;
@@ -60,7 +61,7 @@ namespace ArtificialVCM
                         var from = (int)(configuration.RandomFrom * 10);
                         var to = (int)(configuration.RandomTo * 10);
 
-                        importance = LinearUniformRandom.GetInstance.Next(from, to + 1) * 0.1;
+                        importance = Math.Round(LinearUniformRandom.GetInstance.Next(from, to + 1) * 0.1, 2);
                     }
                     else
                     {
@@ -69,7 +70,7 @@ namespace ArtificialVCM
                             .GoalStates[agent.AssignedGoals.FirstOrDefault(g => g.Name == configuration.BasedOn)]
                             .Importance * 10);
 
-                        importance = LinearUniformRandom.GetInstance.Next(from, to + 1) * 0.1;
+                        importance = Math.Round(LinearUniformRandom.GetInstance.Next(from, to + 1) * 0.1, 2);
                     }
                 }
 
@@ -77,7 +78,7 @@ namespace ArtificialVCM
 
                 agent.GoalStates.Add(goal, goalState);
 
-                
+                agent[string.Format("{0}_Importance", goal.Name)] = importance;
             });
 
             //initializes initial anticipated influence for each kh and goal assigned to the agent
@@ -117,17 +118,15 @@ namespace ArtificialVCM
                     switch (reference)
                     {
                         case AlgorithmVariables.G1Importance:
-                        {
-                            var goal = agent.GoalStates.Keys.FirstOrDefault(g => g.Name == "G1");
-                            agent[variable] = agent.GoalStates[goal].Importance * 10;
-                            break;
-                        }
+                            {
+                                agent[variable] = agent[AlgorithmVariables.G1Importance] * 10;
+                                break;
+                            }
                         case AlgorithmVariables.G2Importance:
-                        {
-                            var goal = agent.GoalStates.Keys.FirstOrDefault(g => g.Name == "G2");
-                            agent[variable] = agent.GoalStates[goal].Importance * 10;
-                            break;
-                        }
+                            {
+                                agent[variable] = agent[AlgorithmVariables.G2Importance] * 10;
+                                break;
+                            }
 
                         default:
                             throw new UnknownVariableException(reference);

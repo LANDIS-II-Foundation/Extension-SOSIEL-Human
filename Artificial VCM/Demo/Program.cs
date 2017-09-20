@@ -28,14 +28,15 @@ namespace Demo
                 throw new FileNotFoundException($"{algorithmConfigurationFileName} not found at {Directory.GetCurrentDirectory()}");
             }
 
+            string outputDirectory = "Output";
+
+            if (Directory.Exists(outputDirectory))
+                Directory.Delete(outputDirectory, true);
+
             var algorithm = AlgorithmFactory.Create(algorithmConfigurationFilePath);
 
             Console.WriteLine($"{algorithm.Name} algorithm is running....");
-
-            string outputDirectory = string.Empty;
-
             outputDirectory = algorithm.Run();
-
             Console.WriteLine("Algorithm has completed");
 
             WaitKeyPress();

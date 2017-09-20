@@ -43,7 +43,7 @@ namespace Common.Algorithm
 		/// <summary>
         /// Executes agent initializing. It's the first initializing step. 
         /// </summary>
-        protected abstract List<IAgent> InitializeAgents();
+        protected abstract void InitializeAgents();
 
 
         /// <summary>

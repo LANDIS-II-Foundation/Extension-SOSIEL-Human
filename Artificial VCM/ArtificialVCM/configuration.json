@@ -5,7 +5,7 @@
 
   "AgentConfiguration": {
     "Prototype": {
-      "NamePrefix": "Prototype",
+      "NamePrefix": "Agent",
 
       "CommonVariables": {
         "AgentType": "Type1",
@@ -19,18 +19,16 @@
           "Tendency": "Maximize",
           "ReferenceVariable": "AgentProfit",
           "FocalValue": 23.5,
-          "ChangeFocalValueOnPrevious": false,
           "FocalValueReference": "",
-          "IsCommulative": false
+          "IsCumulative": false
         },
         {
           "Name": "G2",
           "Tendency": "Maximize",
           "ReferenceVariable": "CommonProfit",
           "FocalValue": 15,
-          "ChangeFocalValueOnPrevious": false,
           "FocalValueReference": "",
-          "IsCommulative": false
+          "IsCumulative": false
         }
       ],
 
@@ -90,6 +88,7 @@
 
         "PrivateVariables": {
           "AgentStatus": "active",
+          "AgentProfile": "agent_profile1",
           "InitialAgentC": 0
         },
 
@@ -122,7 +121,8 @@
         "NumberOfAgents": 2,
 
         "PrivateVariables": {
-          "AgentStatus": "active"
+          "AgentStatus": "active",
+          "AgentProfile": "agent_profile2"
         },
 
         "VariablesTransform": {
@@ -143,9 +143,7 @@
           }
         },
 
-        "AssignedKnowledgeHeuristics": [
-          "MM1_L1_KH1"
-        ],
+        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1" ],
 
         "AssignedGoals": [ "G1", "G2" ],
 
@@ -174,7 +172,8 @@
         "NumberOfAgents": 4,
 
         "PrivateVariables": {
-          "AgentStatus": "active"
+          "AgentStatus": "active",
+          "AgentProfile": "agent_profile3"
         },
 
         "VariablesTransform": {
@@ -226,7 +225,8 @@
 
         "PrivateVariables": {
           "AgentStatus": "active",
-          "InitialAgentC": 10
+          "InitialAgentC": 10,
+          "AgentProfile": "agent_profile4"
         },
 
         "VariablesTransform": {

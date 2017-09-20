@@ -32,7 +32,6 @@ namespace Common.Processes
 
                 var noConfidenceGoals = importantGoals.Where(kvp => kvp.Value.Confidence == false).ToArray();
 
-                //todo need to use initial value for adjustment  kvp.Key.Importance
                 if (noConfidenceGoals.Length > 0)
                 {
                     var noConfidenceProportions = noConfidenceGoals.Select(kvp => new
@@ -199,7 +198,7 @@ namespace Common.Processes
 
         protected override void Maximize()
         {
-            if(currentGoal.IsCommulative)
+            if(currentGoal.IsCumulative)
             {
                 if (currentGoalState.DiffPriorAndTwicePrior <= currentGoalState.DiffCurrentAndPrior)
                 {
@@ -231,7 +230,7 @@ namespace Common.Processes
 
         protected override void Minimize()
         {
-            if (currentGoal.IsCommulative)
+            if (currentGoal.IsCumulative)
             {
                 if (currentGoalState.DiffPriorAndTwicePrior >= currentGoalState.DiffCurrentAndPrior)
                 {
@@ -274,17 +273,12 @@ namespace Common.Processes
         {
             AgentState currentIterationAgentState = lastIteration.Value[agent];
             AgentState previousIterationAgentState = lastIteration.Previous.Value[agent];
-            AgentState twicePreviousIterationAgentState = null;
-
-            if(lastIteration.Previous.Previous != null)
-            {
-                twicePreviousIterationAgentState = lastIteration.Previous.Previous.Value[agent];
-            }
 
             foreach (var goal in agent.AssignedGoals)
             {
                 currentGoal = goal;
                 currentGoalState = currentIterationAgentState.GoalsState[goal];
+                var previousGoalState = previousIterationAgentState.GoalsState[goal];
 
                 currentGoalState.Value = agent[goal.ReferenceVariable];
 
@@ -306,21 +300,13 @@ namespace Common.Processes
 
                 currentGoalState.DiffCurrentAndPrior = currentGoalState.Value - currentGoalState.PriorValue;
 
-                currentGoalState.DiffPriorAndTwicePrior = currentGoalState.PriorValue;
-
-                if(twicePreviousIterationAgentState != null)
-                {
-                    double twicePriorValue = twicePreviousIterationAgentState.GoalsState[goal].Value;
-
-                    currentGoalState.DiffPriorAndTwicePrior -= twicePriorValue;
-                }
-
-
+                currentGoalState.DiffPriorAndTwicePrior = currentGoalState.PriorValue - previousGoalState.PriorValue;
+                
                 double anticipatedInfluence = 0;
 
-                if(goal.IsCommulative)
+                if(goal.IsCumulative)
                 {
-                    anticipatedInfluence = currentGoalState.Value - currentGoalState.PriorValue;
+                    anticipatedInfluence = currentGoalState.PriorValue - previousGoalState.PriorValue;
                 }
                 else
                 {

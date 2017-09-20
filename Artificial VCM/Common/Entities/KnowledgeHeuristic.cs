@@ -203,5 +203,10 @@ namespace Common.Entities
         {
             return !(a == b);
         }
+
+        public override string ToString()
+        {
+            return Id;
+        }
     }
 }
