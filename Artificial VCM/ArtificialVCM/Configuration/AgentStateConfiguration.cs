@@ -32,8 +32,5 @@ namespace ArtificialVCM.Configuration
 
         [JsonRequired]
         public Dictionary<string, GoalStateConfiguration> GoalsState { get; set; }
-
-        [JsonRequired]
-        public string[] ActivatedKhOnFirstIteration { get; set; }
     }
 }

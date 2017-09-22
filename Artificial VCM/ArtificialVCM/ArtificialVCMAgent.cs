@@ -65,18 +65,16 @@ namespace ArtificialVCM
                     }
                     else
                     {
-                        var from = (int)(configuration.RandomFrom * 10);
-                        var to = 10 - (int)(agent
-                            .GoalStates[agent.AssignedGoals.FirstOrDefault(g => g.Name == configuration.BasedOn)]
-                            .Importance * 10);
+                        var anotherGoalImportance = agent.InitialGoalStates[agent.AssignedGoals.FirstOrDefault(g => g.Name == configuration.BasedOn)]
+                            .Importance;
 
-                        importance = Math.Round(LinearUniformRandom.GetInstance.Next(from, to + 1) * 0.1, 2);
+                        importance = Math.Round(1 - anotherGoalImportance, 2);
                     }
                 }
 
                 GoalState goalState = new GoalState(configuration.Value, goal.FocalValue, importance);
 
-                agent.GoalStates.Add(goal, goalState);
+                agent.InitialGoalStates.Add(goal, goalState);
 
                 agent[string.Format("{0}_Importance", goal.Name)] = importance;
             });

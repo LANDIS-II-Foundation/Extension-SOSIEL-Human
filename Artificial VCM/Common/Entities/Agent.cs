@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace Common.Entities
 {
-    using Configuration;
     using Environments;
     using Exceptions;
     using Helpers;
@@ -28,7 +27,7 @@ namespace Common.Entities
 
         public List<Goal> AssignedGoals { get; protected set; }
 
-        public Dictionary<Goal, GoalState> GoalStates { get; protected set; }
+        public Dictionary<Goal, GoalState> InitialGoalStates { get; protected set; }
 
         public Dictionary<KnowledgeHeuristic, int> KnowledgeHeuristicActivationFreshness { get; protected set; }
 
@@ -42,7 +41,7 @@ namespace Common.Entities
             privateVariables = new Dictionary<string, dynamic>();
             ConnectedAgents = new List<IAgent>();
             AnticipationInfluence = new Dictionary<KnowledgeHeuristic, Dictionary<Goal, double>>();
-            GoalStates = new Dictionary<Goal, GoalState>();
+            InitialGoalStates = new Dictionary<Goal, GoalState>();
             AssignedKnowledgeHeuristics = new List<KnowledgeHeuristic>();
             AssignedGoals = new List<Goal>();
             KnowledgeHeuristicActivationFreshness = new Dictionary<KnowledgeHeuristic, int>();

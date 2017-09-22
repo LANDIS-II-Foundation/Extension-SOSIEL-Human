@@ -97,7 +97,7 @@
 
         "AnticipatedInfluenceState": {
           "MM1_L1_KH1": {
-            "G1": 0
+            "G1": 10
           }
         },
 
@@ -110,11 +110,9 @@
         "GoalsState": {
           "G1": {
             "Importance": 1,
-            "Value": 0
+            "Value": 23.5
           }
-        },
-
-        "ActivatedKhOnFirstIteration": [ "MM1_L1_KH1" ]
+        }
       },
       {
         "PrototypeOfAgent": "Prototype",
@@ -126,7 +124,7 @@
         },
 
         "VariablesTransform": {
-          "InitialAgentC": "G1_Importance"
+          "InitialAgentC": "G2_Importance"
         },
 
         "AnticipatedInfluenceState": {
@@ -150,7 +148,7 @@
         "GoalsState": {
           "G1": {
             "Importance": 0,
-            "Value": 0,
+            "Value": 23.5,
             "Randomness": true,
             "RandomFrom": 0.5,
             "RandomTo": 0.9
@@ -159,13 +157,9 @@
             "Importance": 0,
             "Value": 0,
             "Randomness": true,
-            "RandomFrom": 0.1,
-            "RandomTo": 0,
             "BasedOn": "G1"
           }
-        },
-
-        "ActivatedKhOnFirstIteration": [ "MM1_L1_KH1" ]
+        }
       },
       {
         "PrototypeOfAgent": "Prototype",
@@ -210,14 +204,10 @@
             "Importance": 0,
             "Value": 0,
             "Randomness": true,
-            "RandomFrom": 0.1,
-            "RandomTo": 0,
             "BasedOn": "G2"
 
           }
-        },
-
-        "ActivatedKhOnFirstIteration": [ "MM1_L1_KH1" ]
+        }
       },
       {
         "PrototypeOfAgent": "Prototype",
@@ -234,7 +224,7 @@
 
         "AnticipatedInfluenceState": {
           "MM1_L1_KH1": {
-            "G2": 10
+            "G2": 0
           }
         },
 
@@ -249,9 +239,7 @@
             "Importance": 1,
             "Value": 0
           }
-        },
-
-        "ActivatedKhOnFirstIteration": [ "MM1_L1_KH1" ]
+        }
       }
 
     ]

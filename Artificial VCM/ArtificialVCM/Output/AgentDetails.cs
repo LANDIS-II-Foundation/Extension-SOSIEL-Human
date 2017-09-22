@@ -6,6 +6,8 @@
 
         public int Iteration { get; set; }
 
+        public string AgentId { get; set; }
+
         public string AgentProfile { get; set; }
 
         public double G1Importance { get; set; }

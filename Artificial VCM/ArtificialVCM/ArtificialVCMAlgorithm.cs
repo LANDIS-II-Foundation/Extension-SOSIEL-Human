@@ -71,6 +71,8 @@ namespace ArtificialVCM
         {
             InitializeAgents();
 
+            InitializeFirstIterationState();
+
             AfterInitialization();
         }
 
@@ -141,40 +143,15 @@ namespace ArtificialVCM
                 AgentState agentState = AgentState.Create(agent.Prototype.IsSiteOriented);
 
                 //copy generated goal importance
-                agent.GoalStates.ForEach(kvp =>
+                agent.InitialGoalStates.ForEach(kvp =>
                 {
                     agentState.GoalsState[kvp.Key] = kvp.Value;
                 });
-
-                //selects heuristics for first iteration
-                KnowledgeHeuristicsHistory history = CreateHistory((ArtificialVCMAgent)agent);
-                agentState.AddHeuristicHistory(history);
 
                 states.Add(agent, agentState);
             });
 
             return states;
-        }
-
-        /// <summary>
-        /// Creates an activated/matched heuristics history
-        /// </summary>
-        /// <param name="configuration"></param>
-        /// <param name="agent"></param>
-        /// <returns></returns>
-        private static KnowledgeHeuristicsHistory CreateHistory(ArtificialVCMAgent agent)
-        {
-            KnowledgeHeuristicsHistory history = new KnowledgeHeuristicsHistory();
-
-            KnowledgeHeuristic[] firstIterationActivated
-                = agent.AssignedKnowledgeHeuristics
-                    .Where(kh => agent.AgentStateConfiguration.ActivatedKhOnFirstIteration.Contains(kh.Id))
-                    .ToArray();
-
-            history.Matched.AddRange(firstIterationActivated);
-            history.Activated.AddRange(firstIterationActivated);
-
-            return history;
         }
 
         protected override void PostIterationCalculations(int iteration)
@@ -215,6 +192,7 @@ namespace ArtificialVCM
                 var details = new AgentDetails
                 {
                     Iteration = iteration,
+                    AgentId = agent.Id,
                     AgentProfile = agent[AlgorithmVariables.AgentProfile],
                     G1Importance = GetG1Importance(agent),
                     G2Importance = GetG2Importance(agent),
@@ -225,8 +203,6 @@ namespace ArtificialVCM
 
                 WriteToCSVHelper.AppendTo(_outputFolder + AgentDetails.FileName, details);
             });
-
-            
         }
 
         private double GetG1Importance(IAgent agent)

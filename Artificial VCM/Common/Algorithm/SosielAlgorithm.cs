@@ -6,41 +6,41 @@ using System.Threading.Tasks;
 
 namespace Common.Algorithm
 {
-	using Configuration;
-	using Entities;
-	using Helpers;
-	using Processes;
-	using Exceptions;
+    using Configuration;
+    using Entities;
+    using Helpers;
+    using Processes;
+    using Exceptions;
 
-	public abstract class SosielAlgorithm
-	{
-		private int numberOfIterations;
+    public abstract class SosielAlgorithm
+    {
+        private int numberOfIterations;
         private int iterationCounter;
-		private ProcessesConfiguration processConfiguration;
+        private ProcessesConfiguration processConfiguration;
 
-		protected int numberOfAgentsAfterInitialize; 
-		protected bool algorithmStoppage = false;
-		protected AgentList agentList;
-		protected LinkedList<Dictionary<IAgent, AgentState>> iterations = new LinkedList<Dictionary<IAgent, AgentState>>();
+        protected int numberOfAgentsAfterInitialize;
+        protected bool algorithmStoppage = false;
+        protected AgentList agentList;
+        protected LinkedList<Dictionary<IAgent, AgentState>> iterations = new LinkedList<Dictionary<IAgent, AgentState>>();
 
-		//processes
-		AnticipatoryLearning al = new AnticipatoryLearning();
-		CounterfactualThinking ct = new CounterfactualThinking();
-		Innovation it = new Innovation();
-		SocialLearning sl = new SocialLearning();
-		ActionSelection acts = new ActionSelection();
-		ActionTaking at = new ActionTaking();
+        //processes
+        AnticipatoryLearning al = new AnticipatoryLearning();
+        CounterfactualThinking ct = new CounterfactualThinking();
+        Innovation it = new Innovation();
+        SocialLearning sl = new SocialLearning();
+        ActionSelection acts = new ActionSelection();
+        ActionTaking at = new ActionTaking();
 
 
-		public SosielAlgorithm(int numberOfIterations, ProcessesConfiguration processConfiguration)
-		{
-			this.numberOfIterations = numberOfIterations;
-			this.processConfiguration = processConfiguration;
+        public SosielAlgorithm(int numberOfIterations, ProcessesConfiguration processConfiguration)
+        {
+            this.numberOfIterations = numberOfIterations;
+            this.processConfiguration = processConfiguration;
 
             iterationCounter = 0;
-		}
+        }
 
-		/// <summary>
+        /// <summary>
         /// Executes agent initializing. It's the first initializing step. 
         /// </summary>
         protected abstract void InitializeAgents();
@@ -114,7 +114,7 @@ namespace Common.Algorithm
         /// <param name="iteration"></param>
         protected virtual void PostIterationStatistic(int iteration) { }
 
-		/// <summary>
+        /// <summary>
         /// Executes agent deactivation logic.
         /// </summary>
         protected virtual void AgentsDeactivation() { }
@@ -127,251 +127,263 @@ namespace Common.Algorithm
 
 
 
-		/// <summary>
+        /// <summary>
         /// Executes reproduction logic.
         /// </summary>
         /// <param name="minAgentNumber"></param>
         protected virtual void Reproduction(int minAgentNumber)
-		{
-			
-		}
+        {
+
+        }
 
         /// <summary>
         /// Executes maintenance logic.
         /// </summary>
         protected virtual void Maintenance()
-		{
-			agentList.ActiveAgents.ForEach(a =>
-			{
+        {
+            agentList.ActiveAgents.ForEach(a =>
+            {
                 //increment heuristic activation freshness
                 a.KnowledgeHeuristicActivationFreshness.Keys.ToArray().ForEach(k =>
-				{
-					a.KnowledgeHeuristicActivationFreshness[k] += 1;
-				});
-			});
-		}
+                {
+                    a.KnowledgeHeuristicActivationFreshness[k] += 1;
+                });
+            });
+        }
 
 
-		/// <summary>
+        /// <summary>
         /// Executes SOSIEL Algorithm
         /// </summary>
         /// <param name="activeSites"></param>
         protected void RunSosiel(IEnumerable<Site> activeSites)
-		{
-			for (int i = 1; i <= numberOfIterations; i++)
-			{
+        {
+            for (int i = 1; i <= numberOfIterations; i++)
+            {
                 iterationCounter++;
 
-				IAgent[] orderedAgents = agentList.ActiveAgents.Randomize(processConfiguration.AgentRandomizationEnabled).ToArray();
+                IAgent[] orderedAgents = agentList.ActiveAgents.Randomize(processConfiguration.AgentRandomizationEnabled).ToArray();
 
-				var agentGroups = orderedAgents.GroupBy(a => a[SosielVariables.AgentType]).OrderBy(group => group.Key).ToArray();
+                var agentGroups = orderedAgents.GroupBy(a => a[SosielVariables.AgentType]).OrderBy(group => group.Key).ToArray();
 
-				PreIterationCalculations(iterationCounter);
-				PreIterationStatistic(iterationCounter);
+                PreIterationCalculations(iterationCounter);
+                PreIterationStatistic(iterationCounter);
 
-				Dictionary<IAgent, AgentState> currentIteration;
+                Dictionary<IAgent, AgentState> currentIteration;
 
-				if (iterationCounter > 1)
-					currentIteration = iterations.AddLast(new Dictionary<IAgent, AgentState>()).Value;
-				else
-					currentIteration = iterations.AddLast(InitializeFirstIterationState()).Value;
+                if (iterationCounter > 1)
+                    currentIteration = iterations.AddLast(new Dictionary<IAgent, AgentState>()).Value;
+                else
+                    currentIteration = iterations.AddLast(InitializeFirstIterationState()).Value;
 
-				Dictionary<IAgent, AgentState> priorIteration = iterations.Last.Previous?.Value;
-                
-				Dictionary<IAgent, Goal[]> rankedGoals = new Dictionary<IAgent, Goal[]>(agentList.Agents.Count);
+                Dictionary<IAgent, AgentState> priorIteration = iterations.Last.Previous?.Value;
 
-				orderedAgents.ForEach(a =>
-				{
-					rankedGoals.Add(a, a.AssignedGoals.ToArray());
+                Dictionary<IAgent, Goal[]> rankedGoals = new Dictionary<IAgent, Goal[]>(agentList.Agents.Count);
 
-					if (iterationCounter > 1)
-						currentIteration.Add(a, priorIteration[a].CreateForNextIteration());
-				});
-                
+                orderedAgents.ForEach(a =>
+                {
+                    rankedGoals.Add(a, a.AssignedGoals.ToArray());
+
+                    if (iterationCounter > 1)
+                        currentIteration.Add(a, priorIteration[a].CreateForNextIteration());
+                });
+
                 Site[] orderedSites = activeSites.Randomize().ToArray();
 
                 Site[] notSiteOriented = new Site[] { Site.DefaultSite };
 
-				if (processConfiguration.AnticipatoryLearningEnabled && iterationCounter > 1)
-				{
-					//1st round: AL, CT, IR
-					foreach (var agentGroup in agentGroups)
-					{
-						foreach (IAgent agent in agentGroup)
-						{
-							//anticipatory learning process
-							rankedGoals[agent] = al.Execute(agent, iterations.Last);
+                if (iterationCounter == 1)
+                {
+                    foreach (var agentGroup in agentGroups)
+                    {
+                        foreach (IAgent agent in agentGroup)
+                        {
+                            rankedGoals[agent] = al.SortByImportance(agent, currentIteration[agent].GoalsState)
+                                .ToArray();
+                        }
+                    }
+                }
 
-							if (processConfiguration.CounterfactualThinkingEnabled)
-							{
-								if (rankedGoals[agent].Any(g => currentIteration[agent].GoalsState.Any(kvp => kvp.Value.Confidence == false)))
-								{
-                                    foreach (Site site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
+                if (processConfiguration.AnticipatoryLearningEnabled && iterationCounter > 1)
+                    {
+                        //1st round: AL, CT, IR
+                        foreach (var agentGroup in agentGroups)
+                        {
+                            foreach (IAgent agent in agentGroup)
+                            {
+                                //anticipatory learning process
+                                rankedGoals[agent] = al.Execute(agent, iterations.Last);
+
+                                if (processConfiguration.CounterfactualThinkingEnabled)
+                                {
+                                    if (rankedGoals[agent].Any(g => currentIteration[agent].GoalsState.Any(kvp => kvp.Value.Confidence == false)))
                                     {
-                                        BeforeCounterfactualThinking(agent, site);
-
-                                        foreach (var set in agent.AssignedKnowledgeHeuristics.GroupBy(h => h.Layer.Set).OrderBy((IGrouping<MentalModel, KnowledgeHeuristic> g) => g.Key.PositionNumber))
+                                        foreach (Site site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
                                         {
-                                            //optimization
-                                            Goal selectedGoal = rankedGoals[agent].First(g => set.Key.AssociatedWith.Contains(g));
+                                            BeforeCounterfactualThinking(agent, site);
 
-                                            GoalState selectedGoalState = currentIteration[agent].GoalsState[selectedGoal];
-
-                                            if (selectedGoalState.Confidence == false)
+                                            foreach (var set in agent.AssignedKnowledgeHeuristics.GroupBy(h => h.Layer.Set).OrderBy((IGrouping<MentalModel, KnowledgeHeuristic> g) => g.Key.PositionNumber))
                                             {
-                                                foreach (var layer in set.GroupBy(h => h.Layer).OrderBy((IGrouping<KnowledgeHeuristicsLayer, KnowledgeHeuristic> g) => g.Key.PositionNumber))
+                                                //optimization
+                                                Goal selectedGoal = rankedGoals[agent].First(g => set.Key.AssociatedWith.Contains(g));
+
+                                                GoalState selectedGoalState = currentIteration[agent].GoalsState[selectedGoal];
+
+                                                if (selectedGoalState.Confidence == false)
                                                 {
-                                                    if (layer.Key.LayerConfiguration.Modifiable || (!layer.Key.LayerConfiguration.Modifiable && layer.Any(r => r.IsModifiable)))
+                                                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy((IGrouping<KnowledgeHeuristicsLayer, KnowledgeHeuristic> g) => g.Key.PositionNumber))
                                                     {
-                                                        //looking for matched heuristics in prior period
-                                                        KnowledgeHeuristic[] matchedPriorPeriodHeuristics = priorIteration[agent].HeuristicHistories[site]
-                                                                .Matched.Where(h => h.Layer == layer.Key).ToArray();
-
-                                                        bool? CTResult = null;
-
-                                                        //counterfactual thinking process
-                                                        if (matchedPriorPeriodHeuristics.Length >= 2)
-                                                            CTResult = ct.Execute(agent, iterations.Last, selectedGoal, matchedPriorPeriodHeuristics, layer.Key, site);
-
-
-                                                        if (processConfiguration.InnovationEnabled)
+                                                        if (layer.Key.LayerConfiguration.Modifiable || (!layer.Key.LayerConfiguration.Modifiable && layer.Any(r => r.IsModifiable)))
                                                         {
-                                                            //innovation process
-                                                            if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
+                                                            //looking for matched heuristics in prior period
+                                                            KnowledgeHeuristic[] matchedPriorPeriodHeuristics = priorIteration[agent].HeuristicHistories[site]
+                                                                    .Matched.Where(h => h.Layer == layer.Key).ToArray();
 
-                                                                it.Execute(agent, iterations.Last, selectedGoal, layer.Key, site);
+                                                            bool? CTResult = null;
+
+                                                            //counterfactual thinking process
+                                                            if (matchedPriorPeriodHeuristics.Length >= 2)
+                                                                CTResult = ct.Execute(agent, iterations.Last, selectedGoal, matchedPriorPeriodHeuristics, layer.Key, site);
+
+
+                                                            if (processConfiguration.InnovationEnabled)
+                                                            {
+                                                                //innovation process
+                                                                if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
+
+                                                                    it.Execute(agent, iterations.Last, selectedGoal, layer.Key, site);
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
                                         }
                                     }
-								}
-							}
-						}
-					}
-				}
+                                }
+                            }
+                        }
+                    }
 
-				if (processConfiguration.SocialLearningEnabled && iterationCounter > 1)
-				{
-					//2nd round: SL
-					foreach (var agentGroup in agentGroups)
-					{
+                    if (processConfiguration.SocialLearningEnabled && iterationCounter > 1)
+                    {
+                        //2nd round: SL
+                        foreach (var agentGroup in agentGroups)
+                        {
 
-						foreach (IAgent agent in agentGroup)
-						{
-							foreach (var set in agent.AssignedKnowledgeHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
-							{
-								foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
-								{
-                                    //social learning process
-                                    sl.ExecuteLearning(agent, iterations.Last, layer.Key);
-								}
-							}
-						}
-					}
-
-				}
-
-				if (processConfiguration.HeuristicSelectionEnabled && iterationCounter > 1)
-				{
-					//AS part I
-					foreach (var agentGroup in agentGroups)
-					{
-						foreach (IAgent agent in agentGroup)
-						{
-                            foreach (Site site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
+                            foreach (IAgent agent in agentGroup)
                             {
-                                foreach (var set in agent.AssignedKnowledgeHeuristics.GroupBy(h => h.Layer.Set).OrderBy((IGrouping<MentalModel, KnowledgeHeuristic> g) => g.Key.PositionNumber))
+                                foreach (var set in agent.AssignedKnowledgeHeuristics.GroupBy(h => h.Layer.Set).OrderBy(g => g.Key.PositionNumber))
                                 {
-                                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy((IGrouping<KnowledgeHeuristicsLayer, KnowledgeHeuristic> g) => g.Key.PositionNumber))
+                                    foreach (var layer in set.GroupBy(h => h.Layer).OrderBy(g => g.Key.PositionNumber))
                                     {
-                                        
-                                        BeforeActionSelection(agent, site);
-
-
-                                        //action selection process part I
-                                        acts.ExecutePartI(agent, iterations.Last, rankedGoals[agent], layer.ToArray(), site);
+                                        //social learning process
+                                        sl.ExecuteLearning(agent, iterations.Last, layer.Key);
                                     }
                                 }
                             }
-						}
-					}
+                        }
 
+                    }
 
-					if (processConfiguration.HeuristicSelectionPart2Enabled && iterationCounter > 1)
-					{
-						//4th round: AS part II
-						foreach (var agentGroup in agentGroups)
-						{
-							foreach (IAgent agent in agentGroup)
-							{
+                    if (processConfiguration.HeuristicSelectionEnabled)
+                    {
+                        //AS part I
+                        foreach (var agentGroup in agentGroups)
+                        {
+                            foreach (IAgent agent in agentGroup)
+                            {
                                 foreach (Site site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
                                 {
-                                    foreach (var set in agent.AssignedKnowledgeHeuristics.GroupBy(r => r.Layer.Set).OrderBy((IGrouping<MentalModel, KnowledgeHeuristic> g) => g.Key.PositionNumber))
+                                    foreach (var set in agent.AssignedKnowledgeHeuristics.GroupBy(h => h.Layer.Set).OrderBy((IGrouping<MentalModel, KnowledgeHeuristic> g) => g.Key.PositionNumber))
                                     {
                                         foreach (var layer in set.GroupBy(h => h.Layer).OrderBy((IGrouping<KnowledgeHeuristicsLayer, KnowledgeHeuristic> g) => g.Key.PositionNumber))
                                         {
+
                                             BeforeActionSelection(agent, site);
 
-                                            //action selection process part II
-                                            acts.ExecutePartII(agent, iterations.Last, rankedGoals[agent], layer.ToArray(), site);
+
+                                            //action selection process part I
+                                            acts.ExecutePartI(agent, iterations.Last, rankedGoals[agent], layer.ToArray(), site);
                                         }
                                     }
                                 }
-							}
-						}
-					}
-				}
-
-				if (processConfiguration.ActionTakingEnabled)
-				{
-					//5th round: TA
-					foreach (var agentGroup in agentGroups)
-					{
-						foreach (IAgent agent in agentGroup)
-						{
-                            foreach (Site site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
-                            {
-                                at.Execute(agent, currentIteration[agent], site);
-
-                                AfterActionTaking(agent, site);
                             }
-							//if (periods.Last.Value.IsOverconsumption)
-							//    return periods;
-						}
-					}
-				}
+                        }
 
-				if (processConfiguration.AlgorithmStopIfAllAgentsSelectDoNothing && iterationCounter > 1)
-				{
-					if (currentIteration.SelectMany(kvp => kvp.Value.HeuristicHistories.Values.SelectMany(rh=> rh.Activated)).All(r => r.IsAction == false))
-					{
-						algorithmStoppage = true;
-					}
-				}
 
-				PostIterationCalculations(iterationCounter);
+                        if (processConfiguration.HeuristicSelectionPart2Enabled && iterationCounter > 1)
+                        {
+                            //4th round: AS part II
+                            foreach (var agentGroup in agentGroups)
+                            {
+                                foreach (IAgent agent in agentGroup)
+                                {
+                                    foreach (Site site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
+                                    {
+                                        foreach (var set in agent.AssignedKnowledgeHeuristics.GroupBy(r => r.Layer.Set).OrderBy((IGrouping<MentalModel, KnowledgeHeuristic> g) => g.Key.PositionNumber))
+                                        {
+                                            foreach (var layer in set.GroupBy(h => h.Layer).OrderBy((IGrouping<KnowledgeHeuristicsLayer, KnowledgeHeuristic> g) => g.Key.PositionNumber))
+                                            {
+                                                BeforeActionSelection(agent, site);
 
-				PostIterationStatistic(iterationCounter);
+                                                //action selection process part II
+                                                acts.ExecutePartII(agent, iterations.Last, rankedGoals[agent], layer.ToArray(), site);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
-				if (processConfiguration.AgentsDeactivationEnabled && iterationCounter > 1)
-				{
-					AgentsDeactivation();
-				}
+                    if (processConfiguration.ActionTakingEnabled)
+                    {
+                        //5th round: TA
+                        foreach (var agentGroup in agentGroups)
+                        {
+                            foreach (IAgent agent in agentGroup)
+                            {
+                                foreach (Site site in agent.Prototype.IsSiteOriented ? orderedSites : notSiteOriented)
+                                {
+                                    at.Execute(agent, currentIteration[agent], site);
 
-				AfterDeactivation(iterationCounter);
+                                    AfterActionTaking(agent, site);
+                                }
+                                //if (periods.Last.Value.IsOverconsumption)
+                                //    return periods;
+                            }
+                        }
+                    }
 
-				if (processConfiguration.ReproductionEnabled && iterationCounter > 1)
-				{
-					Reproduction(0);
-				}
+                    if (processConfiguration.AlgorithmStopIfAllAgentsSelectDoNothing && iterationCounter > 1)
+                    {
+                        if (currentIteration.SelectMany(kvp => kvp.Value.HeuristicHistories.Values.SelectMany(rh => rh.Activated)).All(r => r.IsAction == false))
+                        {
+                            algorithmStoppage = true;
+                        }
+                    }
 
-				if (algorithmStoppage || agentList.ActiveAgents.Length == 0)
-					break;
+                    PostIterationCalculations(iterationCounter);
 
-				Maintenance();
-			}
-		}
-	}
-}
+                    PostIterationStatistic(iterationCounter);
+
+                    if (processConfiguration.AgentsDeactivationEnabled && iterationCounter > 1)
+                    {
+                        AgentsDeactivation();
+                    }
+
+                    AfterDeactivation(iterationCounter);
+
+                    if (processConfiguration.ReproductionEnabled && iterationCounter > 1)
+                    {
+                        Reproduction(0);
+                    }
+
+                    if (algorithmStoppage || agentList.ActiveAgents.Length == 0)
+                        break;
+
+                    Maintenance();
+                }
+            }
+        }
+    }

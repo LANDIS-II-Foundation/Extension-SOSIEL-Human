@@ -23,7 +23,7 @@ namespace Common.Entities
 
         AgentPrototype Prototype { get; }
 
-        Dictionary<Goal, GoalState> GoalStates { get; }
+        Dictionary<Goal, GoalState> InitialGoalStates { get; }
 
         /// <summary>
         /// Assigns new heuristic to mental model (heuristic list) of current agent. If empty rooms ended, old heuristics will be removed.

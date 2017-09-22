@@ -60,6 +60,8 @@ namespace Common.Processes
                     ? priorPeriodHeuristic.Consequent.Value
                     : agent[priorPeriodHeuristic.Consequent.VariableValue];
 
+                double newConsequent = consequentValue;
+
                 switch (selectedGoalState.AnticipatedDirection)
                 {
                     case AnticipatedDirection.Up:
@@ -68,13 +70,13 @@ namespace Common.Processes
                             {
                                 max = Math.Abs(consequentValue - max);
 
-                                consequentValue += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                                newConsequent += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
                             }
                             if (KnowledgeHeuristicsLayerConfiguration.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Negative)
                             {
                                 max = Math.Abs(consequentValue - min);
 
-                                consequentValue -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                                newConsequent -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
                             }
 
                             break;
@@ -85,13 +87,13 @@ namespace Common.Processes
                             {
                                 max = Math.Abs(consequentValue - min);
 
-                                consequentValue -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                                newConsequent -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
                             }
                             if (KnowledgeHeuristicsLayerConfiguration.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Negative)
                             {
                                 max = Math.Abs(consequentValue - max);
 
-                                consequentValue += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
+                                newConsequent += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
                             }
 
                             break;
@@ -102,7 +104,7 @@ namespace Common.Processes
                         }
                 }
 
-                KnowledgeHeuristicConsequent consequent = KnowledgeHeuristicConsequent.Renew(priorPeriodHeuristic.Consequent, consequentValue);
+                KnowledgeHeuristicConsequent consequent = KnowledgeHeuristicConsequent.Renew(priorPeriodHeuristic.Consequent, newConsequent);
                 #endregion
 
 
@@ -125,7 +127,15 @@ namespace Common.Processes
 
 
                 //change base ai values for the new heuristic
-                double consequentChangeProportion = (generatedHeuristic.Consequent.Value - priorPeriodHeuristic.Consequent.Value) / (double)priorPeriodHeuristic.Consequent.Value;
+                double consequentChangeProportion;
+                if (consequentValue == 0)
+                {
+                    consequentChangeProportion = 0;
+                }
+                else
+                {
+                    consequentChangeProportion = Math.Abs(generatedHeuristic.Consequent.Value - consequentValue) / consequentValue;
+                }
 
                 
                 Dictionary<Goal, double> baseAI = agent.AnticipationInfluence[priorPeriodHeuristic];

@@ -24,7 +24,7 @@ namespace Common.Processes
         /// <param name="agent"></param>
         /// <param name="goals"></param>
         /// <returns></returns>
-        IEnumerable<Goal> SortByImportance(IAgent agent, Dictionary<Goal, GoalState> goals)
+        public IEnumerable<Goal> SortByImportance(IAgent agent, Dictionary<Goal, GoalState> goals)
         {
             if (goals.Count > 1)
             {
@@ -40,15 +40,15 @@ namespace Common.Processes
                         Goal = kvp.Key
                     }).ToArray();
 
-                    double totalNoConfidenctUnadjustedProportions = noConfidenceGoals.Sum(kvp => kvp.Value.Importance);
+                    var confidenceGoals = goals.Where(kvp => kvp.Value.Confidence).ToArray();
+
+                    double totalConfidenceUnadjustedProportions = confidenceGoals.Sum(kvp => kvp.Value.Importance);
 
                     double totalNoConfidenceAdjustedProportions = noConfidenceProportions.Sum(p => p.Proportion);
 
-                    var confidenceGoals = goals.Where(kvp => kvp.Value.Confidence == true).ToArray();
-
                     var confidenceProportions = confidenceGoals.Select(kvp => new
                     {
-                        Proportion = kvp.Value.Importance * (1 - totalNoConfidenceAdjustedProportions) / totalNoConfidenctUnadjustedProportions,
+                        Proportion = kvp.Value.Importance * (1 - totalNoConfidenceAdjustedProportions) / totalConfidenceUnadjustedProportions,
                         Goal = kvp.Key
                     }).ToArray();
 
