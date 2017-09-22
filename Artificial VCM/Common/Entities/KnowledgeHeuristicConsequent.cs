@@ -49,6 +49,7 @@ namespace Common.Entities
             KnowledgeHeuristicConsequent newConsequent = old.Clone();
 
             newConsequent.Value = newValue;
+            newConsequent.VariableValue = null;
 
             return newConsequent;
         }
@@ -64,7 +65,7 @@ namespace Common.Entities
             //check on reference equality first
             //custom logic for comparing two objects
             return ReferenceEquals(this, other) 
-                || (other != null && Param == other.Param && Value == other.Value && VariableValue == other.VariableValue);
+                || (other != null && Param == other.Param && Value == other.Value && (VariableValue == other.VariableValue || VariableValue == null || other.VariableValue == null));
         }
 
         public override bool Equals(object obj)

@@ -2,7 +2,7 @@
 {
     public class AgentDetails
     {
-        public const string FileName = "Agent_details.csv";
+        public const string FileName = "{0}_details.csv";
 
         public int Iteration { get; set; }
 

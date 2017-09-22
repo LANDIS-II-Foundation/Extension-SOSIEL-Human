@@ -108,6 +108,29 @@ namespace ArtificialVCM
                 }
             });
 
+            //calculate focal values (max possible difference)
+            var agentsCount = initialState.AgentsState.Sum(state => state.NumberOfAgents);
+            agentPrototypes.ForEach(kvp =>
+            {
+                var prototype = kvp.Value;
+
+                prototype.Goals.ForEach(goal =>
+                {
+                    var e = prototype[AlgorithmVariables.E];
+                    var m = prototype[AlgorithmVariables.M];
+
+                    switch (goal.Name)
+                    {
+                        case "G1":
+                            goal.FocalValue = e + m * e * (agentsCount - 1) / agentsCount;
+                            break;
+                        case "G2":
+                            goal.FocalValue = m * e;
+                            break;
+                    }
+                });
+            });
+
             //create agents, groupby is used for saving agents numeration, e.g. FE1, HM1. HM2 etc
             initialState.AgentsState.GroupBy(state => state.PrototypeOfAgent).ForEach((agentStateGroup) =>
             {
@@ -201,7 +224,7 @@ namespace ArtificialVCM
                     NumberOfKH = agent.AssignedKnowledgeHeuristics.Count
                 };
 
-                WriteToCSVHelper.AppendTo(_outputFolder + AgentDetails.FileName, details);
+                WriteToCSVHelper.AppendTo(_outputFolder + string.Format(AgentDetails.FileName, agent.Id), details);
             });
         }
 

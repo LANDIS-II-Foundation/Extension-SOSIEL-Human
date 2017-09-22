@@ -159,11 +159,11 @@ namespace Common.Processes
                             {
                                 if (relationship == ConsequentRelationship.Positive)
                                 {
-                                    ai += difference;
+                                    ai -= difference;
                                 }
                                 else
                                 {
-                                    ai -= difference;
+                                    ai += difference;
                                 }
 
                                 break;
@@ -172,11 +172,11 @@ namespace Common.Processes
                             {
                                 if (relationship == ConsequentRelationship.Positive)
                                 {
-                                    ai -= difference;
+                                    ai += difference;
                                 }
                                 else
                                 {
-                                    ai += difference;
+                                    ai -= difference;
                                 }
 
                                 break;

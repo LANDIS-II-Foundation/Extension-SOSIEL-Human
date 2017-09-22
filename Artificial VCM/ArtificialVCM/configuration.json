@@ -18,7 +18,6 @@
           "Name": "G1",
           "Tendency": "Maximize",
           "ReferenceVariable": "AgentProfit",
-          "FocalValue": 23.5,
           "FocalValueReference": "",
           "IsCumulative": false
         },
@@ -26,7 +25,6 @@
           "Name": "G2",
           "Tendency": "Maximize",
           "ReferenceVariable": "CommonProfit",
-          "FocalValue": 15,
           "FocalValueReference": "",
           "IsCumulative": false
         }
