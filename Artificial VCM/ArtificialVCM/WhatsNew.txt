@@ -1,0 +1,4 @@
+﻿Artificial VCM 1.0.1.6474 2017-09-22
+
+New features:
+ - Implementation of Artificial VCM
