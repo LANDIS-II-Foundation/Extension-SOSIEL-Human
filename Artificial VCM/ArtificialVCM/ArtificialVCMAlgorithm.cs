@@ -71,8 +71,6 @@ namespace ArtificialVCM
         {
             InitializeAgents();
 
-            InitializeFirstIterationState();
-
             AfterInitialization();
         }
 
@@ -155,6 +153,13 @@ namespace ArtificialVCM
             agentList =  new AgentList(agents, agentPrototypes.Select(kvp=>kvp.Value).ToList());
         }
 
+        protected override void AfterInitialization()
+        {
+            base.AfterInitialization();
+
+            CalculateCommonPoolProfit();
+        }
+
         /// <inheritdoc />
         protected override Dictionary<IAgent, AgentState> InitializeFirstIterationState()
         {
@@ -177,16 +182,12 @@ namespace ArtificialVCM
             return states;
         }
 
+        /// <inheritdoc />
         protected override void PostIterationCalculations(int iteration)
         {
             base.PostIterationCalculations(iteration);
 
-            var commonProfit = agentList.ActiveAgents
-                .Select(agent => (double) agent[AlgorithmVariables.M] * (double) agent[AlgorithmVariables.AgentC])
-                .Average();
-
-            var firstAgent = agentList.Agents.First();
-            firstAgent.SetToCommon(AlgorithmVariables.CommonProfit, commonProfit);
+            CalculateCommonPoolProfit();
 
             agentList.ActiveAgents.ForEach(agent =>
             {
@@ -195,6 +196,20 @@ namespace ArtificialVCM
             });
         }
 
+        /// <summary>
+        /// Calculates the common pool profit.
+        /// </summary>
+        private void CalculateCommonPoolProfit()
+        {
+            var commonProfit = agentList.ActiveAgents
+                .Select(agent => (double) agent[AlgorithmVariables.M] * (double) agent[AlgorithmVariables.AgentC])
+                .Average();
+
+            var firstAgent = agentList.Agents.First();
+            firstAgent.SetToCommon(AlgorithmVariables.CommonProfit, commonProfit);
+        }
+
+        /// <inheritdoc />
         protected override void PostIterationStatistic(int iteration)
         {
             base.PostIterationStatistic(iteration);
@@ -209,9 +224,6 @@ namespace ArtificialVCM
 
             agentList.Agents.ForEach(agent =>
             {
-                var activatedKH = iterations.Last.Value[agent].TakenActions[Site.DefaultSite];
-                var consequentValue = activatedKH.First().Value;
-
                 var details = new AgentDetails
                 {
                     Iteration = iteration,
@@ -220,7 +232,6 @@ namespace ArtificialVCM
                     G1Importance = GetG1Importance(agent),
                     G2Importance = GetG2Importance(agent),
                     AgentContribution = agent[AlgorithmVariables.AgentC],
-                    ConsequentValue = consequentValue,
                     NumberOfKH = agent.AssignedKnowledgeHeuristics.Count
                 };
 
@@ -228,11 +239,17 @@ namespace ArtificialVCM
             });
         }
 
+        /// <summary>
+        /// Gets the first goal importance.
+        /// </summary>
         private double GetG1Importance(IAgent agent)
         {
             return agent.ContainsVariable(AlgorithmVariables.G1Importance) ? agent[AlgorithmVariables.G1Importance] : 0;
         }
 
+        /// <summary>
+        /// Gets the second goal importance.
+        /// </summary>
         private double GetG2Importance(IAgent agent)
         {
             return agent.ContainsVariable(AlgorithmVariables.G2Importance) ? agent[AlgorithmVariables.G2Importance] : 0;

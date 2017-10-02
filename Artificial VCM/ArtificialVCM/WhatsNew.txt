@@ -2,3 +2,8 @@
 
 New features:
  - Implementation of Artificial VCM
+
+Artificial VCM 1.0.2.6484 2017-10-02
+
+New features:
+ - Changed agents configuration and the algorithm according to the latest specification Artificial VCM 1.1

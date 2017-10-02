@@ -250,7 +250,6 @@ namespace Common.Algorithm
                                                             {
                                                                 //innovation process
                                                                 if (CTResult == false || matchedPriorPeriodHeuristics.Length < 2)
-
                                                                     it.Execute(agent, iterations.Last, selectedGoal, layer.Key, site);
                                                             }
                                                         }

@@ -191,7 +191,8 @@ namespace Common.Processes
 
             if (matchedHeuristics.Length > 1)
             {
-                priorPeriodActivatedHeuristic = priorPeriod.HeuristicHistories[site].Activated.FirstOrDefault(r => r.Layer == processedHeuristics.First().Layer);
+                if(priorPeriod != null)
+                    priorPeriodActivatedHeuristic = priorPeriod.HeuristicHistories[site].Activated.FirstOrDefault(r => r.Layer == processedHeuristics.First().Layer);
                 
                 //set anticipated influence before execute specific logic
                 anticipatedInfluence = agent.AnticipationInfluence;

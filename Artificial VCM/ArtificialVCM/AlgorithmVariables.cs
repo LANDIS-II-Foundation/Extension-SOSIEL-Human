@@ -20,5 +20,8 @@ namespace ArtificialVCM
 
         public const string G1Importance = "G1_Importance";
         public const string G2Importance = "G2_Importance";
+
+        public const string Mean = "Mean";
+        public const string StdDev = "StdDev";
     }
 }

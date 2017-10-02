@@ -16,8 +16,6 @@
 
         public double AgentContribution { get; set; }
 
-        public double ConsequentValue { get; set; }
-
         public int NumberOfKH { get; set; }
     }
 }

@@ -37,7 +37,7 @@ namespace Common.Randoms
             get
             {
                 if (random == null)
-                    random = new NormalDistributionRandom(0.3,0.3);
+                    random = new NormalDistributionRandom(0.3, 0.3);
 
                 return random;
             }

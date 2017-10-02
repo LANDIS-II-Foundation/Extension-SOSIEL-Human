@@ -10,7 +10,9 @@
       "CommonVariables": {
         "AgentType": "Type1",
         "E": 10,
-        "M": 1.5
+        "M": 1,
+        "Mean": 0.3,
+        "StdDev": 0.3
       },
 
       "Goals": [
@@ -70,6 +72,26 @@
           },
           "RequiredParticipants": 1,
           "IsAction": true
+        },
+        {
+          "MentalModel": 1,
+          "KnowledgeHeuristicsLayer": 1,
+          "PositionNumber": 2,
+          "Id": "MM1_L1_KH2",
+          "Antecedent": [
+            {
+              "Param": "AgentStatus",
+              "Sign": "==",
+              "Value": "active"
+            }
+          ],
+          "Consequent": {
+            "Param": "AgentC",
+            "Value": 0,
+            "VariableValue": "E"
+          },
+          "RequiredParticipants": 1,
+          "IsAction": true
         }
       ],
 
@@ -82,39 +104,7 @@
     "AgentsState": [
       {
         "PrototypeOfAgent": "Prototype",
-        "NumberOfAgents": 2,
-
-        "PrivateVariables": {
-          "AgentStatus": "active",
-          "AgentProfile": "agent_profile1",
-          "InitialAgentC": 0
-        },
-
-        "VariablesTransform": {
-        },
-
-        "AnticipatedInfluenceState": {
-          "MM1_L1_KH1": {
-            "G1": 10
-          }
-        },
-
-        "AssignedKnowledgeHeuristics": [
-          "MM1_L1_KH1"
-        ],
-
-        "AssignedGoals": [ "G1" ],
-
-        "GoalsState": {
-          "G1": {
-            "Importance": 1,
-            "Value": 23.5
-          }
-        }
-      },
-      {
-        "PrototypeOfAgent": "Prototype",
-        "NumberOfAgents": 2,
+        "NumberOfAgents": 10,
 
         "PrivateVariables": {
           "AgentStatus": "active",
@@ -125,21 +115,18 @@
           "InitialAgentC": "G2_Importance"
         },
 
+        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1", "MM1_L1_KH2" ],
+
         "AnticipatedInfluenceState": {
           "MM1_L1_KH1": {
             "G1": 0,
             "G2": 0
+          },
+          "MM1_L1_KH2": {
+            "G1": 0,
+            "G2": 0
           }
         },
-
-        "AnticipatedInfluenceTransform": {
-          "MM1_L1_KH1": {
-            "G1": "InitialAgentC",
-            "G2": "InitialAgentC"
-          }
-        },
-
-        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1" ],
 
         "AssignedGoals": [ "G1", "G2" ],
 
@@ -148,7 +135,7 @@
             "Importance": 0,
             "Value": 23.5,
             "Randomness": true,
-            "RandomFrom": 0.5,
+            "RandomFrom": 0.1,
             "RandomTo": 0.9
           },
           "G2": {
@@ -158,88 +145,7 @@
             "BasedOn": "G1"
           }
         }
-      },
-      {
-        "PrototypeOfAgent": "Prototype",
-        "NumberOfAgents": 4,
-
-        "PrivateVariables": {
-          "AgentStatus": "active",
-          "AgentProfile": "agent_profile3"
-        },
-
-        "VariablesTransform": {
-          "InitialAgentC": "G2_Importance"
-        },
-
-        "AnticipatedInfluenceState": {
-          "MM1_L1_KH1": {
-            "G1": 0,
-            "G2": 0
-          }
-        },
-
-        "AnticipatedInfluenceTransform": {
-          "MM1_L1_KH1": {
-            "G1": "InitialAgentC",
-            "G2": "InitialAgentC"
-          }
-        },
-
-        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1" ],
-
-        "AssignedGoals": [ "G1", "G2" ],
-
-        "GoalsState": {
-          "G2": {
-            "Importance": 0,
-            "Value": 0,
-            "Randomness": true,
-            "RandomFrom": 0.6,
-            "RandomTo": 0.9
-          },
-          "G1": {
-            "Importance": 0,
-            "Value": 0,
-            "Randomness": true,
-            "BasedOn": "G2"
-
-          }
-        }
-      },
-      {
-        "PrototypeOfAgent": "Prototype",
-        "NumberOfAgents": 2,
-
-        "PrivateVariables": {
-          "AgentStatus": "active",
-          "InitialAgentC": 10,
-          "AgentProfile": "agent_profile4"
-        },
-
-        "VariablesTransform": {
-        },
-
-        "AnticipatedInfluenceState": {
-          "MM1_L1_KH1": {
-            "G2": 0
-          }
-        },
-
-        "AssignedKnowledgeHeuristics": [
-          "MM1_L1_KH1"
-        ],
-
-        "AssignedGoals": [ "G2" ],
-
-        "GoalsState": {
-          "G2": {
-            "Importance": 1,
-            "Value": 0
-          }
-        }
       }
-
     ]
   }
 }
