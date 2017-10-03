@@ -143,12 +143,12 @@ namespace ArtificialVCM
                     {
                         case AlgorithmVariables.G1Importance:
                             {
-                                agent[variable] = agent[AlgorithmVariables.G1Importance] * 10;
+                                agent[variable] = agent[AlgorithmVariables.E] * agent[AlgorithmVariables.G1Importance];
                                 break;
                             }
                         case AlgorithmVariables.G2Importance:
                             {
-                                agent[variable] = agent[AlgorithmVariables.G2Importance] * 10;
+                                agent[variable] = agent[AlgorithmVariables.E] * agent[AlgorithmVariables.G2Importance];
                                 break;
                             }
 
@@ -185,7 +185,7 @@ namespace ArtificialVCM
 
             agent[AlgorithmVariables.AgentProfit] = e * (1 - importance * (1 - m));
             agent[AlgorithmVariables.AgentC] = agent[AlgorithmVariables.AgentProfit];
-            //agent[AlgorithmVariables.CommonProfit] = e * importance;
+            agent[AlgorithmVariables.CommonProfit] = e * importance;
         }
 
         private static double GenerateImportance(ArtificialVCMAgent agent, double min, double max)

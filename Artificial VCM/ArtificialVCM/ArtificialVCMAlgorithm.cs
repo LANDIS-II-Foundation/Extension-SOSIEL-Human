@@ -157,7 +157,13 @@ namespace ArtificialVCM
         {
             base.AfterInitialization();
 
-            CalculateCommonPoolProfit();
+            var agentsCount = agentList.Agents.Count;
+
+            agentList.Agents.ForEach(agent =>
+            {
+                agent[AlgorithmVariables.CommonProfit] = agent[AlgorithmVariables.E] *
+                                                         agent[AlgorithmVariables.G2Importance];
+            });
         }
 
         /// <inheritdoc />
@@ -187,26 +193,16 @@ namespace ArtificialVCM
         {
             base.PostIterationCalculations(iteration);
 
-            CalculateCommonPoolProfit();
+            var commonProfit = agentList.ActiveAgents
+                .Select(agent => (double)agent[AlgorithmVariables.M] * (double)agent[AlgorithmVariables.AgentC])
+                .Average();
 
             agentList.ActiveAgents.ForEach(agent =>
             {
-                agent[AlgorithmVariables.AgentProfit] = agent[AlgorithmVariables.E] - agent[AlgorithmVariables.AgentC] +
-                                                        agent[AlgorithmVariables.CommonProfit];
+                agent[AlgorithmVariables.CommonProfit] = commonProfit;
+
+                agent[AlgorithmVariables.AgentProfit] = agent[AlgorithmVariables.E] - agent[AlgorithmVariables.AgentC] + commonProfit;
             });
-        }
-
-        /// <summary>
-        /// Calculates the common pool profit.
-        /// </summary>
-        private void CalculateCommonPoolProfit()
-        {
-            var commonProfit = agentList.ActiveAgents
-                .Select(agent => (double) agent[AlgorithmVariables.M] * (double) agent[AlgorithmVariables.AgentC])
-                .Average();
-
-            var firstAgent = agentList.Agents.First();
-            firstAgent.SetToCommon(AlgorithmVariables.CommonProfit, commonProfit);
         }
 
         /// <inheritdoc />

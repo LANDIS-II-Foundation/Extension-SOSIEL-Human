@@ -1,9 +1,15 @@
 ﻿Artificial VCM 1.0.1.6474 2017-09-22
 
 New features:
- - Implementation of Artificial VCM
+ - Implementation of Artificial VCM.
 
 Artificial VCM 1.0.2.6484 2017-10-02
 
 New features:
- - Changed agents configuration and the algorithm according to the latest specification Artificial VCM 1.1
+ - Changed agents configuration and the algorithm according to the latest specification Artificial VCM 1.1.
+
+Artificial VCM 1.0.3.6485 2017-10-02
+
+Fixed bugs:
+ - Fixed the formula of agent(i)_c(t=1).
+ - Fixed the formula of agent(i)_common_profit(t=0).
