@@ -1,6 +1,6 @@
 ﻿namespace ArtificialVCM.Output
 {
-    public class AgentDetails
+    public class AgentDetailsOutput
     {
         public const string FileName = "{0}_details.csv";
 
@@ -17,5 +17,9 @@
         public double AgentContribution { get; set; }
 
         public int NumberOfKH { get; set; }
+
+        public string SelectedGoal { get; set; }
+
+        public string Details { get; set; }
     }
 }

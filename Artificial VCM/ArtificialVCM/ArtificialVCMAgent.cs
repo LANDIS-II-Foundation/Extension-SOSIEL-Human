@@ -184,7 +184,7 @@ namespace ArtificialVCM
             var importance = agent[AlgorithmVariables.G2Importance];
 
             agent[AlgorithmVariables.AgentProfit] = e * (1 - importance * (1 - m));
-            agent[AlgorithmVariables.AgentC] = agent[AlgorithmVariables.AgentProfit];
+            agent[AlgorithmVariables.AgentC] = e * importance;
             agent[AlgorithmVariables.CommonProfit] = e * importance;
         }
 

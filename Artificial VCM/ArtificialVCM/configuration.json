@@ -11,8 +11,8 @@
         "AgentType": "Type1",
         "E": 10,
         "M": 1,
-        "Mean": 0.3,
-        "StdDev": 0.3
+        "Mean": 0.5,
+        "StdDev": 0.5
       },
 
       "Goals": [

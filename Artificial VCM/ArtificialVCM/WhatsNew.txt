@@ -13,3 +13,11 @@ Artificial VCM 1.0.3.6485 2017-10-02
 Fixed bugs:
  - Fixed the formula of agent(i)_c(t=1).
  - Fixed the formula of agent(i)_common_profit(t=0).
+ 
+Artificial VCM 1.0.4.6486 2017-10-04
+
+New features:
+ - Added additional information for testing purposes.
+
+Fixed bugs:
+ - Fixed output value (average contribution).

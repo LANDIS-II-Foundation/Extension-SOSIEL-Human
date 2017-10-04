@@ -188,17 +188,12 @@ namespace Common.Processes
 
 
                 //add the generated heuristic to the prototype's mental model and assign one to the agent's mental model 
-
-                if (agent.Prototype.IsSimilarHeuristicExists(generatedHeuristic) == false)
+                if (agent.AssignedKnowledgeHeuristics.Any(heuristic => heuristic == generatedHeuristic) == false)
                 {
                     //add to the prototype and assign to current agent
                     agent.AddHeuristic(generatedHeuristic, layer, proportionalAI);
                 }
-                else if(agent.AssignedKnowledgeHeuristics.Any(heuristic => heuristic == generatedHeuristic) == false)
-                {
-                    //assign to current agent only
-                    agent.AssignNewHeuristic(generatedHeuristic, proportionalAI);
-                }
+              
 
                 if (layer.Set.Layers.Count > 1)
                     //set consequent to actor's variables for next layers

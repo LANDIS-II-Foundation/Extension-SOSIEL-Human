@@ -22,6 +22,8 @@ namespace Common.Algorithm
         protected bool algorithmStoppage = false;
         protected AgentList agentList;
         protected LinkedList<Dictionary<IAgent, AgentState>> iterations = new LinkedList<Dictionary<IAgent, AgentState>>();
+        protected Dictionary<IAgent, Goal[]> rankedGoals;
+
 
         //processes
         AnticipatoryLearning al = new AnticipatoryLearning();
@@ -178,7 +180,7 @@ namespace Common.Algorithm
 
                 Dictionary<IAgent, AgentState> priorIteration = iterations.Last.Previous?.Value;
 
-                Dictionary<IAgent, Goal[]> rankedGoals = new Dictionary<IAgent, Goal[]>(agentList.Agents.Count);
+                rankedGoals = new Dictionary<IAgent, Goal[]>(agentList.Agents.Count);
 
                 orderedAgents.ForEach(a =>
                 {

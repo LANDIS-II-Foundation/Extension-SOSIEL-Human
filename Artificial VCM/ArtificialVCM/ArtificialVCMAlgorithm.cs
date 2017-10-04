@@ -164,6 +164,29 @@ namespace ArtificialVCM
                 agent[AlgorithmVariables.CommonProfit] = agent[AlgorithmVariables.E] *
                                                          agent[AlgorithmVariables.G2Importance];
             });
+
+            agentList.Agents.ForEach(agent =>
+            {
+                var details = new AgentDetailsOutput
+                {
+                    Iteration = 0,
+                    AgentId = agent.Id,
+                    AgentProfile = agent[AlgorithmVariables.AgentProfile],
+                    G1Importance = GetG1Importance(agent),
+                    G2Importance = GetG2Importance(agent),
+                    AgentContribution = agent[AlgorithmVariables.AgentC],
+                    NumberOfKH = agent.AssignedKnowledgeHeuristics.Count,
+                    SelectedGoal = "-",
+                    Details = string.Join(" || ", agent.AssignedGoals.Select(goal =>
+                    {
+                        return string.Format("{0}: {1}", goal.Name, string.Join(" | ",
+                            agent.AnticipationInfluence.Select(kvp => string.Format("{0} - {1}", kvp.Key,
+                                kvp.Value[goal])).ToArray()));
+                    }))
+                };
+
+                WriteToCSVHelper.AppendTo(_outputFolder + string.Format(AgentDetailsOutput.FileName, agent.Id), details);
+            });
         }
 
         /// <inheritdoc />
@@ -210,17 +233,15 @@ namespace ArtificialVCM
         {
             base.PostIterationStatistic(iteration);
 
-            var firstAgent = agentList.Agents.First();
-
-            WriteToCSVHelper.AppendTo(_outputFolder + AverageContribution.FileName, new AverageContribution
+            WriteToCSVHelper.AppendTo(_outputFolder + AverageContributionOutput.FileName, new AverageContributionOutput
             {
                 Iteration = iteration,
-                CommonPoolProfit = firstAgent[AlgorithmVariables.CommonProfit]
+                AverageContribution = agentList.ActiveAgents.Select(agent => (double)agent[AlgorithmVariables.AgentC]).Average()
             });
 
             agentList.Agents.ForEach(agent =>
             {
-                var details = new AgentDetails
+                var details = new AgentDetailsOutput
                 {
                     Iteration = iteration,
                     AgentId = agent.Id,
@@ -228,10 +249,17 @@ namespace ArtificialVCM
                     G1Importance = GetG1Importance(agent),
                     G2Importance = GetG2Importance(agent),
                     AgentContribution = agent[AlgorithmVariables.AgentC],
-                    NumberOfKH = agent.AssignedKnowledgeHeuristics.Count
+                    NumberOfKH = agent.AssignedKnowledgeHeuristics.Count,
+                    SelectedGoal = rankedGoals[agent].First().Name,
+                    Details = string.Join(" || ",  agent.AssignedGoals.Select(goal =>
+                    {
+                        return string.Format("{0}: {1}", goal.Name, string.Join(" | ",
+                            agent.AnticipationInfluence.Select(kvp => string.Format("{0} - {1}", kvp.Key,
+                                kvp.Value[goal])).ToArray()));
+                    }))
                 };
 
-                WriteToCSVHelper.AppendTo(_outputFolder + string.Format(AgentDetails.FileName, agent.Id), details);
+                WriteToCSVHelper.AppendTo(_outputFolder + string.Format(AgentDetailsOutput.FileName, agent.Id), details);
             });
         }
 
