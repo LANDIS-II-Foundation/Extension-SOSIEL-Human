@@ -64,8 +64,11 @@ namespace Common.Entities
         {
             //check on reference equality first
             //custom logic for comparing two objects
-            return ReferenceEquals(this, other) 
-                || (other != null && Param == other.Param && Value == other.Value && (VariableValue == other.VariableValue || VariableValue == null || other.VariableValue == null));
+            return ReferenceEquals(this, other)
+                   || (other != null
+                       && Param == other.Param
+                       && Value == other.Value
+                       && VariableValue == other.VariableValue);
         }
 
         public override bool Equals(object obj)

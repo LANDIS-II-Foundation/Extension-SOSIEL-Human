@@ -168,7 +168,10 @@ namespace Common.Entities
             //check on reference equality first
             //custom logic for comparing two objects
             return ReferenceEquals(this, other) 
-                || (other != null && Consequent == other.Consequent && Antecedent.Length == other.Antecedent.Length && Antecedent.All(ant => other.Antecedent.Any(ant2 => ant == ant2)));
+                || (other != null 
+                && Consequent == other.Consequent
+                && Antecedent.Length == other.Antecedent.Length 
+                && Antecedent.All(ant => other.Antecedent.Any(ant2 => ant == ant2)));
         }
 
         public override bool Equals(object obj)

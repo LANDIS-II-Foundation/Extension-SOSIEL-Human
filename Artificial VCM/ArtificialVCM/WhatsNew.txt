@@ -21,3 +21,9 @@ New features:
 
 Fixed bugs:
  - Fixed output value (average contribution).
+
+Artificial VCM 1.0.5.6487 2017-10-05
+
+New features:
+ - Changed the formula of anticipated influence calculation.
+ - Added KH consequent value to the details column in AgentDetailsOutput

@@ -133,7 +133,7 @@
         "GoalsState": {
           "G1": {
             "Importance": 0,
-            "Value": 23.5,
+            "Value": 0,
             "Randomness": true,
             "RandomFrom": 0.1,
             "RandomTo": 0.9

@@ -310,7 +310,7 @@ namespace Common.Processes
                 }
                 else
                 {
-                    anticipatedInfluence = currentGoalState.Value;
+                    anticipatedInfluence = currentGoalState.Value - currentGoalState.PriorValue;
                 }
 
                 currentGoalState.AnticipatedInfluenceValue = anticipatedInfluence;

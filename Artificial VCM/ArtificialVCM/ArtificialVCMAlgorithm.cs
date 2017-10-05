@@ -180,8 +180,9 @@ namespace ArtificialVCM
                     Details = string.Join(" || ", agent.AssignedGoals.Select(goal =>
                     {
                         return string.Format("{0}: {1}", goal.Name, string.Join(" | ",
-                            agent.AnticipationInfluence.Select(kvp => string.Format("{0} - {1}", kvp.Key,
-                                kvp.Value[goal])).ToArray()));
+                            agent.AnticipationInfluence.Select(kvp => string.Format("{0}({2}={3}) - {1}", kvp.Key,
+                                Math.Round(kvp.Value[goal], 3), kvp.Key.Consequent.Param,
+                                string.IsNullOrEmpty(kvp.Key.Consequent.VariableValue) ? kvp.Key.Consequent.Value : agent[kvp.Key.Consequent.VariableValue])).ToArray()));
                     }))
                 };
 
@@ -202,7 +203,10 @@ namespace ArtificialVCM
                 //copy generated goal importance
                 agent.InitialGoalStates.ForEach(kvp =>
                 {
-                    agentState.GoalsState[kvp.Key] = kvp.Value;
+                    var goalState = kvp.Value;
+                    goalState.Value = agent[kvp.Key.ReferenceVariable];
+
+                    agentState.GoalsState[kvp.Key] = goalState;
                 });
 
                 states.Add(agent, agentState);
@@ -254,8 +258,9 @@ namespace ArtificialVCM
                     Details = string.Join(" || ",  agent.AssignedGoals.Select(goal =>
                     {
                         return string.Format("{0}: {1}", goal.Name, string.Join(" | ",
-                            agent.AnticipationInfluence.Select(kvp => string.Format("{0} - {1}", kvp.Key,
-                                kvp.Value[goal])).ToArray()));
+                            agent.AnticipationInfluence.Select(kvp => string.Format("{0}({2}={3}) - {1}", kvp.Key,
+                                Math.Round(kvp.Value[goal], 3),kvp.Key.Consequent.Param, 
+                                string.IsNullOrEmpty(kvp.Key.Consequent.VariableValue) ? kvp.Key.Consequent.Value : agent[kvp.Key.Consequent.VariableValue])).ToArray()));
                     }))
                 };
 

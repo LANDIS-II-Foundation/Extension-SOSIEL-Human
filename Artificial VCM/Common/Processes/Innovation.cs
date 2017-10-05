@@ -68,12 +68,16 @@ namespace Common.Processes
                         {
                             if (KnowledgeHeuristicsLayerConfiguration.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Positive)
                             {
+                                if (consequentValue == max) return;
+
                                 max = Math.Abs(consequentValue - max);
 
                                 newConsequent += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
                             }
                             if (KnowledgeHeuristicsLayerConfiguration.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Negative)
                             {
+                                if (consequentValue == min) return;
+
                                 max = Math.Abs(consequentValue - min);
 
                                 newConsequent -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
@@ -85,12 +89,16 @@ namespace Common.Processes
                         {
                             if (KnowledgeHeuristicsLayerConfiguration.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Positive)
                             {
+                                if (consequentValue == min) return;
+
                                 max = Math.Abs(consequentValue - min);
 
                                 newConsequent -= (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
                             }
                             if (KnowledgeHeuristicsLayerConfiguration.ConvertSign(parameters.ConsequentRelationshipSign[goal.Name]) == ConsequentRelationship.Negative)
                             {
+                                if (consequentValue == max) return;
+
                                 max = Math.Abs(consequentValue - max);
 
                                 newConsequent += (Math.Abs(PowerLawRandom.GetInstance.Next(min, max) - max));
@@ -188,12 +196,19 @@ namespace Common.Processes
 
 
                 //add the generated heuristic to the prototype's mental model and assign one to the agent's mental model 
-                if (agent.AssignedKnowledgeHeuristics.Any(heuristic => heuristic == generatedHeuristic) == false)
+                if (agent.Prototype.IsSimilarHeuristicExists(generatedHeuristic) == false)
                 {
                     //add to the prototype and assign to current agent
                     agent.AddHeuristic(generatedHeuristic, layer, proportionalAI);
                 }
-              
+                else if (agent.AssignedKnowledgeHeuristics.Any(heuristic => heuristic == generatedHeuristic) == false)
+                {
+                    var kh = agent.Prototype.KnowledgeHeuristics.FirstOrDefault(h => h == generatedHeuristic);
+
+                    //assign to current agent only
+                    agent.AssignNewHeuristic(kh, proportionalAI);
+                }
+
 
                 if (layer.Set.Layers.Count > 1)
                     //set consequent to actor's variables for next layers
