@@ -38,8 +38,10 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(AutomaticVersions) = postSolution
-		UpdateAssemblyVersion.Release|Any CPU = False
+		PrimaryVersionType.Release|Any CPU = AssemblyVersionAttribute
+		UpdateAssemblyVersion.Release|Any CPU = True
 		UpdateAssemblyFileVersion.Release|Any CPU = False
 		UpdateAssemblyInfoVersion.Release|Any CPU = False
+		AssemblyVersionSettings.Release|Any CPU = None.None.Increment.DeltaDayStamp
 	EndGlobalSection
 EndGlobal

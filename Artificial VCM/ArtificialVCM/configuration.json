@@ -100,11 +100,41 @@
   },
 
   "InitialState": {
-
     "AgentsState": [
       {
         "PrototypeOfAgent": "Prototype",
-        "NumberOfAgents": 10,
+        "NumberOfAgents": 2,
+
+        "PrivateVariables": {
+          "AgentStatus": "active",
+          "AgentProfile": "agent_profile1",
+          "G2_Importance":  0 
+        },
+
+        "VariablesTransform": {
+          "InitialAgentC": "G2_Importance"
+        },
+
+        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1" ],
+
+        "AnticipatedInfluenceState": {
+          "MM1_L1_KH1": {
+            "G1": 0
+          }
+        },
+
+        "AssignedGoals": [ "G1" ],
+
+        "GoalsState": {
+          "G1": {
+            "Importance": 1,
+            "Value": 0
+          }
+        }
+      },
+      {
+        "PrototypeOfAgent": "Prototype",
+        "NumberOfAgents": 5,
 
         "PrivateVariables": {
           "AgentStatus": "active",
@@ -131,18 +161,93 @@
         "AssignedGoals": [ "G1", "G2" ],
 
         "GoalsState": {
-          "G1": {
-            "Importance": 0,
-            "Value": 0,
-            "Randomness": true,
-            "RandomFrom": 0.1,
-            "RandomTo": 0.9
-          },
           "G2": {
             "Importance": 0,
             "Value": 0,
             "Randomness": true,
-            "BasedOn": "G1"
+            "RandomFrom": 0.1,
+            "RandomTo": 0.4
+          },
+          "G1": {
+            "Importance": 0,
+            "Value": 0,
+            "Randomness": true,
+            "BasedOn": "G2"
+          }
+        }
+      },
+      {
+        "PrototypeOfAgent": "Prototype",
+        "NumberOfAgents": 2,
+
+        "PrivateVariables": {
+          "AgentStatus": "active",
+          "AgentProfile": "agent_profile3"
+        },
+
+        "VariablesTransform": {
+          "InitialAgentC": "G2_Importance"
+        },
+
+        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1", "MM1_L1_KH2" ],
+
+        "AnticipatedInfluenceState": {
+          "MM1_L1_KH1": {
+            "G1": 0,
+            "G2": 0
+          },
+          "MM1_L1_KH2": {
+            "G1": 0,
+            "G2": 0
+          }
+        },
+
+        "AssignedGoals": [ "G1", "G2" ],
+
+        "GoalsState": {
+          "G2": {
+            "Importance": 0,
+            "Value": 0,
+            "Randomness": true,
+            "RandomFrom": 0.5,
+            "RandomTo": 0.9
+          },
+          "G1": {
+            "Importance": 0,
+            "Value": 0,
+            "Randomness": true,
+            "BasedOn": "G2"
+          }
+        }
+      },
+      {
+        "PrototypeOfAgent": "Prototype",
+        "NumberOfAgents": 2,
+
+        "PrivateVariables": {
+          "AgentStatus": "active",
+          "AgentProfile": "agent_profile4",
+          "G2_Importance": 1 
+        },
+
+        "VariablesTransform": {
+          "InitialAgentC": "G2_Importance"
+        },
+
+        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1" ],
+
+        "AnticipatedInfluenceState": {
+          "MM1_L1_KH1": {
+            "G2": 0
+          }
+        },
+
+        "AssignedGoals": [ "G2" ],
+
+        "GoalsState": {
+          "G2": {
+            "Importance": 1,
+            "Value": 0
           }
         }
       }

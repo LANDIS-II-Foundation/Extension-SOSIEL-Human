@@ -108,21 +108,21 @@ namespace ArtificialVCM
             //manually initialize AI
             agent.AssignedKnowledgeHeuristics.ForEach(kh =>
             {
-                var goal1 = agent.AssignedGoals.First(g => g.Name == "G1");
-                var goal2 = agent.AssignedGoals.First(g => g.Name == "G2");
+                var goal1 = agent.AssignedGoals.FirstOrDefault(g => g.Name == "G1");
+                var goal2 = agent.AssignedGoals.FirstOrDefault(g => g.Name == "G2");
 
                 Dictionary<Goal, double> inner = new Dictionary<Goal, double>();
 
                 if (kh.PositionNumber == 1)
                 {
-                    inner.Add(goal1, agent[AlgorithmVariables.E]);
-                    inner.Add(goal2, agent[AlgorithmVariables.E] - 1);
+                    if (goal1 != null) inner.Add(goal1, agent[AlgorithmVariables.E]);
+                    if (goal2 != null) inner.Add(goal2, agent[AlgorithmVariables.E] - 1);
                 }
 
                 if (kh.PositionNumber == 2)
                 {
-                    inner.Add(goal1, 0);
-                    inner.Add(goal2, agent[AlgorithmVariables.E]);
+                    if (goal1 != null) inner.Add(goal1, 0);
+                    if (goal2 != null) inner.Add(goal2, agent[AlgorithmVariables.E]);
                 }
 
                 agent.AnticipationInfluence.Add(kh, inner);
