@@ -145,14 +145,10 @@
           "InitialAgentC": "G2_Importance"
         },
 
-        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1", "MM1_L1_KH2" ],
+        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1" ],
 
         "AnticipatedInfluenceState": {
           "MM1_L1_KH1": {
-            "G1": 0,
-            "G2": 0
-          },
-          "MM1_L1_KH2": {
             "G1": 0,
             "G2": 0
           }
@@ -234,10 +230,10 @@
           "InitialAgentC": "G2_Importance"
         },
 
-        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH1" ],
+        "AssignedKnowledgeHeuristics": [ "MM1_L1_KH2" ],
 
         "AnticipatedInfluenceState": {
-          "MM1_L1_KH1": {
+          "MM1_L1_KH2": {
             "G2": 0
           }
         },

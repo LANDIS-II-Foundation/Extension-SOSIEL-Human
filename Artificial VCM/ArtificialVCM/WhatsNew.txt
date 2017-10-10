@@ -32,3 +32,9 @@ Artificial VCM 1.0.6.6489 2017-10-06
 
 New features:
  - Changed configuration.json according to Artificial VCM 3
+
+Artificial VCM 1.0.7.6492 2017-10-10
+
+New features:
+ - Changed agents configuration
+ - Anticipated influence(t) = goal variable value(t)
