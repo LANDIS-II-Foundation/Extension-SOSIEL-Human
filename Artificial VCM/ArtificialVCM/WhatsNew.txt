@@ -38,3 +38,8 @@ Artificial VCM 1.0.7.6492 2017-10-10
 New features:
  - Changed agents configuration
  - Anticipated influence(t) = goal variable value(t)
+
+Artificial VCM 1.0.8.6495 2017-10-12
+
+New features:
+ - Added UseImportanceAdjusting property to the configuration

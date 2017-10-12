@@ -36,6 +36,8 @@ namespace Common.Entities
 
         public bool IsSiteOriented { get; set; }
 
+        public bool UseImportanceAdjusting { get; set; }
+
         public AgentPrototype()
         {
             CommonVariables = new Dictionary<string, dynamic>();

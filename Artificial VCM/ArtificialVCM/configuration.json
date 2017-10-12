@@ -95,7 +95,8 @@
         }
       ],
 
-      "IsSiteOriented": false
+      "IsSiteOriented": false,
+      "UseImportanceAdjusting": false 
     }
   },
 

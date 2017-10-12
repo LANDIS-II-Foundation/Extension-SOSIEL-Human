@@ -32,7 +32,7 @@ namespace Common.Processes
 
                 var noConfidenceGoals = importantGoals.Where(kvp => kvp.Value.Confidence == false).ToArray();
 
-                if (noConfidenceGoals.Length > 0)
+                if (noConfidenceGoals.Length > 0 && agent.Prototype.UseImportanceAdjusting)
                 {
                     var noConfidenceProportions = noConfidenceGoals.Select(kvp => new
                     {
