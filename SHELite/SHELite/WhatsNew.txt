@@ -1,0 +1,6 @@
+﻿SHELite 1.0.1.6503
+
+New features:
+ - Implement SHE Lite with changes: 
+	1) changed kh for picking mushrooms 
+
